@@ -2,27 +2,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Log In</title>
+	<title>Registration system PHP and MySQL</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>Login</h2>
-        </div>
-        <form action="login.php" method="post">
-            <div>
-                <label for="username">Username: </label>
-                <input type="text" name="username" required>
-            </div>
+	<div class="header">
+		<h2>Login</h2>
+	</div>
+	<form method="post" action="login.php">
 
-            <div>
-                <label for="password">Password: </label>
-                <input type="password" name="password" required>
-            </div>
+		<?php echo display_error(); ?>
 
-            <button type="submit" name="login_user">Log In</button>
-            <p> Not a user? <a href="registration.php"><b>register</b></a></p>
-        </form>
-    </div>
+		<div class="input-group">
+			<label>Username</label>
+			<input type="text" name="username" >
+		</div>
+		<div class="input-group">
+			<label>Password</label>
+			<input type="password" name="password">
+		</div>
+		<div class="input-group">
+			<button type="submit" class="btn" name="login_btn">Login</button>
+		</div>
+		<p>
+			Not yet a member? <a href="registration.php">Sign up</a>
+		</p>
+	</form>
 </body>
 </html>
