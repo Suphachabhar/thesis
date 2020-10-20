@@ -1,7 +1,8 @@
+<?php include('server.php') ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Log In</title>
 </head>
 <body>
     <div class="container">
@@ -11,15 +12,15 @@
         <form action="login.php" method="post">
             <div>
                 <label for="username">Username: </label>
-                <input type="text" name="username">
+                <input type="text" name="username" required>
             </div>
 
             <div>
                 <label for="password">Password: </label>
-                <input type="password" name="password_1">
+                <input type="password" name="password" required>
             </div>
 
-            <button type="submit">Login</button>
+            <button type="submit" name="login_user">Log In</button>
             <p> Not a user? <a href="registration.php"><b>register</b></a></p>
         </form>
     </div>
