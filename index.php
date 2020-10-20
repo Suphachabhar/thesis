@@ -1,9 +1,5 @@
 <?php 
     include('server.php');
-    if (!isLoggedIn()) {
-        $_SESSION['msg'] = "You must log in first";
-        header('location: login.php');
-    }
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +26,7 @@
 		<?php endif ?>
 		<!-- logged in user information -->
 		<div class="profile_info">
-			<img src="images/user_profile.png"  >
+			
 
 			<div>
 				<?php  if (isset($_SESSION['user'])) : ?>
