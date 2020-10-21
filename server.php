@@ -138,22 +138,25 @@ function login(){
 	if (count($errors) == 0) {
 		$password = md5($password);
 
-		$query = "SELECT * FROM users WHERE username='$username' AND password='$password' LIMIT 1";
+		$query = "SELECT * FROM user WHERE username='$username' AND password='$password' LIMIT 1";
 		$results = mysqli_query($db, $query);
 
-		
+		if (mysqli_num_rows($results) != 0) {
 			$logged_in_user = mysqli_fetch_assoc($results);
 			if ($logged_in_user['user_type'] == 1) {
 
 				$_SESSION['user'] = $logged_in_user;
-				$_SESSION['success']  = "You are now logged in";
+				$_SESSION['success']  = "You are now logged in, ".$logged_in_user['username'];
 				header('location: home.php');		  
 			}else{
 				$_SESSION['user'] = $logged_in_user;
-				$_SESSION['success']  = "You are now logged in";
+				$_SESSION['success']  = "You are now logged in, ".$logged_in_user['username'];
 
 				header('location: index.php');
 			}
+		} else {
+            array_push($errors, "Invalid username or password");
+        }
 		
 	}
 }
