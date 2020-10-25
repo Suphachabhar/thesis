@@ -1,16 +1,27 @@
 <?php
+    require_once("database.php");
     session_start();
 ?>
 
 <html>
+<?php if (!isset($_GET['id'])) : 
+    $_SESSION['success'] = "Invalid course ID.";
+    header('location: index.php');
+else : 
+    $query = "SELECT name FROM topics where id = ".$_GET['id']." LIMIT 1";
+    $results = mysqli_query($db, $query);
+    
+    if (mysqli_num_rows($results) != 0) :
+        $topic = mysqli_fetch_assoc($results);
+?>
 <head>
-    <title>Topic</title>
+    <title><?php echo $topic['name']; ?></title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
     
 <body>
 	<div class="header">
-		<h2>Topic</h2>
+		<h2><?php echo $topic['name']; ?></h2>
 	</div>
 	<div class="content">
 		<?php if (isset($_SESSION['success'])) : ?>
@@ -26,10 +37,17 @@
         
         <form action="topic_handler.php" method="post" enctype="multipart/form-data">
             <input name="function" value="upload" hidden>
+            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
             <input type="file" name="fileToUpload">
             <input type="submit" value="Upload File">
         </form>
         <p></p>
 	</div>
 </body>
+<?php 
+    else :
+        $_SESSION['success'] = "Invalid course ID.";
+        header('location: index.php');
+    endif;
+endif ?>
 </html>

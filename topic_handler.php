@@ -10,9 +10,12 @@
     }
     
     function uploadCourseContent() {
-        $target_dir = "files/";
-        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $uploadOk = 1;
+        if (!isset($_POST["topic"])) {
+            $_SESSION['success'] = "Invalid topic ID";
+            header('location: index.php');
+        }
+        $target_file = "files/".$_POST["topic"]."/".basename($_FILES["fileToUpload"]["name"]);
         
         if ($uploadOk == 0) {
             $_SESSION['success'] = "Sorry, your file was not uploaded.";
@@ -23,6 +26,6 @@
                 $_SESSION['success'] = "Sorry, there was an error uploading your file.";
             }
         }
-        header('location: topic.php');
+        header('location: topic.php?id='.$_POST['topic']);
     }
 ?>
