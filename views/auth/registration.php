@@ -15,7 +15,7 @@
 			<form method="post" action="login.php">
 
 			<?php echo display_error(); ?>
-				<img src="img/avatar.svg">
+				<img src="img/avatar.png">
 				<h2 class="title">Login Form</h2>
 
 				<div class="input-div one">
