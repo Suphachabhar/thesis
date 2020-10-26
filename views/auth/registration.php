@@ -52,14 +52,14 @@
            		   <div class="i"> 
            		    	<i class="fas fa-lock"></i>
                     </div>
-                    
+
            		   <div class="div">
            		    	<h5>Confirm Password</h5>
            		    	<input type="password" class="input" name="password_2">
             	   </div>
                 </div>
                 
-				<input type="submit" class="btn" value="Register" name="regiter_btn">
+				<input type="submit" class="btn" name="regiter_btn">
 
 				
 				<a href="login.php">Sign in</a>

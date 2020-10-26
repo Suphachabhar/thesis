@@ -5,14 +5,14 @@ include('server.php');
 if (isset($_GET['logout'])) {
 	session_destroy();
 	unset($_SESSION['user']);
-	header("location: login.php");
+	header("location: auth/login.php");
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<title>Home</title>
-	<link rel="stylesheet" type="text/css" href="../style.css">
+	<link href="style.css" rel="stylesheet">
 	<style>
 	.header {
 		background: #003366;
