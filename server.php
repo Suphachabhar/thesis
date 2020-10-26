@@ -147,10 +147,12 @@ function login(){
 
 				$_SESSION['user'] = $logged_in_user;
 				$_SESSION['success']  = "You are now logged in, ".$logged_in_user['username'];
+                $_SESSION['user_type'] = $logged_in_user['user_type'];
 				header('location: home.php');		  
 			}else{
 				$_SESSION['user'] = $logged_in_user;
 				$_SESSION['success']  = "You are now logged in, ".$logged_in_user['username'];
+                $_SESSION['user_type'] = $logged_in_user['user_type'];
 
 				header('location: index.php');
 			}

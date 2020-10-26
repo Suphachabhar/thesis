@@ -10,6 +10,11 @@ if (isset($_GET['logout'])) {
 ?>
 <!DOCTYPE html>
 <html>
+<?php
+    if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 1) {
+        header('location: index.php');
+    }
+?>
 <head>
 	<title>Home</title>
 	<link rel="stylesheet" type="text/css" href="../style.css">
@@ -57,6 +62,14 @@ if (isset($_GET['logout'])) {
 				<?php endif ?>
 			</div>
 		</div>
+        <div>
+            <h2>Create a topic</h2>
+            <form action="topic_handler.php" method="post">
+                <input name="function" value="createTopic" hidden>
+                <input name="name" value="">
+                <input type="submit" value="Create">
+            </form>
+        </div>
 	</div>
 </body>
 </html>

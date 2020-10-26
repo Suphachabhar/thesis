@@ -4,6 +4,11 @@
 
 <!DOCTYPE html>
 <html>
+<?php
+    if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 1) {
+        header('location: home.php');
+    }
+?>
 <head>
 	<title>Home</title>
 	<link rel="stylesheet" type="text/css" href="style.css">

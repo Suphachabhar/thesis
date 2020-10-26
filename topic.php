@@ -35,13 +35,14 @@ else :
 			</div>
 		<?php endif ?>
         
-        <form action="topic_handler.php" method="post" enctype="multipart/form-data">
-            <input name="function" value="upload" hidden>
-            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-            <input type="file" name="fileToUpload">
-            <input type="submit" value="Upload File">
-        </form>
-        <p></p>
+        <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 1) : ?>
+            <form action="topic_handler.php" method="post" enctype="multipart/form-data">
+                <input name="function" value="upload" hidden>
+                <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                <input type="file" name="fileToUpload">
+                <input type="submit" value="Upload File">
+            </form>
+        <?php endif ?>
 	</div>
 </body>
 <?php 
