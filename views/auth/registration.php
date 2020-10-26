@@ -1,46 +1,74 @@
 <?php include('server.php') ?>
 
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Registration</title>
-    <link rel="stylesheet" href="style.css">
+	<title>Meta LMS</title>
+	
+	<link href="style.css" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <h2>Register</h2>
-    </div>
+	<img class="wave" src="img/wave.png">
+	<div class="container">
+	
+		<div class="login-content">
+			<form method="post" action="login.php">
 
-    <form method="post" action="registration.php">
-        <?php echo display_error(); ?>
+			<?php echo display_error(); ?>
+				<img src="img/avatar.svg">
+				<h2 class="title">Login Form</h2>
 
-        <div class="input-group">
-            <label>Username</label>
-            <input type="text" name="username" value="<?php echo $username; ?>">
-        </div>
+				<div class="input-div one">
+					<div class="i">
+						<i class="fas fa-user"></i>
+					</div>
+					<div class="div">
+           		   		<h5>Username</h5>
+           		   		<input type="text" class="input" name="username" value="<?php echo $username; ?>">
+           		   </div>
+                </div>
+                
+                <div class="input-div one">
+           		   <div class="i"> 
+           		    	<i class="fas fa-lock"></i>
+           		   </div>
+           		   <div class="div">
+           		    	<h5>Email</h5>
+           		    	<input type="email" class="input" name="email" value="<?php echo $email; ?>">
+            	   </div>
+				</div>
 
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" name="email" value="<?php echo $email; ?>">
-        </div>
+				<div class="input-div one">
+           		   <div class="i"> 
+           		    	<i class="fas fa-lock"></i>
+           		   </div>
+           		   <div class="div">
+           		    	<h5>Password</h5>
+           		    	<input type="password" class="input" name="password_1">
+            	   </div>
+				</div>
+                
+                <div class="input-div pass">
+           		   <div class="i"> 
+           		    	<i class="fas fa-lock"></i>
+                    </div>
+                    
+           		   <div class="div">
+           		    	<h5>Confirm Password</h5>
+           		    	<input type="password" class="input" name="password_2">
+            	   </div>
+                </div>
+                
+				<input type="submit" class="btn" value="Register" name="regiter_btn">
 
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" name="password_1">
-        </div>
+				
+				<a href="login.php">Sign in</a>
+				
 
-        <div class="input-group">
-            <label>Confirm password</label>
-            <input type="password" name="password_2">
-        </div>
+				</form>
+		</div>
 
-        <div class="input-group">
-            <button type="submit" class="btn" name="register_btn">Register</button>
-        </div>
-
-        <p>Already a user? <a href="login.php">Sign in</a></p>
-
-    </form>
+	</div>
+	<script type="text/javascript" src="style.js"></script>
 </body>
 </html>

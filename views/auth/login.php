@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Registration system PHP and MySQL</title>
+	<title>Meta LMS</title>
 	
 	<link href="style.css" rel="stylesheet">
 </head>
@@ -40,9 +40,9 @@
 				
 				<input type="submit" class="btn" value="Login" name="login_btn">
 
-				<p>
-					Not yet a member? <a href="registration.php">Sign up</a>
-				</p>
+				
+				<a href="registration.php">Sign up</a>
+				
 
 				</form>
 		</div>
