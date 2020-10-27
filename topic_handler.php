@@ -18,14 +18,14 @@
         if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 1) {
             if (empty($_POST['name'])) {
                 $_SESSION['success'] = "Please provide a topic name.";
-                header('location: home.php');
+                header('location: views/auth/home.php');
             } else {            
                 $query = "SELECT id FROM topics where name = '".$_POST['name']."'";
                 $results = mysqli_query($db, $query);
                 
                 if (mysqli_num_rows($results) != 0) {
                     $_SESSION['success'] = "The topic name \"".$_POST['name']."\" has been used.";
-                    header('location: home.php');
+                    header('location: views/auth/home.php');
                 } else {
                     $query = "SELECT max(id) FROM topics";
                     $results = mysqli_query($db, $query);
@@ -42,7 +42,7 @@
             }
         } else {
             $_SESSION['success'] = "You don't have permission to create topics.";
-            header('location: index.php');
+            header('location: views/auth/index.php');
         }
     }
     
@@ -51,7 +51,7 @@
             $uploadOk = 1;
             if (!isset($_POST["topic"])) {
                 $_SESSION['success'] = "Invalid topic ID";
-                header('location: index.php');
+                header('location: views/auth/index.php');
             }
             $target_file = "files/".$_POST["topic"]."/".basename($_FILES["fileToUpload"]["name"]);
             

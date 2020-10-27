@@ -64,7 +64,7 @@ if (isset($_GET['logout'])) {
 		</div>
         <div>
             <h2>Create a topic</h2>
-            <form action="topic_handler.php" method="post">
+            <form action="../../topic_handler.php" method="post">
                 <input name="function" value="createTopic" hidden>
                 <input name="name" value="">
                 <input type="submit" value="Create">
