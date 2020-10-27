@@ -5,7 +5,7 @@
 <head>
 	<title>Meta LMS</title>
 	
-	<link href="style.css" rel="stylesheet">
+	<link href="auth.css" rel="stylesheet">
 </head>
 <body>
 	<img class="wave" src="img/wave.png">
