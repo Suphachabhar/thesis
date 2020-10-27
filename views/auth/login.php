@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Registration system PHP and MySQL</title>
+	<title>Meta LMS</title>
 	
-	<link href="style.css" rel="stylesheet">
+	<link href="auth.css" rel="stylesheet">
 </head>
 <body>
 	<img class="wave" src="img/wave.png">
@@ -15,7 +15,7 @@
 			<form method="post" action="login.php">
 
 			<?php echo display_error(); ?>
-				<img src="img/avatar.svg">
+				<img src="img/avatar.png">
 				<h2 class="title">Login Form</h2>
 
 				<div class="input-div one">
@@ -40,9 +40,9 @@
 				
 				<input type="submit" class="btn" value="Login" name="login_btn">
 
-				<p>
-					Not yet a member? <a href="registration.php">Sign up</a>
-				</p>
+				
+				<a href="registration.php">Sign up</a>
+				
 
 				</form>
 		</div>
