@@ -1,8 +1,4 @@
 <?php
-    function permission() {
-        return isset($_SESSION['user_type']) && $_SESSION['user_type'] == 1;
-    }
-    
     function mainPage() {
         return permission() ? 'views/auth/home.php' : 'views/auth/index.php';
     }

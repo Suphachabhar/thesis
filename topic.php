@@ -2,31 +2,27 @@
     session_start();
     require_once("database.php");
     require_once("errors.php");
+    require_once("checks.php");
 ?>
 
 <html>
-<?php if (!isset($_GET['id'])) : 
-    $_SESSION['success'] = invalidInputError("topic ID");
-    header('location: '.mainPage());
-else : 
-    $query = "SELECT name FROM topics where id = ".$_GET['id']." LIMIT 1";
-    $results = mysqli_query($db, $query);
-    
-    if (mysqli_num_rows($results) == 0) :
+<?php
+    $topic = existingTopicID($_GET['id'], $db);
+    if (is_null($topic)) : 
         $_SESSION['success'] = invalidInputError("topic ID");
         header('location: '.mainPage());
-    else :
-        $topic = mysqli_fetch_assoc($results);
+    else : 
 ?>
 <head>
-    <title><?php echo $topic['name']; ?></title>
+    <title id="title"><?php echo $topic['name']; ?></title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
     
 <body>
 	<div id="name" class="header">
-		<h2><?php echo $topic['name']; ?></h2><button id="editName">Edit</button>
+		<h2><?php echo $topic['name']; ?></h2>
+        <button class="editTopic">Edit</button>
 	</div>
 	<div class="content">
 		<?php if (isset($_SESSION['success'])) : ?>
@@ -46,7 +42,11 @@ else :
             foreach ($sList as $subtopic) :
         ?>
             <div>
-                <h3><?php echo $subtopic[1]; ?></h3>
+                <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
+                <div id="<?php echo 'subtopicHeader_'.$subtopic[0]; ?>" class="subtopicHeader">
+                    <h3 id="<?php echo 'subtopicName_'.$subtopic[0]; ?>"><?php echo $subtopic[1]; ?></h3>
+                    <button id="<?php echo 'editSubtopic_'.$subtopic[0]; ?>" class="editSubtopic">Edit</button>
+                </div>
                 <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 1) : ?>
                     <h4>Upload content</h4>
                     <form action="topic_handler.php" method="post" enctype="multipart/form-data">
@@ -73,13 +73,48 @@ else :
         <?php endif ?>
 	</div>
 </body>
-<?php 
-    endif;
-endif; ?>
+<?php endif; ?>
 
 <script>
-	$("#editName").click(function () {
-		$("#name").html('<form action="topic_handler.php" method="post"><input name="function" value="editTopicName" hidden><input name="id" value='+"<?php echo $_GET['id']; ?>"+' hidden><input name="name" value='+"<?php echo $topic['name']; ?>"+'><input type="submit" value="Change"></form>');
-	});
+	$(document).on("click", ".editTopic", (function () {
+		$("#name").html(' \
+            <form action="topic_handler.php" method="post"> \
+                <input name="function" value="editTopicName" hidden> \
+                <input name="id" value='+"<?php echo $_GET['id']; ?>"+' hidden> \
+                <input name="name" value='+"<?php echo $topic['name']; ?>"+'> \
+                <input type="submit" value="Change"> \
+            </form> \
+            <button class="cancelEditTopic">Cancel</button> \
+        ');
+	}));
+    
+	$(document).on("click", ".cancelEditTopic", (function () {
+		$("#name").html(' \
+            <h2>'+ $("#title").html() +'</h2> \
+            <button class="editTopic">Edit</button> \
+        ');
+	}));
+		
+	$(document).on("click", ".editSubtopic", (function () {
+		var subID = $(this).attr("id").split("_")[1];
+		$("#subtopicHeader_"+subID).html(' \
+            <form action="topic_handler.php" method="post"> \
+                <input name="function" value="editSubtopicName" hidden> \
+                <input name="topic" value='+"<?php echo $_GET['id']; ?>"+' hidden> \
+                <input name="id" value='+ subID +' hidden> \
+                <input name="name" value='+ $("#subtopicName_"+subID).html() +'> \
+                <input type="submit" value="Change"> \
+            </form> \
+            <button id="cancel_'+ subID +'" class="cancelEditSubtopic">Cancel</button> \
+        ');
+	}));
+    
+	$(document).on("click", ".cancelEditSubtopic", (function () {
+		var subID = $(this).attr("id").split("_")[1];
+		$("#subtopicHeader_"+subID).html(' \
+            <h3 id="subtopicName_'+ subID +'">'+ $("#title_"+subID).html() +'</h3> \
+            <button id="editSubtopic_'+ subID +'" class="editSubtopic">Edit</button> \
+        ');
+	}));
 </script>
 </html>
