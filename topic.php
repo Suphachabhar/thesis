@@ -21,11 +21,12 @@ else :
 <head>
     <title><?php echo $topic['name']; ?></title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
     
 <body>
-	<div class="header">
-		<h2><?php echo $topic['name']; ?></h2>
+	<div id="name" class="header">
+		<h2><?php echo $topic['name']; ?></h2><button id="editName">Edit</button>
 	</div>
 	<div class="content">
 		<?php if (isset($_SESSION['success'])) : ?>
@@ -75,4 +76,10 @@ else :
 <?php 
     endif;
 endif; ?>
+
+<script>
+	$("#editName").click(function () {
+		$("#name").html('<form action="topic_handler.php" method="post"><input name="function" value="editTopicName" hidden><input name="id" value='+"<?php echo $_GET['id']; ?>"+' hidden><input name="name" value='+"<?php echo $topic['name']; ?>"+'><input type="submit" value="Change"></form>');
+	});
+</script>
 </html>

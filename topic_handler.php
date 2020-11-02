@@ -10,6 +10,10 @@
         case "createSubtopic":
             createSubtopic($db);
             break;
+            
+        case "editTopicName":
+            editTopicName($db);
+            break;
     
         case "upload":
             uploadTopicContent($db);
@@ -20,7 +24,7 @@
     }
     
     function createTopic($db) {
-        if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 1) {
+        if (!permission()) {
             $_SESSION['success'] = permissionError("create topics");
             header('location: views/auth/index.php');
         } elseif (empty($_POST['name'])) {
@@ -39,7 +43,7 @@
                 $id = mysqli_fetch_assoc($results)['id'] + 1;
                 $query = "INSERT INTO topics (id, name) VALUES (".$id.", '".$_POST['name']."')";
                 mysqli_query($db, $query);
-                $_SESSION['success'] = "Topic \"".$_POST['name']."\" is created.";
+                $_SESSION['success'] = "Topic \"".$_POST['name']."\" has been created successfully.";
                 header('location: topic.php?id='.$id);
             }
         }
@@ -72,11 +76,36 @@
                         $id = mysqli_fetch_assoc($results)['id'] + 1;
                         $query = "INSERT INTO subtopics (topic, id, name) VALUES (".$_POST['topic'].", ".$id.", '".$_POST['name']."')";
                         mysqli_query($db, $query);
-                        $_SESSION['success'] = "Subtopic \"".$_POST['name']."\" is created.";
+                        $_SESSION['success'] = "Subtopic \"".$_POST['name']."\" has been created successfully.";
                     }
                 }
                 header('location: topic.php?id='.$_POST['topic']);
             }
+        }
+    }
+    
+    function editTopicName($db) {
+        if (empty($_POST['id'])) {
+            $_SESSION['success'] = invalidInputError("topic ID");
+            header('location: '.mainPage());
+        } else {
+            if (!permission()) {
+                $_SESSION['success'] = permissionError("edit topic names");
+            } elseif (empty($_POST['name'])) {
+                $_SESSION['success'] = blankInputError("a topic name");
+            } else {            
+                $query = "SELECT id FROM topics where name = '".$_POST['name']."'";
+                $results = mysqli_query($db, $query);
+                
+                if (mysqli_num_rows($results) != 0) {
+                    $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
+                } else {
+                    $query = "UPDATE topics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id'];
+                    mysqli_query($db, $query);
+                    $_SESSION['success'] = "Topic name has been changed to \"".$_POST['name']."\" successfully.";
+                }
+            }
+            header('location: topic.php?id='.$_POST['id']);
         }
     }
     
@@ -112,7 +141,7 @@
                                 mkdir($directory, 0777, true);
                             }
                             if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $directory."/".$chosen_file)) {
-                                $_SESSION['success'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
+                                $_SESSION['success'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded successfully.";
                             } else {
                                 $_SESSION['success'] = "Sorry, there was an error uploading your file.";
                             }
