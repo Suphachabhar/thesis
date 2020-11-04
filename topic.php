@@ -16,13 +16,17 @@
 <head>
     <title id="title"><?php echo $topic['name']; ?></title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="modal.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
     
 <body>
 	<div id="name" class="header">
 		<h2><?php echo $topic['name']; ?></h2>
-        <button class="editTopic">Edit</button>
+        <?php if (permission()) : ?>
+            <button class="editTopic">Edit</button>
+            <button class="deleteTopic">Delete</button>
+        <?php endif; ?>
 	</div>
 	<div class="content">
 		<?php if (isset($_SESSION['success'])) : ?>
@@ -45,9 +49,12 @@
                 <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
                 <div id="<?php echo 'subtopicHeader_'.$subtopic[0]; ?>" class="subtopicHeader">
                     <h3 id="<?php echo 'subtopicName_'.$subtopic[0]; ?>"><?php echo $subtopic[1]; ?></h3>
-                    <button id="<?php echo 'editSubtopic_'.$subtopic[0]; ?>" class="editSubtopic">Edit</button>
+                    <?php if (permission()) : ?>
+                        <button id="<?php echo 'editSubtopic_'.$subtopic[0]; ?>" class="editSubtopic">Edit</button>
+                        <button id="<?php echo 'deleteSubtopic_'.$subtopic[0]; ?>" class="deleteSubtopic">Delete</button>
+                    <?php endif; ?>
                 </div>
-                <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 1) : ?>
+                <?php if (permission()) : ?>
                     <h4>Upload content</h4>
                     <form action="topic_handler.php" method="post" enctype="multipart/form-data">
                         <input name="function" value="upload" hidden>
@@ -56,12 +63,12 @@
                         <input type="file" name="fileToUpload">
                         <input type="submit" value="Upload File">
                     </form>
-                <?php endif ?>
+                <?php endif; ?>
             </div>
         <?php 
             endforeach;
         
-            if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 1) :
+            if (permission()) :
         ?>
             <h3>Create a new subtopic</h3>
             <form action="topic_handler.php" method="post">
@@ -70,8 +77,29 @@
                 <input name="name">
                 <input type="submit" value="Create">
             </form>
-        <?php endif ?>
+        <?php endif; ?>
 	</div>
+    <?php if (permission()) : ?>
+        <div id="confirmDeleteTopic" class="modal">
+            Are you sure you want to delete this topic?
+            <form action="topic_handler.php" method="post">
+                <input name="function" value="deleteTopic" hidden>
+                <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                <input type="submit" value="Yes">
+            </form>
+            <button class="no">No</button>
+        </div>
+        <div id="confirmDeleteSubtopic" class="modal">
+            Are you sure you want to delete the subtopic <font id="subtopicNameToDelete"></font>?
+            <form action="topic_handler.php" method="post">
+                <input name="function" value="deleteSubtopic" hidden>
+                <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                <input name="subtopic" id="subtopicIDToDelete" hidden>
+                <input type="submit" value="Yes">
+            </form>
+            <button class="no">No</button>
+        </div>
+    <?php endif; ?>
 </body>
 <?php endif; ?>
 
@@ -86,6 +114,10 @@
             </form> \
             <button class="cancelEditTopic">Cancel</button> \
         ');
+	}));
+    
+	$(document).on("click", ".deleteTopic", (function () {
+        $("#confirmDeleteTopic").css("display", "block");
 	}));
     
 	$(document).on("click", ".cancelEditTopic", (function () {
@@ -109,12 +141,23 @@
         ');
 	}));
     
+	$(document).on("click", ".deleteSubtopic", (function () {
+		var subID = $(this).attr("id").split("_")[1];
+        $("#subtopicNameToDelete").html($("#subtopicName_"+subID).html());
+        $("#subtopicIDToDelete").val(subID);
+        $("#confirmDeleteSubtopic").css("display", "block");
+	}));
+    
 	$(document).on("click", ".cancelEditSubtopic", (function () {
 		var subID = $(this).attr("id").split("_")[1];
 		$("#subtopicHeader_"+subID).html(' \
             <h3 id="subtopicName_'+ subID +'">'+ $("#title_"+subID).html() +'</h3> \
             <button id="editSubtopic_'+ subID +'" class="editSubtopic">Edit</button> \
         ');
+	}));
+    
+	$(document).on("click", ".no", (function () {
+        $(".modal").css("display", "none");
 	}));
 </script>
 </html>

@@ -19,6 +19,14 @@
         case "editSubtopicName":
             editSubtopicName($db);
             break;
+            
+        case "deleteTopic":
+            deleteTopic($db);
+            break;
+            
+        case "deleteSubtopic":
+            deleteSubtopic($db);
+            break;
     
         case "upload":
             uploadTopicContent($db);
@@ -104,7 +112,7 @@
             if (is_null($subtopic)) {
                 $_SESSION['success'] = invalidInputError("subtopic ID");
             } elseif (!permission()) {
-                $_SESSION['success'] = permissionError("edit topic names");
+                $_SESSION['success'] = permissionError("edit subtopic names");
             } elseif (empty($_POST['name'])) {
                 $_SESSION['success'] = blankInputError("a topic name");
             } elseif (strcmp($_POST['name'], $subtopic['name']) != 0) {
@@ -120,8 +128,49 @@
         }
     }
     
+    function deleteTopic($db) {
+        $topic = existingTopicID($_POST['id'], $db);
+        if (is_null($topic)) {
+            $_SESSION['success'] = invalidInputError("topic ID");
+            header('location: '.mainPage());
+        } else {
+            if (!permission()) {
+                $_SESSION['success'] = permissionError("delete topics");
+                header('location: topic.php?id='.$_POST['id']);
+            } else {
+                $query = "SELECT id FROM subtopics WHERE topic = ".$_POST['id'];
+                $subtopics = mysqli_query($db, $query);
+                $query = "DELETE FROM topics WHERE id = ".$_POST['id'];
+                mysqli_query($db, $query);
+                removeTopicDirectory($_POST['id'], $subtopics);
+                $_SESSION['success'] = "Topic \"".$topic['name']."\" has been deleted successfully.";
+                header('location: '.mainPage());
+            }
+        }
+    }
+    
+    function deleteSubtopic($db) {
+        if (is_null(existingTopicID($_POST['topic'], $db))) {
+            $_SESSION['success'] = invalidInputError("topic ID");
+            header('location: '.mainPage());
+        } else {
+            $subtopic = existingSubtopicID($_POST['subtopic'], $_POST['topic'], $db);
+            if (is_null($subtopic)) {
+                $_SESSION['success'] = invalidInputError("subtopic ID");
+            } elseif (!permission()) {
+                $_SESSION['success'] = permissionError("delete subtopics");
+            } else {
+                $query = "DELETE FROM subtopics WHERE id = ".$_POST['subtopic'];
+                mysqli_query($db, $query);
+                removeSubtopicDirectory($_POST['topic'], $_POST['subtopic']);
+                $_SESSION['success'] = "Subtopic \"".$subtopic['name']."\" has been deleted successfully.";
+            }
+            header('location: topic.php?id='.$_POST['topic']);
+        }
+    }
+    
     function uploadTopicContent($db) {
-        if (is_null(existingTopicID($_POST['subtopic'], $db))) {
+        if (is_null(existingTopicID($_POST['topic'], $db))) {
             $_SESSION['success'] = invalidInputError("topic ID");
             header('location: '.mainPage());
         } else {
@@ -148,6 +197,27 @@
                 }
             }
             header('location: topic.php?id='.$_POST['topic']);
+        }
+    }
+    
+    function removeTopicDirectory($topic, $subtopics) {
+        $directory = "files/".$topic."/";
+        if (is_dir($directory)) {
+            foreach ($subtopics as $subtopic) {
+                removeSubtopicDirectory($topic, $subtopic["id"]);
+            }
+            rmdir($directory);
+        }
+    }
+    
+    function removeSubtopicDirectory($topic, $subtopic) {
+        $directory = "files/".$topic."/".$subtopic."/";
+        if (is_dir($directory)) {
+            $files = glob($directory . '*', GLOB_MARK);
+            foreach ($files as $file) {
+                unlink($file);
+            }
+            rmdir($directory);
         }
     }
 ?>
