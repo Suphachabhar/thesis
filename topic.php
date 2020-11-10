@@ -26,6 +26,7 @@
         <?php if (permission()) : ?>
             <button class="editTopic">Edit</button>
             <button class="deleteTopic">Delete</button>
+            <button class="rearrange">Rearrange Subtopics</button>
         <?php endif; ?>
 	</div>
 	<div class="content">
@@ -41,7 +42,7 @@
 		<?php
             endif;
         
-            $query = "SELECT id, name FROM subtopics where topic = ".$_GET['id'];
+            $query = "SELECT id, name, sort FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
             $sList = mysqli_fetch_all(mysqli_query($db, $query));
             foreach ($sList as $subtopic) :
         ?>
@@ -98,6 +99,16 @@
                 <input type="submit" value="Yes">
             </form>
             <button class="no">No</button>
+        </div>
+        <div id="rearrangeSubtopics" class="modal">
+            <span class="close">&times;</span>
+            <?php
+                foreach ($sList as $subtopic) :
+            ?>
+            <?php 
+                endforeach;
+            ?>
+            <button id="confirmRearrange">Save</button>
         </div>
     <?php endif; ?>
 </body>
@@ -157,6 +168,10 @@
 	}));
     
 	$(document).on("click", ".no", (function () {
+        $(".modal").css("display", "none");
+	}));
+    
+	$(document).on("click", ".close", (function () {
         $(".modal").css("display", "none");
 	}));
 </script>

@@ -69,10 +69,12 @@
             } elseif (existingSubtopicName($_POST['name'], $_POST['topic'], $db)) {
                 $_SESSION['success'] = clashedInputError("subtopic name", $_POST['name']);
             } else {
-                $query = "SELECT COALESCE(MAX(id), 0) as id FROM subtopics WHERE topic = ".$_POST['topic'];
+                $query = "SELECT COALESCE(MAX(id), 0) as id, COUNT(*) as sort FROM subtopics WHERE topic = ".$_POST['topic'];
                 $results = mysqli_query($db, $query);
-                $id = mysqli_fetch_assoc($results)['id'] + 1;
-                $query = "INSERT INTO subtopics (topic, id, name) VALUES (".$_POST['topic'].", ".$id.", '".$_POST['name']."')";
+                $newInfo = mysqli_fetch_assoc($results);
+                $id = $newInfo['id'] + 1;
+                $sort = $newInfo['sort'] + 1;
+                $query = "INSERT INTO subtopics (topic, id, name, sort) VALUES (".$_POST['topic'].", ".$id.", '".$_POST['name']."', ".$sort.")";
                 mysqli_query($db, $query);
                 $_SESSION['success'] = "Subtopic \"".$_POST['name']."\" has been created successfully.";
             }
@@ -160,8 +162,12 @@
             } elseif (!permission()) {
                 $_SESSION['success'] = permissionError("delete subtopics");
             } else {
-                $query = "DELETE FROM subtopics WHERE id = ".$_POST['subtopic'];
+                $query = "DELETE FROM subtopics WHERE id = ".$_POST['subtopic']." AND topic = ".$_POST['topic'];
                 mysqli_query($db, $query);
+                
+                $query = "UPDATE subtopics SET sort = sort - 1 WHERE topic = ".$_POST['topic']." AND sort > ".$subtopic['sort'];
+                mysqli_query($db, $query);
+                
                 removeSubtopicDirectory($_POST['topic'], $_POST['subtopic']);
                 $_SESSION['success'] = "Subtopic \"".$subtopic['name']."\" has been deleted successfully.";
             }
