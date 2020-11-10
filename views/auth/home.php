@@ -1,13 +1,13 @@
 <?php 
 include('server.php');
 
-
 if (isset($_GET['logout'])) {
 	session_destroy();
 	unset($_SESSION['user']);
 	header("location: auth/login.php");
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <?php
@@ -16,20 +16,25 @@ if (isset($_GET['logout'])) {
     }
 ?>
 <head>
-	<title>Home</title>
-	<link href="style.css" rel="stylesheet">
-	<style>
-	.header {
-		background: #003366;
-	}
-	button[name=register_btn] {
-		background: #003366;
-	}
-	</style>
+<meta charset="UTF-8">
+
+	<title>Course</title>
+	<link href="home.css" rel="stylesheet">
+	
+	
 </head>
 <body>
+	<nav>
+      <div id="logo-img">
+          <a href="home.php">
+              <img src="img/unsw_0.png" href="home.php">
+		  </a>
+      </div>
+      
+  	</nav>
+
 	<div class="header">
-		<h2>Admin - Home Page</h2>
+		
 	</div>
 	<div class="content">
 		<!-- notification message -->
@@ -43,10 +48,9 @@ if (isset($_GET['logout'])) {
 				</h3>
 			</div>
 		<?php endif ?>
-
 		<!-- logged in user information -->
 		<div class="profile_info">
-			<img src="../images/admin_profile.png"  >
+			
 
 			<div>
 				<?php  if (isset($_SESSION['user'])) : ?>
@@ -55,8 +59,7 @@ if (isset($_GET['logout'])) {
 					<small>
 						<i  style="color: #888;">(<?php echo ucfirst($_SESSION['user']['user_type']); ?>)</i> 
 						<br>
-						<a href="home.php?logout='1'" style="color: red;">logout</a>
-                       &nbsp; <a href="create_user.php"> + add user</a>
+						<a href="index.php?logout='1'" style="color: red;">logout</a>
 					</small>
 
 				<?php endif ?>
