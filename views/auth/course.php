@@ -38,7 +38,7 @@ if (isset($_GET['logout'])) {
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item">
-				<a class="nav-link" href="course.php">Course</a>
+				<a class="nav-link" href="#">Course<span class="sr-only">(current)</span></a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link disabled" href="#"></a>
@@ -50,7 +50,7 @@ if (isset($_GET['logout'])) {
 	</div>
 	</nav>
 
-	<div class="content">
+    <div class="content">
 		<?php if (isset($_SESSION['success'])) : ?>
 		<div class="error success" >
 			<h3>
@@ -61,6 +61,48 @@ if (isset($_GET['logout'])) {
 			</h3>
 		</div>
 		<?php endif ?>
+	</div>
+
+	<div class="content">
+		
+
+    
+
+        <form action="../../topic_handler.php" method="post">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">create</button>
+
+
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Create new topic</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form>
+				<div class="form-group">
+					<label class="col-form-label">Topic:</label>
+                    <input name="function" value="createTopic" hidden>
+					<input name="name" type="text" class="form-control">
+				</div>
+				<div class="form-group">
+					<label for="message-text" class="col-form-label">Description:</label>
+					<textarea class="form-control" id="message-text"></textarea>
+				</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				<button type="submit" class="btn btn-primary" value="Create">Submit</button>
+			</div>
+			</div>
+		</div>
+		</div>
+        </form>	
+
 	</div>
 
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -78,8 +120,8 @@ if (isset($_GET['logout'])) {
   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
   var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-  modal.find('.modal-body input').val(recipient)
+  modal.find('.modal-title').text('Create new topic')
+
 })
 </script>
 
