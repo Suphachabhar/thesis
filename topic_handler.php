@@ -27,6 +27,10 @@
         case "deleteSubtopic":
             deleteSubtopic($db);
             break;
+            
+        case "rearrangeSubtopics":
+            rearrangeSubtopics($db);
+            break;
     
         case "upload":
             uploadTopicContent($db);
@@ -152,26 +156,61 @@
     }
     
     function deleteSubtopic($db) {
-        if (is_null(existingTopicID($_POST['topic'], $db))) {
+        if (!isset($_POST['topic'])) {
             $_SESSION['success'] = invalidInputError("topic ID");
             header('location: '.mainPage());
         } else {
-            $subtopic = existingSubtopicID($_POST['subtopic'], $_POST['topic'], $db);
+            $subtopic = existingSubtopicID($_POST['id'], $_POST['topic'], $db);
             if (is_null($subtopic)) {
                 $_SESSION['success'] = invalidInputError("subtopic ID");
             } elseif (!permission()) {
-                $_SESSION['success'] = permissionError("delete subtopics");
-            } else {
-                $query = "DELETE FROM subtopics WHERE id = ".$_POST['subtopic']." AND topic = ".$_POST['topic'];
-                mysqli_query($db, $query);
-                
-                $query = "UPDATE subtopics SET sort = sort - 1 WHERE topic = ".$_POST['topic']." AND sort > ".$subtopic['sort'];
-                mysqli_query($db, $query);
-                
-                removeSubtopicDirectory($_POST['topic'], $_POST['subtopic']);
-                $_SESSION['success'] = "Subtopic \"".$subtopic['name']."\" has been deleted successfully.";
+                $_SESSION['success'] = permissionError("edit subtopic names");
+            } elseif (empty($_POST['name'])) {
+                $_SESSION['success'] = blankInputError("a topic name");
+            } elseif (strcmp($_POST['name'], $subtopic['name']) != 0) {
+                if (existingSubtopicName($_POST['name'], $_POST['topic'], $db)) {
+                    $_SESSION['success'] = clashedInputError('subtopic name', $_POST['name']);
+                } else {
+                    $query = "UPDATE subtopics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
+                    mysqli_query($db, $query);
+                    $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
+                }
             }
             header('location: topic.php?id='.$_POST['topic']);
+        }
+    }
+    
+    function rearrangeSubtopics($db) {
+        if (is_null(existingTopicID($_POST['topic'], $db))) {
+            $_SESSION['success'] = invalidInputError("topic ID");
+            print mainPage();
+        } else {
+            if (!permission()) {
+                $_SESSION['success'] = permissionError("rearrange subtopics");
+            } else {
+                $edits = "";
+                $count = 0;
+                $OK = true;
+                foreach ($_POST['subtopic'] as $subtopicID) {
+                    $subtopic = existingSubtopicID($subtopicID, $_POST['topic'], $db);
+                    if (is_null($subtopic)) {
+                        $_SESSION['success'] = invalidInputError("subtopic ID");
+                        $OK = false;
+                        break;
+                    } else {
+                        $count ++;
+                        $edits .= " WHEN id = ".$subtopicID." THEN ".strval($count);
+                    }
+                }
+                
+                if ($OK && $edits != "") {
+                    $query = "UPDATE subtopics SET sort = (CASE".$edits." END) WHERE topic = ".$_POST['topic']." AND id IN (".join(", ", $_POST['subtopic']).")";
+                    mysqli_query($db, $query);
+                    
+                    $_SESSION['success'] = "The subtopics have been rearranged successfully.";
+                }
+            }
+            print mainPage();
         }
     }
     
