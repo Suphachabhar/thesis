@@ -51,9 +51,9 @@
             $results = mysqli_query($db, $query);
             $id = mysqli_fetch_assoc($results)['id'] + 1;
             $query = "INSERT INTO topics (id, name) VALUES (".$id.", '".$_POST['name']."')";
-            mysqli_query($db, $query);
+            mysqli_query($db, $query); 
             $_SESSION['success'] = "Topic \"".$_POST['name']."\" has been created successfully.";
-            header('location: topic.php?id='.$id);
+            header('location: views/auth/course.php');
         }
     }
     

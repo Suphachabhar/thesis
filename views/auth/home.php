@@ -50,7 +50,7 @@ if (isset($_GET['logout'])) {
 	</div>
 	</nav>
 
-	<div class="content">
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
 		<?php if (isset($_SESSION['success'])) : ?>
 		<div class="error success" >
 			<h3>
@@ -59,6 +59,9 @@ if (isset($_GET['logout'])) {
 					unset($_SESSION['success']);
 				?>
 			</h3>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+			</button>
 		</div>
 		<?php endif ?>
 	</div>
@@ -72,14 +75,15 @@ if (isset($_GET['logout'])) {
 </html>
 
 <script>
+	$('.alert').alert()
 	$('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-  modal.find('.modal-body input').val(recipient)
-})
+		var button = $(event.relatedTarget) // Button that triggered the modal
+		var recipient = button.data('whatever') // Extract info from data-* attributes
+		/=/ If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+		// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+		var modal = $(this)
+		modal.find('.modal-title').text('New message to ' + recipient)
+		modal.find('.modal-body input').val(recipient)
+	})
 </script>
 
