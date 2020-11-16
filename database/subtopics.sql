@@ -24,30 +24,44 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `topics`
+-- Table structure for table `subtopics`
 --
 
-CREATE TABLE `topics` (
+CREATE TABLE `subtopics` (
+  `topic` int(11) NOT NULL,
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `sort` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `topics`
+-- Dumping data for table `subtopics`
 --
 
-INSERT INTO `topics` (`id`, `name`) VALUES
-(8, 'rtf');
+INSERT INTO `subtopics` (`topic`, `id`, `name`, `sort`) VALUES
+(8, 4, 'eee', 1),
+(8, 5, 'fff', 2),
+(8, 6, 'reg', 3);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `topics`
+-- Indexes for table `subtopics`
 --
-ALTER TABLE `topics`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `subtopics`
+  ADD PRIMARY KEY (`topic`,`id`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `subtopics`
+--
+ALTER TABLE `subtopics`
+  ADD CONSTRAINT `subtopics_ibfk_1` FOREIGN KEY (`topic`) REFERENCES `topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

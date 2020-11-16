@@ -21,7 +21,7 @@
             return null;
         }
         
-        $query = "SELECT name FROM subtopics where id = ".$id." and topic = ".$topic;
+        $query = "SELECT name, sort FROM subtopics where id = ".$id." and topic = ".$topic;
         $results = mysqli_query($db, $query);
         if (mysqli_num_rows($results) == 0) {
             return null;
