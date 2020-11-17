@@ -65,7 +65,7 @@ if (isset($_GET['logout'])) {
 
 	<div class="container">
         
-	<form action="../../topic_handler.php" method="post">
+	<form action="../topic/topic_handler.php" method="post">
 		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -85,6 +85,17 @@ if (isset($_GET['logout'])) {
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Description:</label>
 						<textarea class="form-control" id="message-text"></textarea>
+					</div>
+					<div class="form-group">
+						<label for="message-text" class="col-form-label">Prerequisite:</label>
+						<input id="searchPrerequisite" list="prerequisite">
+                        <datalist id="prerequisite" name="prerequisite">
+                            <option value="Internet Explorer">
+                            <option value="Firefox">
+                            <option value="Chrome">
+                            <option value="Opera">
+                            <option value="Safari">
+                        </datalist>  
 					</div>
 					</form>
 				</div>

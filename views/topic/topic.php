@@ -1,8 +1,8 @@
 <?php
     session_start();
-    require_once("database.php");
-    require_once("errors.php");
-    require_once("checks.php");
+    require_once("../../database.php");
+    require_once("../../errors.php");
+    require_once("../../checks.php");
 ?>
 
 <html>
