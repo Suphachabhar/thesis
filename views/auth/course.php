@@ -24,11 +24,8 @@ if (isset($_GET['logout'])) {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Course</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="home.css" rel="stylesheet">
-	
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-	
-	
 </head>
 
 <body>
@@ -68,7 +65,7 @@ if (isset($_GET['logout'])) {
 
 	<div class="container">
         
-	<form action="../topic/topic_handler.php" method="post">
+	<form action="../../topic_handler.php" method="post">
 		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -88,17 +85,6 @@ if (isset($_GET['logout'])) {
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Description:</label>
 						<textarea class="form-control" id="message-text"></textarea>
-					</div>
-					<div class="form-group">
-						<label for="message-text" class="col-form-label">Prerequisite:</label>
-						<input id="searchPrerequisite" list="prerequisite">
-                        <datalist id="prerequisite" name="prerequisite">
-                            <option value="Internet Explorer">
-                            <option value="Firefox">
-                            <option value="Chrome">
-                            <option value="Opera">
-                            <option value="Safari">
-                        </datalist>  
 					</div>
 					</form>
 				</div>
@@ -122,7 +108,7 @@ if (isset($_GET['logout'])) {
 			$query = "SELECT * FROM topics";
 			$query_run = mysqli_query($connection, $query);
 		?>
-		<table id="coursetable" class="table table-hover">
+		<table class="table table-hover">
 		<thead>
 			<tr>
 			<th scope="col" colspan="5">Course</th>
@@ -135,7 +121,7 @@ if (isset($_GET['logout'])) {
 		?>
 		<tbody>
 			<tr>
-			<th scope="row"><?php echo $row['name']; ?></th>
+			<th scope="row"><a href="../topic/topic.php?id=<?php echo $row['id']; ?>"><?php echo $row['name']; ?></th>
 			</tr>
 		</tbody>
 		<?php
@@ -148,12 +134,9 @@ if (isset($_GET['logout'])) {
 	</div>		
 	</div>
 
-	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-
-	
-	
-	
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 </body>
 
@@ -162,7 +145,6 @@ if (isset($_GET['logout'])) {
 </html>
 
 <script>
-
 $('#courseAddModal').on('show.bs.modal', function (event) {
 	var button = $(event.relatedTarget) // Button that triggered the modal
 	var recipient = button.data('whatever') // Extract info from data-* attributes
