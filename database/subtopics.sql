@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2020 at 05:31 AM
+-- Generation Time: Nov 17, 2020 at 06:10 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -39,9 +39,10 @@ CREATE TABLE `subtopics` (
 --
 
 INSERT INTO `subtopics` (`topic`, `id`, `name`, `sort`) VALUES
-(8, 4, 'eee', 1),
-(8, 5, 'fff', 2),
-(8, 6, 'reg', 3);
+(8, 4, 'eee', 2),
+(8, 5, 'fff', 3),
+(8, 6, 'reg', 1),
+(9, 2, 'xyz', 1);
 
 --
 -- Indexes for dumped tables
