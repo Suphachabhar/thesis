@@ -128,7 +128,7 @@ if (isset($_GET['logout'])) {
 		?>
 		<tbody>
 			<tr>
-			<th scope="row"><?php echo $row['name']; ?></th>
+			<th scope="row"><a href="../topic/topic.php?id=<?php echo $row['id']; ?>"><?php echo $row['name']; ?></th>
 			</tr>
 		</tbody>
 		<?php
