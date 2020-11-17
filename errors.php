@@ -1,6 +1,6 @@
 <?php
     function mainPage() {
-        return permission() ? 'views/auth/home.php' : 'views/auth/index.php';
+        return permission() ? '../auth/home.php' : '../auth/index.php';
     }
     
     function permissionError($action) {

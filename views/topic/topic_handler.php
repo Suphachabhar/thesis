@@ -1,8 +1,8 @@
 <?php
     session_start();
-    require_once("database.php");
-    require_once("errors.php");
-    require_once("checks.php");
+    require_once("../../database.php");
+    require_once("../../errors.php");
+    require_once("../../checks.php");
     switch ($_POST["function"]) {
         case "createTopic":
             createTopic($db);
@@ -43,21 +43,18 @@
     function createTopic($db) {
         if (!permission()) {
             $_SESSION['success'] = permissionError("create topics");
-            header('location: views/auth/index.php');
+            header('location: ../auth/index.php');
         } elseif (empty($_POST['name'])) {
             $_SESSION['success'] = blankInputError("a topic name");
-            header('location: views/auth/home.php');
+            header('location: ../auth/home.php');
         } elseif (existingTopicName($_POST['name'], $db)) {
             $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
-            header('location: views/auth/home.php');
+            header('location: ../auth/home.php');
         } else {
-            $query = "SELECT COALESCE(MAX(id), 0) as id FROM topics";
-            $results = mysqli_query($db, $query);
-            $id = mysqli_fetch_assoc($results)['id'] + 1;
-            $query = "INSERT INTO topics (id, name) VALUES (".$id.", '".$_POST['name']."')";
+            $query = "INSERT INTO topics (name) VALUES ('".$_POST['name']."')";
             mysqli_query($db, $query); 
             $_SESSION['success'] = "Topic \"".$_POST['name']."\" has been created successfully.";
-            header('location: views/auth/course.php');
+            header('location: ../auth/course.php');
         }
     }
     
@@ -173,6 +170,7 @@
                 } else {
                     $query = "UPDATE subtopics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
                     mysqli_query($db, $query);
+                    removeSubtopicDirectory($_POST['topic'], $_POST['id']);
                     $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
                 }
             }
@@ -230,7 +228,7 @@
                 } else if (strtolower(pathinfo($chosen_file, PATHINFO_EXTENSION)) != "pdf") {
                     $_SESSION['success'] = "You can upload PDF files only.";
                 } else {
-                    $directory = "files/".$_POST["topic"]."/".$_POST["subtopic"];
+                    $directory = "../../files/".$_POST["topic"]."/".$_POST["subtopic"];
                     if (!file_exists($directory)) {
                         mkdir($directory, 0777, true);
                     }
@@ -246,7 +244,7 @@
     }
     
     function removeTopicDirectory($topic, $subtopics) {
-        $directory = "files/".$topic."/";
+        $directory = "../../files/".$topic."/";
         if (is_dir($directory)) {
             foreach ($subtopics as $subtopic) {
                 removeSubtopicDirectory($topic, $subtopic["id"]);
@@ -256,7 +254,7 @@
     }
     
     function removeSubtopicDirectory($topic, $subtopic) {
-        $directory = "files/".$topic."/".$subtopic."/";
+        $directory = "../../files/".$topic."/".$subtopic."/";
         if (is_dir($directory)) {
             $files = glob($directory . '*', GLOB_MARK);
             foreach ($files as $file) {
