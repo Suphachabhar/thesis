@@ -88,13 +88,9 @@ if (isset($_GET['logout'])) {
 					</div>
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Prerequisite:</label>
+						<input id="searchPrerequisite" name="prerequisite" hidden>
 						<input id="searchPrerequisite" list="prerequisite">
-                        <datalist id="prerequisite" name="prerequisite">
-                            <option value="Internet Explorer">
-                            <option value="Firefox">
-                            <option value="Chrome">
-                            <option value="Opera">
-                            <option value="Safari">
+                        <datalist id="prerequisite">
                         </datalist>  
 					</div>
 					</form>
@@ -156,13 +152,19 @@ if (isset($_GET['logout'])) {
 </html>
 
 <script>
-$('#courseAddModal').on('show.bs.modal', function (event) {
-	var button = $(event.relatedTarget) // Button that triggered the modal
-	var recipient = button.data('whatever') // Extract info from data-* attributes
-	// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-	// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-	var modal = $(this)
-	modal.find('.modal-title').text('Create new topic')
-})
+    $('#courseAddModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var recipient = button.data('whatever') // Extract info from data-* attributes
+        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+        var modal = $(this)
+        modal.find('.modal-title').text('Create new topic')
+    })
+
+	$("#searchPrerequisite").click(function () {
+		$.ajax({url: "../topic/topic_handler.php?function=searchTopic&keyword=" + $("#searchPrerequisite").val(), success: function(result) {
+			$("#prerequisite").html(result);
+		}});
+	});
 </script>
 
