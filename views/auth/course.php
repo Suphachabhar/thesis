@@ -57,19 +57,6 @@ if (isset($_GET['logout'])) {
 	</div>
 	</nav> 
 
-    <div class="content">
-		<?php if (isset($_SESSION['success'])) : ?>
-		<div class="error success" >
-			<h3>
-				<?php 
-					echo $_SESSION['success']; 
-					unset($_SESSION['success']);
-				?>
-			</h3>
-		</div>
-		<?php endif ?>
-	</div>
-
 	<div class="container">
         
 	<form action="../topic/topic_handler.php" method="post">
@@ -159,6 +146,9 @@ if (isset($_GET['logout'])) {
 
 	</div>		
 	</div>
+
+	
+
 
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

@@ -31,6 +31,9 @@ h1 {
 #logo-img img {
     height: 30px;
 }
+body {
+    position: relative;
+}
 
 
 

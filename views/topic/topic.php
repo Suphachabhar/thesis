@@ -1,11 +1,26 @@
 <?php
-    session_start();
+    require_once("../auth/server.php");
     require_once("../../database.php");
     require_once("../../errors.php");
     require_once("../../checks.php");
+
+    
+?>
+
+<?php 
+if (isset($_GET['logout'])) {
+	session_destroy();
+	unset($_SESSION['user']);
+	header("location: auth/login.php");
+}
 ?>
 
 <html>
+<?php
+    if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 1) {
+        header('location: index.php');
+    }
+?>
 <?php
     $topic = existingTopicID($_GET['id'], $db);
     if (is_null($topic)) : 
@@ -20,9 +35,13 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    
+  
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
     <style>
         #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
         #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
@@ -37,8 +56,83 @@
 </head>
     
 <body>
-	<div id="name" class="header">
-		<h2><?php echo $topic['name']; ?></h2>
+    <!-- nav bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+	<div class="logo-img">
+		<a href="../auth/home.php">
+			<img src="../auth/img/unsw_0.png">
+		</a>
+	</div>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link" href="../auth/course.php">Course</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link disabled" href="#"></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="login.php?logout='1'">Logout</a>	
+			</li>
+		</ul>
+	</div>
+    </nav>
+
+   
+    
+    <!-- showing the responding of the system -->
+    <div class="container">
+    <?php if (isset($_SESSION['success'])) : ?>
+        <div class="error success">
+            <h3>
+                <?php 
+                    echo $_SESSION['success']; 
+                    unset($_SESSION['success']);
+                ?>
+            </h3>
+        </div>
+   
+    <?php 
+        endif;
+        if (permission()) :
+    ?>
+        <!-- create sub topic -->
+        <form action="topic_handler.php" method="post">
+		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="courseAddModalLabel">Create new subtopic</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+					<div class="form-group">
+						<label class="col-form-label">Subtopic:</label>
+                        <input name="function" value="createSubtopic" hidden>
+                        <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+						<input name="name">
+					</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary" value="Create">Submit</button>
+				</div>
+				</div>
+			</div>
+		</div>
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"> + Create </button>
+	    </form>
+        <?php endif; ?>
+
+        
+
+        <!-- showing topic name -->
+        <div id="name" class="header">
+		<h3>Learn: <?php echo $topic['name']; ?></h3>
         <?php 
             $query = "SELECT id, name FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
             $results = mysqli_query($db, $query);
@@ -46,28 +140,65 @@
             
             if (permission()) : 
         ?>
-            <button class="editTopic">Edit</button>
+            
             <button class="deleteTopic">Delete</button>
-            <?php if ($nSubtopics > 1) : ?>
-            <button class="rearrange">Rearrange Subtopics</button>
+        
         <?php 
-                endif;
+               
             endif;
         ?>
-	</div>
+    </div>
+
+    <!-- showing subtopic list -->
+    <body>
+    <div class="row">
+        <div class="col-4">
+            <div class="list-group" id="list-tab" role="tablist">
+                <?php
+                    $sList = mysqli_fetch_all($results);
+                    $first = true;
+                    foreach ($sList as $subtopic) :
+                ?>
+                <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
+                    <a class="list-group-item list-group-item-action<?php if ($first) {echo " active"; $first = false;} ?>" 
+                        id="subtopicName_<?php echo $subtopic[0]; ?>" data-toggle="list" href="#list-profile_<?php echo $subtopic[0]; ?>" 
+                        role="tab"><?php echo $subtopic[1]; ?></a>
+                <?php 
+                    endforeach; 
+                ?>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="tab-content" id="nav-tabContent">
+                <?php
+                    $first = true;
+                    foreach ($sList as $subtopic) :
+                ?>
+                <div class="tab-pane fade<?php if ($first) {echo " show active"; $first = false;} ?>" 
+                    id="list-profile_<?php echo $subtopic[0]; ?>" role="tabpanel" aria-labelledby="subtopicName_<?php echo $subtopic[0]; ?>">
+                    <?php if (permission()) : ?>
+                        <h4>Upload content</h4>
+                        <form action="topic_handler.php" method="post" enctype="multipart/form-data">
+                            <input name="function" value="upload" hidden>
+                            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                            <input name="subtopic" value="<?php echo $subtopic[0]; ?>" hidden>
+                            <input type="file" name="fileToUpload">
+                            <input type="submit" value="Upload File">
+                        </form>
+                    <?php endif; ?>
+                </div>
+                <?php 
+                    endforeach; 
+                ?>
+            </div>
+        </div>
+    </div>
+    </body>
+    
+  
+    <!-- showing a list of subtopic -->
 	<div class="content">
-		<?php if (isset($_SESSION['success'])) : ?>
-			<div class="error success">
-				<h3>
-					<?php 
-						echo $_SESSION['success']; 
-						unset($_SESSION['success']);
-					?>
-				</h3>
-			</div>
 		<?php
-            endif;
-        
             $sList = mysqli_fetch_all($results);
             foreach ($sList as $subtopic) :
         ?>
@@ -76,7 +207,7 @@
                 <div id="<?php echo 'subtopicHeader_'.$subtopic[0]; ?>" class="subtopicHeader">
                     <h3 id="<?php echo 'subtopicName_'.$subtopic[0]; ?>"><?php echo $subtopic[1]; ?></h3>
                     <?php if (permission()) : ?>
-                        <button id="<?php echo 'editSubtopic_'.$subtopic[0]; ?>" class="editSubtopic">Edit</button>
+                        
                         <button id="<?php echo 'deleteSubtopic_'.$subtopic[0]; ?>" class="deleteSubtopic">Delete</button>
                     <?php endif; ?>
                 </div>
@@ -92,19 +223,12 @@
                 <?php endif; ?>
             </div>
         <?php 
-            endforeach;
-        
-            if (permission()) :
+            endforeach; 
         ?>
-            <h3>Create a new subtopic</h3>
-            <form action="topic_handler.php" method="post">
-                <input name="function" value="createSubtopic" hidden>
-                <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-                <input name="name">
-                <input type="submit" value="Create">
-            </form>
-        <?php endif; ?>
-	</div>
+            
+    </div>
+    
+    <!-- backend for subtopic   -->
     <?php if (permission()) : ?>
         <div id="confirmDeleteTopic" class="modal">
             Are you sure you want to delete this topic?
@@ -141,42 +265,18 @@
             <button class="confirmRearrange">Save</button>
         </div>
     <?php endif; ?>
+
+
+
+    
+    </div>
+
+	
 <script>
-	$(document).on("click", ".editTopic", (function () {
-		$("#name").html(' \
-            <form action="topic_handler.php" method="post"> \
-                <input name="function" value="editTopicName" hidden> \
-                <input name="id" value='+"<?php echo $_GET['id']; ?>"+' hidden> \
-                <input name="name" value='+"<?php echo $topic['name']; ?>"+'> \
-                <input type="submit" value="Change"> \
-            </form> \
-            <button class="cancelEditTopic">Cancel</button> \
-        ');
-	}));
+
     
 	$(document).on("click", ".deleteTopic", (function () {
         $("#confirmDeleteTopic").css("display", "block");
-	}));
-    
-	$(document).on("click", ".cancelEditTopic", (function () {
-		$("#name").html(' \
-            <h2>'+ $("#title").html() +'</h2> \
-            <button class="editTopic">Edit</button> \
-        ');
-	}));
-		
-	$(document).on("click", ".editSubtopic", (function () {
-		var subID = $(this).attr("id").split("_")[1];
-		$("#subtopicHeader_"+subID).html(' \
-            <form action="topic_handler.php" method="post"> \
-                <input name="function" value="editSubtopicName" hidden> \
-                <input name="topic" value='+"<?php echo $_GET['id']; ?>"+' hidden> \
-                <input name="id" value='+ subID +' hidden> \
-                <input name="name" value='+ $("#subtopicName_"+subID).html() +'> \
-                <input type="submit" value="Change"> \
-            </form> \
-            <button id="cancel_'+ subID +'" class="cancelEditSubtopic">Cancel</button> \
-        ');
 	}));
     
 	$(document).on("click", ".deleteSubtopic", (function () {
@@ -184,18 +284,6 @@
         $("#subtopicNameToDelete").html($("#subtopicName_"+subID).html());
         $("#subtopicIDToDelete").val(subID);
         $("#confirmDeleteSubtopic").css("display", "block");
-	}));
-    
-	$(document).on("click", ".cancelEditSubtopic", (function () {
-		var subID = $(this).attr("id").split("_")[1];
-		$("#subtopicHeader_"+subID).html(' \
-            <h3 id="subtopicName_'+ subID +'">'+ $("#title_"+subID).html() +'</h3> \
-            <button id="editSubtopic_'+ subID +'" class="editSubtopic">Edit</button> \
-        ');
-	}));
-		
-	$(document).on("click", ".rearrange", (function () {
-        $("#rearrangeSubtopics").css("display", "block");
 	}));
     
 	$(document).on("click", ".no", (function () {
@@ -206,19 +294,12 @@
         $(".modal").css("display", "none");
 	}));
     
-	$(document).on("click", ".confirmRearrange", (function () {
-        var dataItem = $("#sortable").sortable("serialize");
-        
-        $.ajax({
-            url: "topic_handler.php",
-            method: "post",
-            data: "function=rearrangeSubtopics&topic=<?php echo $_GET['id']; ?>&" + dataItem,
-            success: function(result) {
-                window.location = "topic.php?id=<?php echo $_GET['id']; ?>";
-            }
-        });
-	}));
+
 </script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
 </body>
 <?php endif; ?>
 
