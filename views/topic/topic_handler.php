@@ -270,14 +270,19 @@
             } else if (strtolower(pathinfo($chosen_file, PATHINFO_EXTENSION)) != "pdf") {
                 $_SESSION['success'] = "You can upload PDF files only.";
             } else {
-                $directory = "../../files/".$_POST["topic"]."/".$_POST["subtopic"];
-                if (!file_exists($directory)) {
-                    mkdir($directory, 0777, true);
+                $cwd = getcwd();
+                $directory = "../../files/" . $_POST["topic"] . "/" . $_POST["subtopic"];
+                $test = file_exists($directory);
+
+                if (!$test) {
+                    $test = mkdir($directory, 0777, true);
                 }
-                if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $directory."/".$chosen_file)) {
-                    $_SESSION['success'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded successfully.";
+
+                if (!$test) {
+                    $_SESSION['success'] = 'failed to create the directory';
                 } else {
-                    $_SESSION['success'] = "Sorry, there was an error uploading your file.";
+                    $move_result = move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $directory."/".$chosen_file);
+                    $_SESSION['success'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded successfully.";
                 }
             }
         }

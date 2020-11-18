@@ -3,7 +3,6 @@
     require_once("../../database.php");
     require_once("../../errors.php");
     require_once("../../checks.php");
-
     
 ?>
 
@@ -11,7 +10,7 @@
 if (isset($_GET['logout'])) {
 	session_destroy();
 	unset($_SESSION['user']);
-	header("location: auth/login.php");
+	header("location: ../auth/login.php");
 }
 ?>
 
@@ -72,7 +71,7 @@ if (isset($_GET['logout'])) {
 				<a class="nav-link disabled" href="#"></a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="login.php?logout='1'">Logout</a>	
+				<a class="nav-link" href="../auth/login.php?logout='1'">Logout</a>	
 			</li>
 		</ul>
 	</div>
