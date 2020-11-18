@@ -176,7 +176,24 @@ if (isset($_GET['logout'])) {
                 ?>
                 <div class="tab-pane fade<?php if ($first) {echo " show active"; $first = false;} ?>" 
                     id="list-profile_<?php echo $subtopic[0]; ?>" role="tabpanel" aria-labelledby="subtopicName_<?php echo $subtopic[0]; ?>">
-                    <?php if (permission()) : ?>
+                    <?php
+                        $directory = '../../files/'.$_GET['id'].'/'.$subtopic[0];
+                        $has_files = false;
+                        if (is_dir($directory)) :
+                            $files = scandir($directory);
+                            if ($files !== false) {
+                                foreach ($files as $f) :
+                                    if ($f == '.' || $f == '..') {continue;}
+                                        $has_files = true;
+                    ?>
+                        <iframe src="<?php echo $directory.'/'.$f; ?>" width="100%" style="height:600px"></iframe>
+                    <?php
+                                endforeach;
+                            }
+                        endif;
+                        
+                        if (!$has_files && permission()) :
+                    ?>
                         <h4>Upload content</h4>
                         <form action="topic_handler.php" method="post" enctype="multipart/form-data">
                             <input name="function" value="upload" hidden>
@@ -185,7 +202,9 @@ if (isset($_GET['logout'])) {
                             <input type="file" name="fileToUpload">
                             <input type="submit" value="Upload File">
                         </form>
-                    <?php endif; ?>
+                    <?php 
+                        endif;
+                    ?>
                 </div>
                 <?php 
                     endforeach; 
