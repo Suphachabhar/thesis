@@ -165,7 +165,7 @@ function login(){
 
 function isAdmin()
 {
-	if (isset($_SESSION['user']) && $_SESSION['user']['user_type'] == 'admin' ) {
+	if (isset($_SESSION['user']) && $_SESSION['user']['user_type'] == 1 ) {
 		return true;
 	}else{
 		return false;

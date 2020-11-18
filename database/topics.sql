@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 17, 2020 at 06:10 AM
+-- Generation Time: Nov 18, 2020 at 10:21 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `topics` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `prerequisite` int(11) DEFAULT NULL
+  `prerequisite` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -38,10 +38,14 @@ CREATE TABLE `topics` (
 --
 
 INSERT INTO `topics` (`id`, `name`, `prerequisite`) VALUES
-(8, 'Kelvin', NULL),
-(9, 'Tingting', NULL),
 (10, 'Nick', NULL),
-(11, 'Janine', NULL);
+(11, 'Janine', NULL),
+(12, 'Debra', NULL),
+(13, 'Andrew', NULL),
+(14, 'Nathan', NULL),
+(15, 'Raphael', NULL),
+(16, 'Marco', NULL),
+(17, 'Sam', NULL);
 
 --
 -- Indexes for dumped tables
@@ -52,7 +56,7 @@ INSERT INTO `topics` (`id`, `name`, `prerequisite`) VALUES
 --
 ALTER TABLE `topics`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `prerequisite` (`prerequisite`);
+  ADD KEY `prerequisite` (`prerequisite`(768));
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -62,7 +66,7 @@ ALTER TABLE `topics`
 -- AUTO_INCREMENT for table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 18, 2020 at 10:21 AM
+-- Generation Time: Nov 18, 2020 at 10:20 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -24,35 +24,43 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `subtopics`
+-- Table structure for table `progresses`
 --
 
-CREATE TABLE `subtopics` (
+CREATE TABLE `progresses` (
+  `student` int(11) NOT NULL,
   `topic` int(11) NOT NULL,
-  `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `sort` int(11) NOT NULL
+  `progress` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `progresses`
+--
+
+INSERT INTO `progresses` (`student`, `topic`, `progress`) VALUES
+(4, 10, 0);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `subtopics`
+-- Indexes for table `progresses`
 --
-ALTER TABLE `subtopics`
-  ADD PRIMARY KEY (`topic`,`id`);
+ALTER TABLE `progresses`
+  ADD PRIMARY KEY (`student`,`topic`),
+  ADD KEY `progresses_ibfk_2` (`topic`);
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `subtopics`
+-- Constraints for table `progresses`
 --
-ALTER TABLE `subtopics`
-  ADD CONSTRAINT `subtopics_ibfk_1` FOREIGN KEY (`topic`) REFERENCES `topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `progresses`
+  ADD CONSTRAINT `progresses_ibfk_1` FOREIGN KEY (`student`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `progresses_ibfk_2` FOREIGN KEY (`topic`) REFERENCES `topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -16,8 +16,8 @@ if (isset($_GET['logout'])) {
 
 <html>
 <?php
-    if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 1) {
-        header('location: index.php');
+    if (!isset($_SESSION['user_type'])) {
+        header('location: ../auth/index.php');
     }
 ?>
 <?php
@@ -133,7 +133,7 @@ if (isset($_GET['logout'])) {
         <div id="name" class="header">
 		<h3>Learn: <?php echo $topic['name']; ?></h3>
         <?php 
-            $query = "SELECT id, name FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
+            $query = "SELECT id, name, sort FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
             $results = mysqli_query($db, $query);
             $nSubtopics = mysqli_num_rows($results);
             
@@ -155,12 +155,23 @@ if (isset($_GET['logout'])) {
             <div class="list-group" id="list-tab" role="tablist">
                 <?php
                     $sList = mysqli_fetch_all($results);
+                    $progress = 0;
+                    if (!isAdmin()) {
+                        $query = "SELECT progress FROM progresses where topic = ".$_GET['id']." AND student = ".$_SESSION['user']['id'];
+                        $results = mysqli_query($db, $query);
+                        if (mysqli_num_rows($results) == 0) {
+                            $createProgress = "INSERT INTO progresses (student, topic, progress) VALUES (".$_SESSION['user']['id'].", ".$_GET['id'].", 0)";
+                            mysqli_query($db, $createProgress);
+                            $results = mysqli_query($db, $query);
+                        }
+                        $progress = mysqli_fetch_assoc($results)['progress'];
+                    }
                     $first = true;
                     foreach ($sList as $subtopic) :
                 ?>
                 <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
                     <a class="list-group-item list-group-item-action<?php if ($first) {echo " active"; $first = false;} ?>" 
-                        id="subtopicName_<?php echo $subtopic[0]; ?>" data-toggle="list" href="#list-profile_<?php echo $subtopic[0]; ?>" 
+                        id="subtopicName_<?php echo $subtopic[0]; ?>"<?php if (isAdmin() || $subtopic[2] <= ($progress + 1)) echo ' data-toggle="list" href="#list-profile_'.$subtopic[2].'"';?> 
                         role="tab"><?php echo $subtopic[1]; ?></a>
                 <?php 
                     endforeach; 
@@ -172,9 +183,10 @@ if (isset($_GET['logout'])) {
                 <?php
                     $first = true;
                     foreach ($sList as $subtopic) :
+                        if (!isAdmin() && $subtopic[2] > ($progress + 1)) continue;
                 ?>
                 <div class="tab-pane fade<?php if ($first) {echo " show active"; $first = false;} ?>" 
-                    id="list-profile_<?php echo $subtopic[0]; ?>" role="tabpanel" aria-labelledby="subtopicName_<?php echo $subtopic[0]; ?>">
+                    id="list-profile_<?php echo $subtopic[2]; ?>" role="tabpanel" aria-labelledby="subtopicName_<?php echo $subtopic[0]; ?>">
                     <?php
                         $directory = '../../files/'.$_GET['id'].'/'.$subtopic[0];
                         $has_files = false;
@@ -186,10 +198,25 @@ if (isset($_GET['logout'])) {
                                         $has_files = true;
                     ?>
                         <iframe src="<?php echo $directory.'/'.$f; ?>" width="100%" style="height:600px"></iframe>
-                    <?php
+                        <?php
                                 endforeach;
                             }
                         endif;
+                        if (!isAdmin()) {
+                            if ($subtopic[2] == count($sList) && $subtopic[2] == $progress) {
+                                echo '<a class="list-group-item list-group-item-action active" href="../auth/course.php">Finish</a>';
+                            } elseif ($subtopic[2] <= $progress && $subtopic[2] != count($sList)) {
+                                echo '<div class="list-group" id="list-tab" role="tablist"><a class="list-group-item list-group-item-action active" data-toggle="list" href="#list-profile_'.strval($subtopic[2]+1).'" role="tab">Next</a></div>';
+                            } else {
+                                $button = '<button type="button" onclick="recordProgress()">';
+                                if ($subtopic[2] == count($sList)) {
+                                    $button .= "Finish";
+                                } else {
+                                    $button .= "Next";
+                                }
+                                echo $button.'</button>';
+                            }
+                        }
                         
                         if (!$has_files && permission()) :
                     ?>
