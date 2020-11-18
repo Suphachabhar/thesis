@@ -4,8 +4,8 @@
     require_once("../../errors.php");
     require_once("../../checks.php");
     switch ($_POST["function"]) {
-        case "searchTopic":
-            searchTopic($db);
+        case "prerequisiteDiv":
+            prerequisiteDiv($db);
             break;
             
         case "createTopic":
@@ -44,22 +44,24 @@
             break;
     }
     
-    function searchTopic($db) {
-        if (!permission()) {
-            $_SESSION['success'] = permissionError("create topics");
-            header('location: ../auth/index.php');
-        } elseif (empty($_POST['name'])) {
-            $_SESSION['success'] = blankInputError("a topic name");
-            header('location: ../auth/home.php');
-        } elseif (existingTopicName($_POST['name'], $db)) {
-            $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
-            header('location: ../auth/home.php');
-        } else {
-            $query = "INSERT INTO topics (name) VALUES ('".$_POST['name']."')";
-            mysqli_query($db, $query); 
-            $_SESSION['success'] = "Topic \"".$_POST['name']."\" has been created successfully.";
-            header('location: ../auth/course.php');
+    function prerequisiteDiv($db) {
+        $output = '';
+        if (!empty($_POST["n"])) {
+            $output = '<div class="prerequisiteSet" id="prerequisiteSet_'.$_POST["n"].'">';
+            $output .= '<input class="searchPrerequisite" id="searchPrerequisite_'.$_POST["n"].'" list="selectPrerequisite_'.$_POST["n"].'">';
+            $output .= '<datalist class="selectPrerequisite" id="selectPrerequisite_'.$_POST["n"].'">';
+            $query = "SELECT id, name FROM topics";
+            $results = mysqli_query($db, $query);
+            foreach (mysqli_fetch_all($results) as $row) {
+                $output .= '<option data-value="'.$row[0].'">'.$row[1].'</option>';
+            }
+            $output .= '</datalist>';
+            $output .= '<button type="button" class="addAND" id="prerequisiteAND_'.$_POST["n"].'">+ AND</button>';
+            $output .= '<button type="button" class="addOR" id="prerequisiteOR_'.$_POST["n"].'">+ OR</button>';
+            $output .= '<button type="button" class="removePrerequisite" id="prerequisiteREMOVE_'.$_POST["n"].'">- remove</button>';
+            $output .= '</div>';
         }
+        print $output;
     }
     
     function createTopic($db) {
@@ -77,7 +79,13 @@
             return;
         }
         
-        $query = "INSERT INTO topics (name) VALUES ('".$_POST['name']."')";
+        $attr = "name";
+        $val = "'".$_POST['name']."'";
+        if (!empty($_POST['prerequisite'])) {
+            $attr .= ", prerequisite";
+            $val .= ", '".$_POST['prerequisite']."'";
+        }
+        $query = "INSERT INTO topics (".$attr.") VALUES (".$val.")";
         mysqli_query($db, $query); 
         $_SESSION['success'] = "Topic \"".$_POST['name']."\" has been created successfully.";
         header('location: ../auth/course.php');

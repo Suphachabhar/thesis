@@ -2,6 +2,7 @@
 
 <?php 
 include('server.php');
+include('../../database.php');
 
 if (isset($_GET['logout'])) {
 	session_destroy();
@@ -26,7 +27,7 @@ if (isset($_GET['logout'])) {
 	<title>Course</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="home.css" rel="stylesheet">
-
+    <link href="prerequisite.css" rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<style>
 		tr[data-href]{
@@ -82,10 +83,10 @@ if (isset($_GET['logout'])) {
 					</div>
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Prerequisite:</label>
-						<input id="searchPrerequisite" name="prerequisite" hidden>
-						<input id="searchPrerequisite" list="prerequisite">
-                        <datalist id="prerequisite">
-                        </datalist>  
+						<input id="prerequisite" name="prerequisite" hidden>
+                        <font id="nPrerequisites">1</font>
+                        <div class="prerequisiteInput"></div>
+                        <div id="test"></div>
 					</div>
 					</form>
 				</div>
@@ -103,11 +104,8 @@ if (isset($_GET['logout'])) {
 
 	<div class="card-body">
 		<?php
-			$connection = mysqli_connect("localhost", "root", "");
-			$db = mysqli_select_db($connection, 'thesis');
-
 			$query = "SELECT * FROM topics";
-			$query_run = mysqli_query($connection, $query);
+			$query_run = mysqli_query($db, $query);
 		?>
 		<table class="table table-hover">
 		<thead>
@@ -147,10 +145,12 @@ if (isset($_GET['logout'])) {
 	</div>		
 	</div>
 
+
 	
 
 
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
@@ -161,6 +161,17 @@ if (isset($_GET['logout'])) {
 </html>
 
 <script>
+	$(document).ready(function() {
+		$.ajax({
+            url: "../topic/topic_handler.php",
+            method: "post",
+            data: "function=prerequisiteDiv&n=1",
+            success: function(result) {
+                $(".prerequisiteInput").html(result);
+            }
+        });
+	});
+    
     $('#courseAddModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var recipient = button.data('whatever') // Extract info from data-* attributes
@@ -168,12 +179,27 @@ if (isset($_GET['logout'])) {
         // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
         var modal = $(this)
         modal.find('.modal-title').text('Create new topic')
-    })
-
-	$("#searchPrerequisite").click(function () {
-		$.ajax({url: "../topic/topic_handler.php?function=searchTopic&keyword=" + $("#searchPrerequisite").val(), success: function(result) {
-			$("#prerequisite").html(result);
-		}});
-	});
+    });
+    
+	/*$(document).on("input", ".searchPrerequisite", (function () {
+        var name = $(this).val();
+		var id = $(this).attr("id").split("_")[1];
+        var val = $('#selectPrerequisite_'+id+' option').filter(function() {
+            return this.value == name;
+        }).data('value');
+		$('#prerequisite').val(val);
+		$('#test').html($('#prerequisite').val());
+	}));*/
+    
+	$(document).on("click", ".addAND", (function () {
+        var parent = $(this).parentElement;
+        if (parent.attr("class") != "prerequisiteAND") {
+            var tmp = $(this).html();
+            
+        }
+		var id = $(this).attr("id").split("_")[1];
+		$('#prerequisite').val(val);
+		$('#test').html($('#prerequisite').val());
+	}));
 </script>
 

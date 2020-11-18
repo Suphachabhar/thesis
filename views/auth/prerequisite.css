@@ -1,0 +1,24 @@
+.prerequisiteSet {
+    display: flex;
+    flex-direction: column;
+}
+
+.searchPrerequisite {
+    flex: 1;
+}
+
+.selectPrerequisite {
+    flex: 1;
+}
+
+.addAND {
+    flex: 1;
+}
+
+.addOR {
+    flex: 1;
+}
+
+.removePrerequisite {
+    flex: 1;
+}
