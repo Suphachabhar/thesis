@@ -28,6 +28,12 @@ if (isset($_GET['logout'])) {
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="home.css" rel="stylesheet">
     <link href="prerequisite.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<style>
+		tr[data-href]{
+			cursor: pointer;
+		}
+	</style>
 </head>
 
 <body>
@@ -126,8 +132,8 @@ if (isset($_GET['logout'])) {
 				foreach($query_run as $row){ 
 		?>
 		<tbody>
-			<tr>
-			<th scope="row"><?php echo $row['name']; ?></th>
+			<tr data-href="../topic/topic.php?id=<?php echo $row['id']; ?>">
+			<td scope="row"><?php echo $row['name']; ?></td>
 			</tr>
 		</tbody>
 		<?php
@@ -137,6 +143,18 @@ if (isset($_GET['logout'])) {
 			}	
 		?>
 		</table>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const rows = document.querySelectorAll("tr[data-href]");
+				rows.forEach(row => {
+					row.addEventListener("click", () => {
+						window.location.href = row.dataset.href;
+					});
+				});
+			});
+		</script>
+
 	</div>		
 	</div>
 
