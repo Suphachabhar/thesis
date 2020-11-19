@@ -29,7 +29,6 @@ if (isset($_GET['logout'])) {
 ?>
 <head>
     <title id="title"><?php echo $topic['name']; ?></title>
-    <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="modal.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -39,8 +38,13 @@ if (isset($_GET['logout'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    
+    <!-- ajax -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    
     <style>
         #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
         #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
@@ -170,7 +174,7 @@ if (isset($_GET['logout'])) {
                     foreach ($sList as $subtopic) :
                 ?>
                 <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
-                    <a class="list-group-item list-group-item-action<?php if ($first) {echo " active"; $first = false;} ?>" 
+                    <a class="list-group-item list-group-item-action<?php if ((isset($_GET['subtopic']) && intval($_GET['subtopic']) == $subtopic[2]) || (!isset($_GET['subtopic']) && $first)) {echo " active"; $first = false;} ?>" 
                         id="subtopicName_<?php echo $subtopic[0]; ?>"<?php if (isAdmin() || $subtopic[2] <= ($progress + 1)) echo ' data-toggle="list" href="#list-profile_'.$subtopic[2].'"';?> 
                         role="tab"><?php echo $subtopic[1]; ?></a>
                 <?php 
@@ -204,11 +208,11 @@ if (isset($_GET['logout'])) {
                         endif;
                         if (!isAdmin()) {
                             if ($subtopic[2] == count($sList) && $subtopic[2] == $progress) {
-                                echo '<a class="list-group-item list-group-item-action active" href="../auth/course.php">Finish</a>';
+                                echo '<a class="list-group-item list-group-item-action" href="../auth/course.php">Finish</a>';
                             } elseif ($subtopic[2] <= $progress && $subtopic[2] != count($sList)) {
-                                echo '<div class="list-group" id="list-tab" role="tablist"><a class="list-group-item list-group-item-action active" data-toggle="list" href="#list-profile_'.strval($subtopic[2]+1).'" role="tab">Next</a></div>';
+                                echo '<button class="nextSubtopic" id="nextSubtopic_'.$subtopic[2].'">Next</button>';
                             } else {
-                                $button = '<button type="button" onclick="recordProgress()">';
+                                $button = '<button class="progress" id="progress_'.$subtopic[2].'">';
                                 if ($subtopic[2] == count($sList)) {
                                     $button .= "Finish";
                                 } else {
@@ -318,8 +322,9 @@ if (isset($_GET['logout'])) {
 
 	
 <script>
-
-    
+    <?php
+        if (isAdmin()) {
+    ?>
 	$(document).on("click", ".deleteTopic", (function () {
         $("#confirmDeleteTopic").css("display", "block");
 	}));
@@ -338,12 +343,33 @@ if (isset($_GET['logout'])) {
 	$(document).on("click", ".close", (function () {
         $(".modal").css("display", "none");
 	}));
+    <?php
+        } else {
+    ?>
+	$(document).on("click", ".progress", (function () {
+		var progressID = $(this).attr("id").split("_")[1];
+        $.ajax({
+            url: "topic_handler.php",
+            method: "post",
+            data: "function=recordProgress&topic=<?php echo $_GET['id']; ?>&progress=" + progressID,
+            success: function(result){
+                window.location = result;
+            }
+        });
+	}));
     
-
+	$(document).on("click", ".nextSubtopic", (function () {
+		var currID = $(this).attr("id").split("_")[1];
+		var nextID = parseInt(currID, 10) + 1;
+        $("#subtopicName_" + currID).removeClass("active");
+        $("#subtopicName_" + nextID).addClass("active");
+        $("#list-profile_" + currID).removeClass("show active");
+        $("#list-profile_" + nextID).addClass("show active");
+	}));
+    <?php
+        }
+    ?>
 </script>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 
 </body>
 <?php endif; ?>

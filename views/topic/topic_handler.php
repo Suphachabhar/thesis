@@ -36,6 +36,10 @@
             uploadTopicContent($db);
             break;
     
+        case "recordProgress":
+            recordProgress($db);
+            break;
+    
         default:
             break;
     }
@@ -288,5 +292,20 @@
             }
             rmdir($directory);
         }
+    }
+    
+    function recordProgress($db) {
+        $url = "../auth/course.php";
+        if (!empty($_POST['topic']) && !empty($_POST['progress'])) {
+            $query = "UPDATE progresses SET progress = ".$_POST['progress']." WHERE student = ".$_SESSION['user']['id']." AND topic = ".$_POST['topic'];
+            mysqli_query($db, $query);
+            
+            $query = "SELECT max(sort) AS max FROM subtopics WHERE topic = ".$_POST['topic'];
+            $result = mysqli_fetch_assoc(mysqli_query($db, $query));
+            if ($result['max'] != $_POST['progress']) {
+                $url = "topic.php?id=".$_POST['topic']."&subtopic=".strval(intval($_POST['progress']) + 1);
+            }
+        }
+        print $url;
     }
 ?>
