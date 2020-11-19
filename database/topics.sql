@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 18, 2020 at 10:21 AM
+-- Generation Time: Nov 19, 2020 at 06:11 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -30,22 +30,24 @@ SET time_zone = "+00:00";
 CREATE TABLE `topics` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `prerequisite` text DEFAULT NULL
+  `prerequisite` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `topics`
 --
 
-INSERT INTO `topics` (`id`, `name`, `prerequisite`) VALUES
-(10, 'Nick', NULL),
-(11, 'Janine', NULL),
-(12, 'Debra', NULL),
-(13, 'Andrew', NULL),
-(14, 'Nathan', NULL),
-(15, 'Raphael', NULL),
-(16, 'Marco', NULL),
-(17, 'Sam', NULL);
+INSERT INTO `topics` (`id`, `name`, `prerequisite`, `description`) VALUES
+(10, 'Nick', NULL, NULL),
+(11, 'Janine', NULL, NULL),
+(12, 'Debra', NULL, NULL),
+(13, 'Andrew', NULL, NULL),
+(14, 'Nathan', NULL, NULL),
+(15, 'Raphael', NULL, NULL),
+(16, 'Marco', NULL, NULL),
+(17, 'Sam', NULL, NULL),
+(18, 'a', 10, 'vfgbhngmjhg\r\ndfsgdhfjgk');
 
 --
 -- Indexes for dumped tables
@@ -56,7 +58,7 @@ INSERT INTO `topics` (`id`, `name`, `prerequisite`) VALUES
 --
 ALTER TABLE `topics`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `prerequisite` (`prerequisite`(768));
+  ADD KEY `prerequisite` (`prerequisite`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -66,7 +68,17 @@ ALTER TABLE `topics`
 -- AUTO_INCREMENT for table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `topics`
+--
+ALTER TABLE `topics`
+  ADD CONSTRAINT `topics_ibfk_1` FOREIGN KEY (`prerequisite`) REFERENCES `topics` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

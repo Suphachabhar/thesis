@@ -4,10 +4,6 @@
     require_once("../../errors.php");
     require_once("../../checks.php");
     switch ($_POST["function"]) {
-        case "prerequisiteDiv":
-            prerequisiteDiv($db);
-            break;
-            
         case "createTopic":
             createTopic($db);
             break;
@@ -44,26 +40,6 @@
             break;
     }
     
-    function prerequisiteDiv($db) {
-        $output = '';
-        if (!empty($_POST["n"])) {
-            $output = '<div class="prerequisiteSet" id="prerequisiteSet_'.$_POST["n"].'">';
-            $output .= '<input class="searchPrerequisite" id="searchPrerequisite_'.$_POST["n"].'" list="selectPrerequisite_'.$_POST["n"].'">';
-            $output .= '<datalist class="selectPrerequisite" id="selectPrerequisite_'.$_POST["n"].'">';
-            $query = "SELECT id, name FROM topics";
-            $results = mysqli_query($db, $query);
-            foreach (mysqli_fetch_all($results) as $row) {
-                $output .= '<option data-value="'.$row[0].'">'.$row[1].'</option>';
-            }
-            $output .= '</datalist>';
-            $output .= '<button type="button" class="addAND" id="prerequisiteAND_'.$_POST["n"].'">+ AND</button>';
-            $output .= '<button type="button" class="addOR" id="prerequisiteOR_'.$_POST["n"].'">+ OR</button>';
-            $output .= '<button type="button" class="removePrerequisite" id="prerequisiteREMOVE_'.$_POST["n"].'">- remove</button>';
-            $output .= '</div>';
-        }
-        print $output;
-    }
-    
     function createTopic($db) {
         if (!permission()) {
             $_SESSION['success'] = permissionError("create topics");
@@ -83,7 +59,11 @@
         $val = "'".$_POST['name']."'";
         if (!empty($_POST['prerequisite'])) {
             $attr .= ", prerequisite";
-            $val .= ", '".$_POST['prerequisite']."'";
+            $val .= ", ".$_POST['prerequisite'];
+        }
+        if (!empty($_POST['description'])) {
+            $attr .= ", description";
+            $val .= ", '".$_POST['description']."'";
         }
         $query = "INSERT INTO topics (".$attr.") VALUES (".$val.")";
         mysqli_query($db, $query); 
