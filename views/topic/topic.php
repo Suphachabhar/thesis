@@ -189,7 +189,7 @@ if (isset($_GET['logout'])) {
                     foreach ($sList as $subtopic) :
                         if (!isAdmin() && $subtopic[2] > ($progress + 1)) continue;
                 ?>
-                <div class="tab-pane fade<?php if ($first) {echo " show active"; $first = false;} ?>" 
+                <div class="tab-pane fade<?php if ((isset($_GET['subtopic']) && intval($_GET['subtopic']) == $subtopic[2]) || (!isset($_GET['subtopic']) && $first)) {echo " show active"; $first = false;} ?>" 
                     id="list-profile_<?php echo $subtopic[2]; ?>" role="tabpanel" aria-labelledby="subtopicName_<?php echo $subtopic[0]; ?>">
                     <?php
                         $directory = '../../files/'.$_GET['id'].'/'.$subtopic[0];
