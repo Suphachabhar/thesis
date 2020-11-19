@@ -79,14 +79,22 @@ if (isset($_GET['logout'])) {
 					</div>
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Description:</label>
-						<textarea class="form-control" id="message-text"></textarea>
+						<textarea class="form-control" id="message-text" name="description"></textarea>
 					</div>
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Prerequisite:</label>
-						<input id="prerequisite" name="prerequisite" hidden>
-                        <font id="nPrerequisites">1</font>
-                        <div class="prerequisiteInput"></div>
-                        <div id="test"></div>
+						<select name="prerequisite">
+                            <option value=""></option>
+                            <?php
+                                $query = "SELECT id, name FROM topics";
+                                $results = mysqli_query($db, $query);
+                                foreach (mysqli_fetch_all($results) as $row) {
+                            ?>
+                                    <option value="<?php echo $row[0]; ?>"><?php echo $row[1]; ?></option>
+                            <?php
+                                }
+                            ?>
+                        </select>
 					</div>
 					</form>
 				</div>
@@ -161,17 +169,6 @@ if (isset($_GET['logout'])) {
 </html>
 
 <script>
-	$(document).ready(function() {
-		$.ajax({
-            url: "../topic/topic_handler.php",
-            method: "post",
-            data: "function=prerequisiteDiv&n=1",
-            success: function(result) {
-                $(".prerequisiteInput").html(result);
-            }
-        });
-	});
-    
     $('#courseAddModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var recipient = button.data('whatever') // Extract info from data-* attributes
@@ -180,26 +177,5 @@ if (isset($_GET['logout'])) {
         var modal = $(this)
         modal.find('.modal-title').text('Create new topic')
     });
-    
-	/*$(document).on("input", ".searchPrerequisite", (function () {
-        var name = $(this).val();
-		var id = $(this).attr("id").split("_")[1];
-        var val = $('#selectPrerequisite_'+id+' option').filter(function() {
-            return this.value == name;
-        }).data('value');
-		$('#prerequisite').val(val);
-		$('#test').html($('#prerequisite').val());
-	}));*/
-    
-	$(document).on("click", ".addAND", (function () {
-        var parent = $(this).parentElement;
-        if (parent.attr("class") != "prerequisiteAND") {
-            var tmp = $(this).html();
-            
-        }
-		var id = $(this).attr("id").split("_")[1];
-		$('#prerequisite').val(val);
-		$('#test').html($('#prerequisite').val());
-	}));
 </script>
 
