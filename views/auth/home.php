@@ -22,11 +22,7 @@ if (isset($_GET['logout'])) {
     function createUL($rows, $db) {
         $output = '<ul>';
         foreach ($rows as $row) {
-            $output .= '<li><div><strong>'.$row['name'].'</strong>';
-            if (!is_null($row['description'])) {
-                $output .= '<p>'.join("</p><p>", preg_split('/\r\n|\r|\n/', $row['description'])).'</p>';
-            }
-            $output .= '</div>';
+            $output .= '<li><div><span><a href="../topic/topic.php?id='.$row['id'].'" target="_blank">'.$row['name'].'</a></span></div>';
             $query = "SELECT id, name, description FROM topics where prerequisite = ".$row['id'];
             $results = mysqli_query($db, $query);
             if (mysqli_num_rows($results) > 0) {
@@ -107,7 +103,7 @@ if (isset($_GET['logout'])) {
 <script>
     $(document).ready(function() {
         $('#container').buzzmap({
-            structure: "<?php echo $mindmap; ?>"
+            structure: '<?php echo $mindmap; ?>'
         });
     });
 
