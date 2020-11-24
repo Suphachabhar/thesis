@@ -8,12 +8,18 @@
             return null;
         }
         
-        $query = "SELECT name FROM topics where id = ".$id;
+        $query = "SELECT name, prerequisite FROM topics where id = ".$id;
         $results = mysqli_query($db, $query);
         if (mysqli_num_rows($results) == 0) {
             return null;
         }
-        return mysqli_fetch_assoc($results);
+        $return = mysqli_fetch_assoc($results);
+        if (!is_null($return['prerequisite'])) {
+            $query = "SELECT id, name FROM topics where id = ".$return['prerequisite'];
+            $results = mysqli_query($db, $query);
+            $return['prerequisite'] = mysqli_fetch_assoc($results);
+        }
+        return $return;
     }
     
     function existingSubtopicID($id, $topic, $db) {

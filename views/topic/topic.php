@@ -25,7 +25,22 @@ if (isset($_GET['logout'])) {
     if (is_null($topic)) : 
         $_SESSION['success'] = invalidInputError("topic ID");
         header('location: '.mainPage());
-    else : 
+    else :
+        $prerequisiteNeeded = false;
+        $prerequisiteFinished = null;
+        if (!isAdmin() && !is_null($topic['prerequisite'])) {
+            $prerequisiteNeeded = true;
+            $query = "SELECT count(a.id) AS subtopics, b.progress FROM subtopics AS a, progresses AS b WHERE b.student = ".$_SESSION['user']['id']
+                ." AND b.topic = ".$topic['prerequisite']['id']." AND b.topic = a.topic";
+            $results = mysqli_query($db, $query);
+            $prerequisiteFinished = mysqli_fetch_assoc($results);
+        }
+        
+        if ($prerequisiteNeeded && (is_null($prerequisiteFinished) || $prerequisiteFinished['subtopics'] != $prerequisiteFinished['progress'])) {
+            $_SESSION['success'] = 'You have to finish the prerequisite (<a href="../topic/topic.php?id='.$topic['prerequisite']['id']
+                .'">'.$topic['prerequisite']['name'].'</a>) before studying this topic.';
+            header('location: '.mainPage());
+        } else {
 ?>
 <head>
     <title id="title"><?php echo $topic['name']; ?></title>
@@ -372,6 +387,9 @@ if (isset($_GET['logout'])) {
 </script>
 
 </body>
-<?php endif; ?>
+<?php 
+    }
+endif;
+?>
 
 </html>
