@@ -39,9 +39,6 @@
 				</div>
 				
 				<input type="submit" class="btn" value="Login" name="login_btn">
-
-				
-				<a href="registration.php">Sign up</a>
 				
 
 				</form>

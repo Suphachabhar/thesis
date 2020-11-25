@@ -78,18 +78,7 @@ if (isset($_GET['logout'])) {
 	</div>
 	</nav>
 
-	<div class="alert alert-warning alert-dismissible fade show" role="alert">
-		<?php if (isset($_SESSION['success'])) : ?>
-		<div class="error success">
-			<h3>
-				<?php 
-					echo $_SESSION['success']; 
-					unset($_SESSION['success']);
-				?>
-			</h3>
-		</div>
-		<?php endif ?>
-	</div>
+	
     
     <div id="container" class="mindmap-placeholder"></div>
     
@@ -105,6 +94,7 @@ if (isset($_GET['logout'])) {
         $('#container').buzzmap({
             structure: '<?php echo $mindmap; ?>'
         });
+        $('#container.buzzmap .node').addClass('active');
     });
 
 	$('.alert').alert();
