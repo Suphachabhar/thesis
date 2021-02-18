@@ -31,9 +31,51 @@ h1 {
 #logo-img img {
     height: 30px;
 }
+
 body {
     position: relative;
 }
 
+.link {
+  stroke: #fcfcfc;
+}
 
+.node text {
+  pointer-events: none;
+  font: 12px Calibri, Arial;
+}
 
+path.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+marker#licensing {
+  fill: green;
+}
+
+path.link.licensing {
+  stroke: green;
+}
+
+path.link.resolved {
+  stroke-dasharray: 0,2 1;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #333;
+  stroke-width: 1.5px;
+}
+
+text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+text.shadow {
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-opacity: .8;
+}
