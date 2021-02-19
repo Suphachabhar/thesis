@@ -86,43 +86,30 @@ if (isset($_GET['logout'])) {
 
 <script>
     $(document).ready(function () {
-        /* (c) Michiel van der Blonk
-         * a model of basic phycics quantities
-         * July 2012
-         * some code adapted from http://bl.ocks.org/1153292
-         */
-        var width = 960,
-            height = 700,
+        var width = 1000,
+            height = 800,
             r = 12,
             gravity = 0.1,
             distance = 100,
             charge = -800,
             fill = d3.scale.category10(),
-
             nodes=<?php echo json_encode($nodes); ?>,
-
-            // the relations shown can be calculated using
-            // formulas from either 1 or 2 other quantities
             links=<?php echo json_encode($links); ?>;
 
-        // create the canvas for the model
         var svg = d3.select("body").append("svg")
             .attr("width", width)
             .attr("height", height);
 
-        // d3 provides the calculations to animate the model
         var force = d3.layout.force()
             .gravity(gravity)
             .distance(distance)
             .charge(charge)
             .size([width, height]);
 
-        // add data, and start the animation
         force.nodes(nodes)
             .links(links)
             .start();
 
-        // add classnames to links for styling
         var link = svg.selectAll(".link")
             .data(links)
             .enter().append("line")
@@ -134,8 +121,11 @@ if (isset($_GET['logout'])) {
             .enter().append("g")
             .attr("class", "node")
             .call(force.drag);
+            
+        var div = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
 
-        // draw circles
         var circle=node.append("svg:circle").attr("r", r - .75).style("fill", function(d) {
                 return fill(d.group);
             }).style("stroke", function(d) {
@@ -143,19 +133,19 @@ if (isset($_GET['logout'])) {
             }).call(force.drag)
             .on("click", function(d) {
                 window.location.href = "../topic/topic.php?id=" + d.group.toString();
+            }).on("mouseover", function(d) {
+                div.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                div.html(d.description)	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");
+            }).on("mouseout", function(d) {
+                div.transition()		
+                    .duration(500)		
+                    .style("opacity", 0);	
             });
 
-        // add tooltip so it shows the unit and formula
-        circle.append("svg:title").text(function(d, i) {
-            if (typeof d.description !== 'undefined') {
-            return d.description;
-            }
-        });
-
-
-        // create arrowheads (end markers)
-        // three type of styles can be made for each group
-        // this feature is not used
         svg.append("svg:defs").selectAll("marker")
             .data([1,2,3])
           .enter().append("svg:marker")
@@ -170,19 +160,16 @@ if (isset($_GET['logout'])) {
           .append("svg:path")
             .attr("d", "M0,-5L10,0L0,5");
 
-        // attach markers
         var path = svg.append("svg:g").selectAll("path")
             .data(force.links())
             .enter().append("svg:path")
             .attr("class", function(d) { return "link " + d.value; })
             .attr("marker-end", function(d) { return "url(#" + d.value + ")"; });
 
-        // create a group for text elements
         var text = svg.append("svg:g").selectAll("g")
             .data(force.nodes())
             .enter().append("svg:g");
 
-        // create shadow in white
         text.append("svg:text")
               .attr("dx", 12)
               .attr("dy", ".35em")
@@ -190,19 +177,10 @@ if (isset($_GET['logout'])) {
               .text(function(d) { return d.name;}
           );
 
-        // create name on top of shadow
         text.append("svg:text")
               .attr("dx", 12)
               .attr("dy", ".35em")
               .text(function(d) { return d.name;}
-          );
-
-        // put the symbol, e.g. kg inside the circle
-        text.append("svg:text")
-              .attr("dx", -4)
-              .attr("dy", 2)
-              .attr("fill", "#ffffff")
-              .text(function(d) { return d["symbol"]?d.symbol:"";}
           );
 
         force.on("tick", tick);
@@ -212,8 +190,7 @@ if (isset($_GET['logout'])) {
             path.attr("d", function(d) {
                 var dx = d.target.x - d.source.x,
                     dy = d.target.y - d.source.y,
-                    dr = 0; // straight lines (0=straight, 1=round)
-                    // alternatively use dr = Math.sqrt(dx * dx + dy * dy); for similar arcs
+                    dr = 0;
                 return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
             });
 

@@ -19,24 +19,25 @@ if (isset($_GET['logout'])) {
         header('location: index.php');
     }
     
-    function createUL($rows, $db) {
-        $output = '<ul>';
-        foreach ($rows as $row) {
-            $output .= '<li><div><span><a href="../topic/topic.php?id='.$row['id'].'" target="_blank">'.$row['name'].'</a></span></div>';
-            $query = "SELECT id, name, description FROM topics where prerequisite = ".$row['id'];
-            $results = mysqli_query($db, $query);
-            if (mysqli_num_rows($results) > 0) {
-                $output .= createUL(mysqli_fetch_all($results, MYSQLI_ASSOC), $db);
-            }
-            $output .= '</li>';
-        }
-        $output .= '</ul>';
-        return $output;
+    $query = "SELECT id, name, description, prerequisite FROM topics";
+    $results = mysqli_query($db, $query);
+    $rows = mysqli_fetch_all($results, MYSQLI_ASSOC);
+    
+    $nodes = array();
+    $nodeNum = array();
+    $links = array();
+    $i = 0;
+    foreach ($rows as $row) {
+        $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"], "description" => "test");
+        $nodeNum[$row["id"]] = $i;
+        $i ++;
     }
     
-    $query = "SELECT id, name, description FROM topics where prerequisite IS NULL";
-    $results = mysqli_query($db, $query);
-    $mindmap = createUL(mysqli_fetch_all($results, MYSQLI_ASSOC), $db);
+    foreach ($rows as $row) {
+        if ($row["prerequisite"]) {
+            $links[] = array("source" => $nodeNum[$row["prerequisite"]], "target" => $nodeNum[$row["id"]], "value" => 1);
+        }
+    }
 ?>
 
 <head>
@@ -52,8 +53,8 @@ if (isset($_GET['logout'])) {
     <link href="https://code.jquery.com/ui/jquery-ui-git.css" type="text/css" rel="stylesheet"/>
     <script src="https://code.jquery.com/ui/jquery-ui-git.js" type="text/javascript"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"> </script>
-    <link href="../../buzzmap/styles.css" type="text/css" rel="stylesheet"/>
-    <script src="../../buzzmap/buzzmap.min.js" type="text/javascript"></script>
+    
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
 </head>
 
 <body>
@@ -77,27 +78,132 @@ if (isset($_GET['logout'])) {
 		</ul>
 	</div>
 	</nav>
-
-	
     
-    <div id="container" class="mindmap-placeholder"></div>
-    
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
+    <div id="learning_map"></div>
 </body>
 
-</html>
-
 <script>
-    $(document).ready(function() {
-        $('#container').buzzmap({
-            structure: '<?php echo $mindmap; ?>'
-        });
-        $('#container.buzzmap .node').addClass('active');
+    $(document).ready(function () {
+        var width = 1000,
+            height = 800,
+            r = 12,
+            gravity = 0.1,
+            distance = 100,
+            charge = -800,
+            fill = d3.scale.category10(),
+            nodes=<?php echo json_encode($nodes); ?>,
+            links=<?php echo json_encode($links); ?>;
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        var force = d3.layout.force()
+            .gravity(gravity)
+            .distance(distance)
+            .charge(charge)
+            .size([width, height]);
+
+        force.nodes(nodes)
+            .links(links)
+            .start();
+
+        var link = svg.selectAll(".link")
+            .data(links)
+            .enter().append("line")
+            .attr("class", "link");
+
+        // enable drag of nodes
+        var node = svg.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(force.drag);
+            
+        var div = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
+
+        var circle=node.append("svg:circle").attr("r", r - .75).style("fill", function(d) {
+                return fill(d.group);
+            }).style("stroke", function(d) {
+                return d3.rgb(fill(d.group)).darker();
+            }).call(force.drag)
+            .on("click", function(d) {
+                window.location.href = "../topic/topic.php?id=" + d.group.toString();
+            }).on("mouseover", function(d) {
+                div.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                div.html(d.description)	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");
+            }).on("mouseout", function(d) {
+                div.transition()		
+                    .duration(500)		
+                    .style("opacity", 0);	
+            });
+
+        svg.append("svg:defs").selectAll("marker")
+            .data([1,2,3])
+          .enter().append("svg:marker")
+            .attr("id", String)
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 22)
+            .attr("refY", -1.5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("fill-color","#cccccc")
+            .attr("orient", "auto")
+          .append("svg:path")
+            .attr("d", "M0,-5L10,0L0,5");
+
+        var path = svg.append("svg:g").selectAll("path")
+            .data(force.links())
+            .enter().append("svg:path")
+            .attr("class", function(d) { return "link " + d.value; })
+            .attr("marker-end", function(d) { return "url(#" + d.value + ")"; });
+
+        var text = svg.append("svg:g").selectAll("g")
+            .data(force.nodes())
+            .enter().append("svg:g");
+
+        text.append("svg:text")
+              .attr("dx", 12)
+              .attr("dy", ".35em")
+              .attr("class", "shadow")
+              .text(function(d) { return d.name;}
+          );
+
+        text.append("svg:text")
+              .attr("dx", 12)
+              .attr("dy", ".35em")
+              .text(function(d) { return d.name;}
+          );
+
+        force.on("tick", tick);
+
+        // move circles using force
+        function tick() {
+            path.attr("d", function(d) {
+                var dx = d.target.x - d.source.x,
+                    dy = d.target.y - d.source.y,
+                    dr = 0;
+                return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+            });
+
+            circle.attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+            text.attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+        };
     });
 
-	$('.alert').alert();
 	$('#exampleModal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget) // Button that triggered the modal
 		var recipient = button.data('whatever') // Extract info from data-* attributes
@@ -107,4 +213,6 @@ if (isset($_GET['logout'])) {
 		modal.find('.modal-body input').val(recipient)
 	});
 </script>
+
+</html>
 
