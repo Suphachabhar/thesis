@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 23, 2021 at 02:19 AM
+-- Generation Time: Feb 23, 2021 at 02:18 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -24,45 +24,45 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Table structure for table `prerequisites`
 --
 
-CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `user_type` int(11) NOT NULL DEFAULT 0,
-  `password` varchar(255) NOT NULL
+CREATE TABLE `prerequisites` (
+  `topic` int(11) NOT NULL,
+  `prerequisite` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `prerequisites`
 --
 
-INSERT INTO `user` (`id`, `username`, `email`, `user_type`, `password`) VALUES
-(1, 'tingting', 'tingting@gmail.com', 1, '202cb962ac59075b964b07152d234b70'),
-(2, 'tt', 'tt@gmail.com', 0, '9adcb29710e807607b683f62e555c22dc5659713'),
-(4, 'hacking', 'test@gmail.com', 0, 'e1a08da1dd23a36f9c1cefb5d3e44e34');
+INSERT INTO `prerequisites` (`topic`, `prerequisite`) VALUES
+(26, 25),
+(27, 25),
+(28, 25),
+(29, 26);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `user`
+-- Indexes for table `prerequisites`
 --
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `prerequisites`
+  ADD PRIMARY KEY (`topic`,`prerequisite`),
+  ADD KEY `prerequisite` (`prerequisite`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- Constraints for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `user`
+-- Constraints for table `prerequisites`
 --
-ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE `prerequisites`
+  ADD CONSTRAINT `prerequisites_ibfk_1` FOREIGN KEY (`topic`) REFERENCES `topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `prerequisites_ibfk_2` FOREIGN KEY (`prerequisite`) REFERENCES `topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

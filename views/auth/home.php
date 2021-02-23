@@ -19,24 +19,25 @@ if (isset($_GET['logout'])) {
         header('location: index.php');
     }
     
-    $query = "SELECT id, name, description, prerequisite FROM topics";
-    $results = mysqli_query($db, $query);
-    $rows = mysqli_fetch_all($results, MYSQLI_ASSOC);
-    
     $nodes = array();
     $nodeNum = array();
     $links = array();
     $i = 0;
+    
+    $query = "SELECT id, name, description FROM topics";
+    $results = mysqli_query($db, $query);
+    $rows = mysqli_fetch_all($results, MYSQLI_ASSOC);
     foreach ($rows as $row) {
         $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"], "description" => "test");
         $nodeNum[$row["id"]] = $i;
         $i ++;
     }
     
+    $query = "SELECT topic, prerequisite FROM prerequisites";
+    $results = mysqli_query($db, $query);
+    $rows = mysqli_fetch_all($results, MYSQLI_ASSOC);
     foreach ($rows as $row) {
-        if ($row["prerequisite"]) {
-            $links[] = array("source" => $nodeNum[$row["prerequisite"]], "target" => $nodeNum[$row["id"]], "value" => 1);
-        }
+        $links[] = array("source" => $nodeNum[$row["prerequisite"]], "target" => $nodeNum[$row["topic"]], "value" => 1);
     }
 ?>
 

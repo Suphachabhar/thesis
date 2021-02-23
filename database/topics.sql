@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2020 at 06:11 AM
+-- Generation Time: Feb 23, 2021 at 02:19 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -39,15 +39,11 @@ CREATE TABLE `topics` (
 --
 
 INSERT INTO `topics` (`id`, `name`, `prerequisite`, `description`) VALUES
-(10, 'Nick', NULL, NULL),
-(11, 'Janine', NULL, NULL),
-(12, 'Debra', NULL, NULL),
-(13, 'Andrew', NULL, NULL),
-(14, 'Nathan', NULL, NULL),
-(15, 'Raphael', NULL, NULL),
-(16, 'Marco', NULL, NULL),
-(17, 'Sam', NULL, NULL),
-(18, 'a', 10, 'vfgbhngmjhg\r\ndfsgdhfjgk');
+(25, 'Integers', NULL, 'Learn how to use integers in C language'),
+(26, 'Bitwise Operations', 25, NULL),
+(27, 'Floating Point', 25, NULL),
+(28, 'Files', 25, NULL),
+(29, 'MIPS', 26, NULL);
 
 --
 -- Indexes for dumped tables
@@ -68,7 +64,7 @@ ALTER TABLE `topics`
 -- AUTO_INCREMENT for table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- Constraints for dumped tables

@@ -22,23 +22,26 @@ if (isset($_GET['logout'])) {
 ?>
 <?php
     $topic = existingTopicID($_GET['id'], $db);
-    if (is_null($topic)) : 
+    if (is_null($topic)) {
         $_SESSION['success'] = invalidInputError("topic ID");
         header('location: '.mainPage());
-    else :
-        $prerequisiteNeeded = false;
-        $prerequisiteFinished = null;
-        if (!isAdmin() && !is_null($topic['prerequisite'])) {
-            $prerequisiteNeeded = true;
-            $query = "SELECT count(a.id) AS subtopics, b.progress FROM subtopics AS a, progresses AS b WHERE b.student = ".$_SESSION['user']['id']
-                ." AND b.topic = ".$topic['prerequisite']['id']." AND b.topic = a.topic";
-            $results = mysqli_query($db, $query);
-            $prerequisiteFinished = mysqli_fetch_assoc($results);
+    } else {
+        $prerequisite = array();
+        if (!isAdmin() && count($topic['prerequisite']) > 0) {
+            foreach ($topic['prerequisite'] as $p) {
+                $query = "SELECT count(a.id) AS subtopics, b.progress FROM subtopics AS a, progresses AS b WHERE b.student = ".$_SESSION['user']['id']
+                    ." AND b.topic = ".$p['id']." AND b.topic = a.topic";
+                $results = mysqli_query($db, $query);
+                $progress = mysqli_fetch_assoc($results);
+                if (is_null($progress) || $progress['subtopics'] != $progress['progress']) {
+                    $prerequisite[] = '<li><a href="../topic/topic.php?id='.$p['id'].'">'.$p['name'].'</a></li>';
+                }
+            }
         }
         
-        if ($prerequisiteNeeded && (is_null($prerequisiteFinished) || $prerequisiteFinished['subtopics'] != $prerequisiteFinished['progress'])) {
-            $_SESSION['success'] = 'You have to finish the prerequisite (<a href="../topic/topic.php?id='.$topic['prerequisite']['id']
-                .'">'.$topic['prerequisite']['name'].'</a>) before studying this topic.';
+        if (count($prerequisite) > 0) {
+            $_SESSION['success'] = 'You have to finish the prerequisite before studying this topic:
+            <ul>'.join('', $prerequisite).'</ul>';
             header('location: '.mainPage());
         } else {
 ?>
@@ -101,7 +104,7 @@ if (isset($_GET['logout'])) {
     <!-- showing the responding of the system -->
     <div class="container">
     <?php 
-        if (permission()) :
+        if (permission()) {
     ?>
         <!-- create sub topic -->
         <form action="topic_handler.php" method="post">
@@ -133,7 +136,7 @@ if (isset($_GET['logout'])) {
 		</div>
 		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"> + Create </button>
 	    </form>
-        <?php endif; ?>
+        <?php } ?>
 
         
 
@@ -145,14 +148,13 @@ if (isset($_GET['logout'])) {
             $results = mysqli_query($db, $query);
             $nSubtopics = mysqli_num_rows($results);
             
-            if (permission()) : 
+            if (permission()) {
         ?>
             
             <button class="deleteTopic">Delete</button>
         
         <?php 
-               
-            endif;
+            }
         ?>
     </div>
 
@@ -175,14 +177,14 @@ if (isset($_GET['logout'])) {
                         $progress = mysqli_fetch_assoc($results)['progress'];
                     }
                     $first = true;
-                    foreach ($sList as $subtopic) :
+                    foreach ($sList as $subtopic) {
                 ?>
                 <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
                     <a class="list-group-item list-group-item-action<?php if ((isset($_GET['subtopic']) && intval($_GET['subtopic']) == $subtopic[2]) || (!isset($_GET['subtopic']) && $first)) {echo " active"; $first = false;} ?>" 
                         id="subtopicName_<?php echo $subtopic[0]; ?>"<?php if (isAdmin() || $subtopic[2] <= ($progress + 1)) echo ' data-toggle="list" href="#list-profile_'.$subtopic[2].'"';?> 
                         role="tab"><?php echo $subtopic[1]; ?></a>
                 <?php 
-                    endforeach; 
+                    }
                 ?>
             </div>
         </div>
@@ -190,7 +192,7 @@ if (isset($_GET['logout'])) {
             <div class="tab-content" id="nav-tabContent">
                 <?php
                     $first = true;
-                    foreach ($sList as $subtopic) :
+                    foreach ($sList as $subtopic) {
                         if (!isAdmin() && $subtopic[2] > ($progress + 1)) continue;
                 ?>
                 <div class="tab-pane fade<?php if ((isset($_GET['subtopic']) && intval($_GET['subtopic']) == $subtopic[2]) || (!isset($_GET['subtopic']) && $first)) {echo " show active"; $first = false;} ?>" 
@@ -198,18 +200,18 @@ if (isset($_GET['logout'])) {
                     <?php
                         $directory = '../../files/'.$_GET['id'].'/'.$subtopic[0];
                         $has_files = false;
-                        if (is_dir($directory)) :
+                        if (is_dir($directory)) {
                             $files = scandir($directory);
                             if ($files !== false) {
-                                foreach ($files as $f) :
+                                foreach ($files as $f) {
                                     if ($f == '.' || $f == '..') {continue;}
                                         $has_files = true;
                     ?>
                         <iframe src="<?php echo $directory.'/'.$f; ?>" width="100%" style="height:600px"></iframe>
                         <?php
-                                endforeach;
+                                }
                             }
-                        endif;
+                        }
                         if (!isAdmin()) {
                             if ($subtopic[2] == count($sList) && $subtopic[2] == $progress) {
                                 echo '<a class="list-group-item list-group-item-action" href="../auth/course.php">Finish</a>';
@@ -226,7 +228,7 @@ if (isset($_GET['logout'])) {
                             }
                         }
                         
-                        if (!$has_files && permission()) :
+                        if (!$has_files && permission()) {
                     ?>
                         <h4>Upload content</h4>
                         <form action="topic_handler.php" method="post" enctype="multipart/form-data">
@@ -237,11 +239,11 @@ if (isset($_GET['logout'])) {
                             <input type="submit" value="Upload File">
                         </form>
                     <?php 
-                        endif;
+                        }
                     ?>
                 </div>
                 <?php 
-                    endforeach; 
+                    }
                 ?>
             </div>
         </div>
@@ -253,18 +255,18 @@ if (isset($_GET['logout'])) {
 	<div class="content">
 		<?php
             $sList = mysqli_fetch_all($results);
-            foreach ($sList as $subtopic) :
+            foreach ($sList as $subtopic) {
         ?>
             <div>
                 <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
                 <div id="<?php echo 'subtopicHeader_'.$subtopic[0]; ?>" class="subtopicHeader">
                     <h3 id="<?php echo 'subtopicName_'.$subtopic[0]; ?>"><?php echo $subtopic[1]; ?></h3>
-                    <?php if (permission()) : ?>
+                    <?php if (permission()) { ?>
                         
                         <button id="<?php echo 'deleteSubtopic_'.$subtopic[0]; ?>" class="deleteSubtopic">Delete</button>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
-                <?php if (permission()) : ?>
+                <?php if (permission()) { ?>
                     <h4>Upload content</h4>
                     <form action="topic_handler.php" method="post" enctype="multipart/form-data">
                         <input name="function" value="upload" hidden>
@@ -273,16 +275,16 @@ if (isset($_GET['logout'])) {
                         <input type="file" name="fileToUpload">
                         <input type="submit" value="Upload File">
                     </form>
-                <?php endif; ?>
+                <?php } ?>
             </div>
         <?php 
-            endforeach; 
+            }
         ?>
             
     </div>
     
     <!-- backend for subtopic   -->
-    <?php if (permission()) : ?>
+    <?php if (permission()) { ?>
         <div id="confirmDeleteTopic" class="modal">
             Are you sure you want to delete this topic?
             <form action="topic_handler.php" method="post">
@@ -306,18 +308,18 @@ if (isset($_GET['logout'])) {
             <span class="close">&times;</span>
             <ul id="sortable">
                 <?php
-                    foreach ($sList as $subtopic) :
+                    foreach ($sList as $subtopic) {
                 ?>
                     <li id="<?php echo 'subtopic_'.$subtopic[0]; ?>">
                         <?php echo $subtopic[1]; ?>
                     </li>
                 <?php 
-                    endforeach;
+                    }
                 ?>
             </ul>
             <button class="confirmRearrange">Save</button>
         </div>
-    <?php endif; ?>
+    <?php } ?>
 
 
 
@@ -377,8 +379,8 @@ if (isset($_GET['logout'])) {
 
 </body>
 <?php 
+        }
     }
-endif;
 ?>
 
 </html>

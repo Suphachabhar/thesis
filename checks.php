@@ -8,17 +8,16 @@
             return null;
         }
         
-        $query = "SELECT name, prerequisite FROM topics where id = ".$id;
+        $query = "SELECT name FROM topics where id = ".$id;
         $results = mysqli_query($db, $query);
         if (mysqli_num_rows($results) == 0) {
             return null;
         }
         $return = mysqli_fetch_assoc($results);
-        if (!is_null($return['prerequisite'])) {
-            $query = "SELECT id, name FROM topics where id = ".$return['prerequisite'];
-            $results = mysqli_query($db, $query);
-            $return['prerequisite'] = mysqli_fetch_assoc($results);
-        }
+        
+        $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b where a.id = b.prerequisite AND b.topic = ".$id;
+        $results = mysqli_query($db, $query);
+        $return['prerequisite'] = mysqli_fetch_all($results, MYSQLI_ASSOC);
         return $return;
     }
     
