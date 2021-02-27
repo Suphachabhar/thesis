@@ -61,18 +61,27 @@
         
         $attr = "name";
         $val = "'".$_POST['name']."'";
-        if (!empty($_POST['prerequisite'])) {
-            $attr .= ", prerequisite";
-            $val .= ", ".$_POST['prerequisite'];
-        }
         if (!empty($_POST['description'])) {
             $attr .= ", description";
             $val .= ", '".$_POST['description']."'";
         }
         $query = "INSERT INTO topics (".$attr.") VALUES (".$val.")";
         mysqli_query($db, $query); 
+        
+        $query = "SELECT id FROM topics WHERE name = '".$_POST['name']."'";
+        if (!empty($_POST['description'])) {
+            $query .= " AND description = '".$_POST['description']."'";
+        }
+        $query .= " ORDER BY id DESC LIMIT 1";
+        $results = mysqli_query($db, $query); 
+        $id = mysqli_fetch_assoc($results)["id"];
+        
         $_SESSION['success'] = "Topic \"".$_POST['name']."\" has been created successfully.";
-        header('location: ../auth/course.php');
+        foreach ($_POST['prerequisite'] as $p) {
+            $query = "INSERT INTO prerequisites (topic, prerequisite) VALUES (".$id.", ".$p.")";
+            mysqli_query($db, $query);
+        }
+        header('location: topic.php?id='.$id);
     }
     
     function createSubtopic($db) {

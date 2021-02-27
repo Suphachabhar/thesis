@@ -27,8 +27,9 @@ if (isset($_GET['logout'])) {
 	<title>Course</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="home.css" rel="stylesheet">
-    <link href="prerequisite.css" rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="../../node_modules/slim-select/dist/slimselect.css" rel="stylesheet">
+    <script src="../../node_modules/slim-select/dist/slimselect.js"></script>
 	<style>
 		tr[data-href]{
 			cursor: pointer;
@@ -83,14 +84,13 @@ if (isset($_GET['logout'])) {
 					</div>
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Prerequisite:</label>
-						<select name="prerequisite">
-                            <option value=""></option>
+                        <select id="prerequisite" name="prerequisite[]" multiple>
                             <?php
-                                $query = "SELECT id, name FROM topics";
+                                $query = "SELECT id, name FROM topics ORDER BY name";
                                 $results = mysqli_query($db, $query);
-                                foreach (mysqli_fetch_all($results) as $row) {
+                                foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
                             ?>
-                                    <option value="<?php echo $row[0]; ?>"><?php echo $row[1]; ?></option>
+                            <option value="<?php echo $row["id"]; ?>"><?php echo $row["name"]; ?></option>
                             <?php
                                 }
                             ?>
@@ -169,6 +169,12 @@ if (isset($_GET['logout'])) {
 </html>
 
 <script>
+    $(document).ready(function () {
+        var instance = new SlimSelect({
+            select: '#prerequisite'
+        });
+    });
+
     $('#courseAddModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
         var recipient = button.data('whatever') // Extract info from data-* attributes

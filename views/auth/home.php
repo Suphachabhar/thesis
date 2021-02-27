@@ -28,7 +28,8 @@ if (isset($_GET['logout'])) {
     $results = mysqli_query($db, $query);
     $rows = mysqli_fetch_all($results, MYSQLI_ASSOC);
     foreach ($rows as $row) {
-        $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"], "description" => "test");
+        $description = $row["description"] ? $row["description"] : $row["name"];
+        $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"], "description" => $description);
         $nodeNum[$row["id"]] = $i;
         $i ++;
     }
