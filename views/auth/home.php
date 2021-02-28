@@ -83,7 +83,7 @@ if (isset($_GET['logout'])) {
     
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
-    <div id="learning_map"></div>
+    
 </body>
 
 <script>
