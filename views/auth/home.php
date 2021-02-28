@@ -91,14 +91,14 @@ if (isset($_GET['logout'])) {
     
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
-    
-    
 </body>
 
 <script>
     $(document).ready(function () {
         var width = 1500,
-            height = 650,
+
+            height = 800,
+
             r = 12,
             gravity = 0.1,
             distance = 100,
