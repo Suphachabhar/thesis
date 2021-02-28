@@ -1,5 +1,3 @@
-
-
 <?php 
 include('server.php');
 include('../../database.php');
@@ -49,6 +47,7 @@ if (isset($_GET['logout'])) {
 	<title>Course</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="home.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     
     <!--for mind map-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -78,18 +77,28 @@ if (isset($_GET['logout'])) {
 				<a class="nav-link" href="login.php?logout='1'">Logout</a>	
 			</li>
 		</ul>
+
+        
 	</div>
+    <div class="top-bar-right">
+        
+        <ul class="navbar-nav mr-auto">
+        <li><input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for topics.."></li>
+        <button class="plus-button"></button>
+        </ul>
+    </div>
 	</nav>
     
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
     
+    
 </body>
 
 <script>
     $(document).ready(function () {
-        var width = 1000,
-            height = 800,
+        var width = 1500,
+            height = 650,
             r = 12,
             gravity = 0.1,
             distance = 100,
