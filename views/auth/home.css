@@ -69,6 +69,7 @@ input::-webkit-calendar-picker-indicator {
 	position: relative;
   top: 650px;
   right: 16px;
+  cursor:pointer;
 }
 
 
