@@ -133,41 +133,35 @@ if (isset($_GET['logout'])) {
 		<button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
         
 	    </form>
-    <?php } ?>
-
-    <?php 
         
-        if (permission()) {
-    ?>
-        <!-- create sub topic -->
+        <!-- delete topic -->
         <form action="topic_handler.php" method="post">
-		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
+		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="courseAddModalLabel">Create new subtopic</h5>
+					<h5 class="modal-title" id="deleteModalLabel">Delete <?php echo $topic['name']; ?></h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
 					<form>
-					<div class="form-group">
-						<label class="col-form-label">Subtopic:</label>
-                        <input name="function" value="createSubtopic" hidden>
-                        <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-						<input name="name">
-					</div>
+                        <div class="form-group" hidden>
+                            <input name="function" value="deleteTopic">
+                            <input name="id" value="<?php echo $_GET['id']; ?>">
+                        </div>
 					</form>
+					<p>Are you sure you want to delete this topic?</p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="submit" class="btn btn-primary" value="Create">Submit</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+					<button type="submit" class="btn btn-primary" value="Yes">Yes</button>
 				</div>
 				</div>
 			</div>
 		</div>
-		<button class="delete-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
+		<button class="delete-button-topic" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo"></button>
         
 	    </form>
     <?php } ?>
@@ -186,14 +180,6 @@ if (isset($_GET['logout'])) {
             $query = "SELECT id, name, sort FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
             $results = mysqli_query($db, $query);
             $nSubtopics = mysqli_num_rows($results);
-            
-            if (permission()) {
-        ?>
-            
-            <button class="deleteTopic">Delete jjj</button>
-        
-        <?php 
-            }
         ?>
     </div>
 
@@ -325,15 +311,6 @@ if (isset($_GET['logout'])) {
     
     <!-- backend for subtopic   -->
     <?php if (permission()) { ?>
-        <div id="confirmDeleteTopic" class="modal">
-            Are you sure you want to delete this topic?
-            <form action="topic_handler.php" method="post">
-                <input name="function" value="deleteTopic" hidden>
-                <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                <input type="submit" value="Yes">
-            </form>
-            <button class="no">No</button>
-        </div>
         <div id="confirmDeleteSubtopic" class="modal">
             Are you sure you want to delete the subtopic <font id="subtopicNameToDelete"></font>?
             <form action="topic_handler.php" method="post">
@@ -373,11 +350,7 @@ if (isset($_GET['logout'])) {
     <?php
         if (isAdmin()) {
     ?>
-	$(document).on("click", ".deleteTopic", (function () {
-        $("#confirmDeleteTopic").css("display", "block");
-	}));
-    
-	$(document).on("click", ".deleteSubtopic", (function () {
+    $(document).on("click", ".deleteSubtopic", (function () {
 		var subID = $(this).attr("id").split("_")[1];
         $("#subtopicNameToDelete").html($("#subtopicName_"+subID).html());
         $("#subtopicIDToDelete").val(subID);
