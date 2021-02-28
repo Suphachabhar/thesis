@@ -316,6 +316,8 @@ if (isset($_GET['logout'])) {
                     window.location = result;
                 }
             }
+        });
+    });
 
 
     $(document).ready(function () {
