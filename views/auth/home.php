@@ -85,7 +85,7 @@ if (isset($_GET['logout'])) {
         
         <ul class="navbar-nav mr-auto">
         <li><input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for topics.."></li>
-        <button class="plus-button"></button>
+       
         </ul>
     </div>
 
