@@ -24,8 +24,8 @@ if (isset($_GET['logout'])) {
     
     $query = "SELECT id, name, description FROM topics";
     $results = mysqli_query($db, $query);
-    $rows = mysqli_fetch_all($results, MYSQLI_ASSOC);
-    foreach ($rows as $row) {
+    $topics = mysqli_fetch_all($results, MYSQLI_ASSOC);
+    foreach ($topics as $row) {
         $description = $row["description"] ? $row["description"] : $row["name"];
         $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"], "description" => $description);
         $nodeNum[$row["id"]] = $i;
@@ -84,8 +84,16 @@ if (isset($_GET['logout'])) {
     <div class="top-bar-right">
         
         <ul class="navbar-nav mr-auto">
-        <li><input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for topics.."></li>
-       
+        <li><input type="text" id="myInput" list="topicList" placeholder="Search for topics.."></li>
+        <datalist id="topicList">
+            <?php
+                foreach ($topics as $row) {
+            ?>
+            <option value="<?php echo $row["name"]; ?>"></option>
+            <?php
+                }
+            ?>
+        </select>
         </ul>
     </div>
 
