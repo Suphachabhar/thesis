@@ -48,6 +48,7 @@ body {
   padding: 10px 40px 10px 40px; /* Add some padding */
   border: 1px solid #ddd; /* Add a grey border */
   margin-bottom: -10px; /* Add some space below the input */
+  right: 16px;
 }
 
 .plus-button {
