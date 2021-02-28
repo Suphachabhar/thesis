@@ -1,5 +1,3 @@
-
-
 <?php 
 include('server.php');
 include('../../database.php');
