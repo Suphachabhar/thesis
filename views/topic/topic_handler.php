@@ -40,6 +40,10 @@
             recordProgress($db);
             break;
     
+        case "search":
+            searchTopic($db);
+            break;
+    
         default:
             break;
     }
@@ -316,5 +320,15 @@
             }
         }
         print $url;
+    }
+    
+    function searchTopic($db) {
+        $link = "";
+        $query = "SELECT id FROM topics WHERE name = '".$_POST["name"]."'";
+        $result = mysqli_query($db, $query);
+        if (mysqli_num_rows($result) > 0) {
+            $link = "../topic/topic.php?id=".mysqli_fetch_assoc($result)["id"];
+        }
+        print $link;
     }
 ?>

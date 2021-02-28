@@ -236,6 +236,19 @@ if (isset($_GET['logout'])) {
 		modal.find('.modal-title').text('New message to ' + recipient)
 		modal.find('.modal-body input').val(recipient)
 	});
+    
+    $("#myInput").bind('input', function () {
+        $.ajax({
+            url: "../topic/topic_handler.php",
+            method: "POST",
+            data: "function=search&name=" + $('#myInput').val(),
+            success: function(result){
+                if (result != "") {
+                    window.location = result;
+                }
+            }
+        });
+    });
 </script>
 
 </html>
