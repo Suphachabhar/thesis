@@ -117,7 +117,7 @@ if (isset($_GET['logout'])) {
      
         <!-- create sub topic -->
         <form action="../topic/topic_handler.php" method="post">
-		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
+		<div class="modal fade withShadow" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 				<div class="modal-header">
@@ -173,7 +173,28 @@ if (isset($_GET['logout'])) {
     
     
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
-
+    
+    <div class="modal fade topicInfo" id="courseModal" tabindex="-1" role="dialog" aria-labelledby="courseModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="courseModalLabel">Test</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                    <div class="form-group">
+                        <label class="col-form-label">Test:</label>
+                        <input name="name">
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#courseModal" data-whatever="@mdo"> Test </button>
 </body>
 
 <script>
@@ -325,6 +346,15 @@ if (isset($_GET['logout'])) {
             select: '#prerequisite'
 
         });
+    });
+    
+    $('.topicInfo').on('show hidden', function() {
+        $('body').toggleClass('no-shadow');
+        console.log("test");
+    });
+    
+    $('.withShadow').on('show hidden', function() {
+        $('body').removeClass('no-shadow');
     });
 </script>
 
