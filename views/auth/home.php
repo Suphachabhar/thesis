@@ -1,5 +1,3 @@
-
-
 <?php 
 include('server.php');
 include('../../database.php');
@@ -83,12 +81,37 @@ if (isset($_GET['logout'])) {
     
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
+<<<<<<< HEAD
     
+=======
+    <div id="learning_map"></div>
+        <div class="footer">
+            <p>Footer</p>
+            <!-- Change the `data-field` of buttons and `name` of input field's for multiple plus minus buttons-->
+            <div class="input-group plus-minus-input">
+            <div class="input-group-button">
+                <button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity">
+                <i class="fa fa-minus" aria-hidden="true"></i>
+                </button>
+            </div>
+            <input class="input-group-field" type="number" name="quantity" value="0">
+            <div class="input-group-button">
+                <button type="button" class="button hollow circle" data-quantity="plus" data-field="quantity">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+>>>>>>> master
 </body>
 
 <script>
     $(document).ready(function () {
-        var width = 1000,
+        var width = 1500,
             height = 800,
             r = 12,
             gravity = 0.1,
