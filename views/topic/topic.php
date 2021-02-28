@@ -162,6 +162,7 @@ if (isset($_GET['logout'])) {
     <body>
     <div class="row">
         <div class="col-4">
+            <p><?php echo $topic["description"]; ?></p>
             <div class="list-group" id="list-tab" role="tablist">
                 <?php
                     $sList = mysqli_fetch_all($results);
