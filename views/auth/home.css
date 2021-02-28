@@ -43,32 +43,28 @@ body {
   background-position: 9px 11px; /* Position the search icon */
   background-repeat: no-repeat; /* Do not repeat the icon image */
   width: 100%; /* Full-width */
-  font-size: 15px; /* Increase font-size */
+  font-size: 14px; /* Increase font-size */
   color: grey;
-  padding: 9px 40px 9px 40px; /* Add some padding */
+  padding: 10px 40px 10px 40px; /* Add some padding */
   border: 1px solid #ddd; /* Add a grey border */
   margin-bottom: -10px; /* Add some space below the input */
 }
 
 .plus-button {
+  background-image: url('img/plusicon.png'); /* Add a search icon to input */
+  background-size: 18px 18px;
+  background-position: 13px 13px; /* Position the search icon */
+  background-repeat: no-repeat; /* Do not repeat the icon image */
 	border: 2px solid lightgrey;
 	background-color: #fff;
 	font-size: 16px;
-	height: 2.5em;
-	width: 2.5em;
+	height: 3em;
+	width: 3em;
 	border-radius: 999px;
 	position: relative;
+  top: 650px;
+  right: 16px;
 }
-
-.footer {
-  position: fixed;
-   left: 0;
-   bottom: 0;
-   width: 100%;
-   text-align: center;
-}
-
-
 
 
 .link {
