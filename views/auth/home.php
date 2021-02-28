@@ -47,7 +47,24 @@ if (isset($_GET['logout'])) {
 	<title>Course</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="home.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="../../node_modules/slim-select/dist/slimselect.css" rel="stylesheet">
+    <script src="../../node_modules/slim-select/dist/slimselect.js"></script>
+	<style>
+		tr[data-href]{
+			cursor: pointer;
+		}
+	</style>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+
     
     <!--for mind map-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -97,7 +114,58 @@ if (isset($_GET['logout'])) {
         </ul>
     </div>
 
-    <button class="plus-button"></button>
+     
+        <!-- create sub topic -->
+        <form action="../topic/topic_handler.php" method="post">
+		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="courseAddModalLabel">Create new topic</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+					<div class="form-group">
+						<label class="col-form-label">Topic:</label>
+						<input name="function" value="createTopic" hidden>
+						<input name="name" type="text" class="form-control">
+					</div>
+					<div class="form-group">
+						<label for="message-text" class="col-form-label">Description:</label>
+						<textarea class="form-control" id="message-text" name="description"></textarea>
+					</div>
+					<div class="form-group">
+						<label for="message-text" class="col-form-label">Prerequisite:</label>
+                        <select id="prerequisite" name="prerequisite[]" multiple>
+                            <?php
+                                $query = "SELECT id, name FROM topics ORDER BY name";
+                                $results = mysqli_query($db, $query);
+                                foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                            ?>
+                            <option value="<?php echo $row["id"]; ?>"><?php echo $row["name"]; ?></option>
+                            <?php
+                                }
+                            ?>
+                        </select>
+					</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary" value="Create">Submit</button>
+				</div>
+				</div>
+			</div>
+		</div>
+		<button class="plus-button" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
+	</form>
+
+       
+
+    
     
 	</nav>
    
@@ -236,6 +304,12 @@ if (isset($_GET['logout'])) {
 		modal.find('.modal-title').text('New message to ' + recipient)
 		modal.find('.modal-body input').val(recipient)
 	});
+
+    $(document).ready(function () {
+        var instance = new SlimSelect({
+            select: '#prerequisite'
+        });
+    });
 </script>
 
 </html>
