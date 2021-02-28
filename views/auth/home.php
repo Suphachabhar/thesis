@@ -81,14 +81,10 @@ if (isset($_GET['logout'])) {
     
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
-<<<<<<< HEAD
-    
-=======
-    <div id="learning_map"></div>
-        <div class="footer">
-            <p>Footer</p>
-            <!-- Change the `data-field` of buttons and `name` of input field's for multiple plus minus buttons-->
-            <div class="input-group plus-minus-input">
+    <div class="footer">
+        <p>Footer</p>
+        <!-- Change the `data-field` of buttons and `name` of input field's for multiple plus minus buttons-->
+        <div class="input-group plus-minus-input">
             <div class="input-group-button">
                 <button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity">
                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -102,11 +98,6 @@ if (isset($_GET['logout'])) {
             </div>
         </div>
     </div>
-
-    
-
-
->>>>>>> master
 </body>
 
 <script>
