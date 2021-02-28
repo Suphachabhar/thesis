@@ -80,14 +80,20 @@ if (isset($_GET['logout'])) {
 
         
 	</div>
+
     <div class="top-bar-right">
         
         <ul class="navbar-nav mr-auto">
         <li><input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for topics.."></li>
-        <button class="plus-button"></button>
         </ul>
     </div>
+
+    <button class="plus-button"></button>
+    
 	</nav>
+   
+
+    
     
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
@@ -96,9 +102,7 @@ if (isset($_GET['logout'])) {
 <script>
     $(document).ready(function () {
         var width = 1500,
-
-            height = 800,
-
+            height = 650,
             r = 12,
             gravity = 0.1,
             distance = 100,
