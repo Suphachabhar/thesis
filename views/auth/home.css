@@ -51,6 +51,10 @@ body {
   right: 16px;
 }
 
+input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
 .plus-button {
   background-image: url('img/plusicon.png'); /* Add a search icon to input */
   background-size: 18px 18px;
