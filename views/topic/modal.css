@@ -47,6 +47,40 @@
     height: 30px;
 }
 
+.plus-button-topic{
+    background-image: url('../auth/img/plusicon.png'); /* Add a search icon to input */
+    background-size: 18px 18px;
+    background-position: 13px 13px; /* Position the search icon */
+    background-repeat: no-repeat; /* Do not repeat the icon image */
+      border: 2px solid lightgrey;
+      background-color: #fff;
+      font-size: 16px;
+      height: 3em;
+      width: 3em;
+      border-radius: 999px;
+      position: relative;
+    top: 590px;
+    right: -30px;
+    cursor:pointer;
+}
+
+.delete-button-topic{
+    background-image: url('../auth/img/binicon.png'); /* Add a search icon to input */
+    background-size: 30px 30px;
+    background-position: 6.5px 6.5px; /* Position the search icon */
+    background-repeat: no-repeat; /* Do not repeat the icon image */
+      border: 2px solid lightgrey;
+      background-color: #fff;
+      font-size: 16px;
+      height: 3em;
+      width: 3em;
+      border-radius: 999px;
+      position: relative;
+    top: 650px;
+    right: 16px;
+    cursor:pointer;
+}
+
 body {
     position: relative;
 }

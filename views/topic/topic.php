@@ -97,12 +97,8 @@ if (isset($_GET['logout'])) {
 			</li>
 		</ul>
 	</div>
-    </nav>
 
-   
-    
-    <!-- showing the responding of the system -->
-    <div class="container">
+  
     <?php 
         if (permission()) {
     ?>
@@ -134,12 +130,55 @@ if (isset($_GET['logout'])) {
 				</div>
 			</div>
 		</div>
-		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"> + Create </button>
-	    </form>
-        <?php } ?>
-
+		<button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
         
+	    </form>
+    <?php } ?>
 
+    <?php 
+        
+        if (permission()) {
+    ?>
+        <!-- create sub topic -->
+        <form action="topic_handler.php" method="post">
+		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="courseAddModalLabel">Create new subtopic</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+					<div class="form-group">
+						<label class="col-form-label">Subtopic:</label>
+                        <input name="function" value="createSubtopic" hidden>
+                        <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+						<input name="name">
+					</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary" value="Create">Submit</button>
+				</div>
+				</div>
+			</div>
+		</div>
+		<button class="delete-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
+        
+	    </form>
+    <?php } ?>
+    
+    
+    </nav>
+
+   
+    
+    <!-- showing the responding of the system -->
+    <div class="container">
         <!-- showing topic name -->
         <div id="name" class="header">
 		<h3>Learn: <?php echo $topic['name']; ?></h3>
@@ -151,7 +190,7 @@ if (isset($_GET['logout'])) {
             if (permission()) {
         ?>
             
-            <button class="deleteTopic">Delete</button>
+            <button class="deleteTopic">Delete jjj</button>
         
         <?php 
             }
@@ -321,8 +360,10 @@ if (isset($_GET['logout'])) {
         </div>
     <?php } ?>
 
+    
+    
 
-
+        
     
     </div>
 
