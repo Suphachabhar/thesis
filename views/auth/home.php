@@ -161,24 +161,19 @@ if (isset($_GET['logout'])) {
 			</div>
 		</div>
 		<button class="plus-button" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
+
 	</form>
-
-       
-
-    
-    
 	</nav>
-   
 
-    
-    
-	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
+    <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    </div>
 
-</body>
+    <div id="main">
 
-<script>
-    $(document).ready(function () {
-        var width = 1500,
+        <script>
+            $(document).ready(function () {
+            var width = 1500,
             height = 650,
             r = 12,
             gravity = 0.1,
@@ -225,6 +220,9 @@ if (isset($_GET['logout'])) {
             }).call(force.drag)
             .on("click", function(d) {
                 window.location.href = "../topic/topic.php?id=" + d.group.toString();
+                
+                //openNav();
+                console.log("say");
             }).on("mouseover", function(d) {
                 div.transition()		
                     .duration(200)		
@@ -295,6 +293,20 @@ if (isset($_GET['logout'])) {
             });
         };
     });
+            </script>
+        
+        </div> 
+
+    
+   
+
+
+	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
+
+</body>
+
+<script>
+    
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget) // Button that triggered the modal
@@ -319,6 +331,26 @@ if (isset($_GET['logout'])) {
         });
     });
 
+    /*
+    
+    $(document).click(function(e) {
+        if (!$(e.target).is("#mySidenav")) {
+            if (document.getElementById("mySidenav").style.width == "250px") {
+                document.getElementById("mySidenav").style.width = "0";
+                console.log("anything");
+            }
+        }
+    });*/
+
+    
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "550px";
+        document.getElementById("main").style.marginLeft = "550px";
+    }
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0px";
+        document.getElementById("main").style.marginLeft= "0";
+    }
 
     $(document).ready(function () {
         var instance = new SlimSelect({

@@ -47,8 +47,8 @@ body {
   color: grey;
   padding: 10px 40px 10px 40px; /* Add some padding */
   border: 1px solid #ddd; /* Add a grey border */
-  margin-bottom: -10px; /* Add some space below the input */
-  right: 16px;
+  margin-bottom: -10px; /* Add some space below the 4input */
+  right: -90px;
 }
 
 input::-webkit-calendar-picker-indicator {
@@ -128,4 +128,48 @@ div.tooltip {
     border: 0px;
     border-radius: 8px;
     pointer-events: none;
+}
+
+.sidenav {
+  height: 80%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 100px;
+  left: 50px;
+  background-color: lightgrey;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: -10px;
+  left: 430px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+#main {
+  transition: margin-left .5s;
+  padding: 16px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
 }
