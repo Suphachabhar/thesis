@@ -361,6 +361,9 @@
             $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
             
             $output = '<h2>'.$info['name'].'</h2>';
+            $output .= '<button onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$info['name'].'</button>';
+            $output .= '<a href="../topic/topic.php?id='.$_POST["id"].'">'.$info['name'].'</a>';
+            
             if (!is_null($info['description'])) {
                 $output .= '<p>'.$info['description'].'</p>';
             }
@@ -374,7 +377,7 @@
             if (count($prereqs) > 0) {
                 $output .= '<br/><h4>Prerequisite</h4><ul>';
                 foreach ($prereqs as $p) {
-                    $output .= '<li>'.$p['name'].'</li>';
+                    $output .= '<li><button onclick="openNav('.$p['id'].')">'.$p['name'].'</button></li>';
                 }
                 $output .= '</ul>';
             }
