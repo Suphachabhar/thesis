@@ -182,6 +182,14 @@
         $subtopics = mysqli_query($db, $query);
         $query = "DELETE FROM topics WHERE id = ".$_POST['id'];
         mysqli_query($db, $query);
+        if (isset($_POST['connection']) && count($_POST['connection']) > 0) {
+            $values = array();
+            foreach ($_POST['connection'] AS $c) {
+                $values[] = "(".str_replace(" checked", "", $c).")";
+            }
+            $query = "INSERT INTO prerequisites (topic, prerequisite) VALUES ".join(", ", $values);
+            mysqli_query($db, $query);
+        }
         removeTopicDirectory($_POST['id'], $subtopics);
         $_SESSION['success'] = "Topic \"".$topic['name']."\" has been deleted successfully.";
         header('location: '.mainPage());
