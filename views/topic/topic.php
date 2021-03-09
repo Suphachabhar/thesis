@@ -140,25 +140,50 @@ if (isset($_GET['logout'])) {
 		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="deleteModalLabel">Delete <?php echo $topic['name']; ?></h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<form>
-                        <div class="form-group" hidden>
-                            <input name="function" value="deleteTopic">
-                            <input name="id" value="<?php echo $_GET['id']; ?>">
-                        </div>
-					</form>
-					<p>Are you sure you want to delete this topic?</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-					<button type="submit" class="btn btn-primary" value="Yes">Yes</button>
-				</div>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete <?php echo $topic['name']; ?></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <?php if (count($topic['prerequisite']) > 0 && count($topic['after']) > 0) { ?>
+                    <div class="modal-body">
+                        <p>The topic you are going to delete is a prerequisite of some other topics. Please tick the box if you want to link these topics to the prerequisites of this topic.</p>
+                        <form>
+                            <div class="form-group">
+                                <input name="function" value="deleteTopic" hidden>
+                                <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                                <?php
+                                    foreach ($topic['prerequisite'] as $p) {
+                                        foreach ($topic['after'] as $a) {
+                                            echo '<input type="checkbox" name="connection[]" value="'.$a['id'].', '.$p['id']
+                                                .' checked"><a href="topic.php?id='.$p['id'].'" target="_blank">'.$p['name']
+                                                .'</a> -> <a href="topic.php?id='.$a['id'].'" target="_blank">'.$a['name'].'</a><br/>';
+                                        }
+                                    }
+                                ?>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" value="Yes">Delete this topic</button>
+                    </div>
+                    <?php } else { ?>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this topic?</p>
+                        <form>
+                            <div class="form-group" hidden>
+                                <input name="function" value="deleteTopic">
+                                <input name="id" value="<?php echo $_GET['id']; ?>">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
+                    </div>
+                    <?php } ?>
 				</div>
 			</div>
 		</div>
