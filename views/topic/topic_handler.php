@@ -44,6 +44,10 @@
             searchTopic($db);
             break;
     
+        case "getInfo":
+            getTopicInfo($db);
+            break;
+    
         default:
             break;
     }
@@ -338,5 +342,50 @@
             $link = "../topic/topic.php?id=".mysqli_fetch_assoc($result)["id"];
         }
         print $link;
+    }
+    
+    function getTopicInfo($db) {
+        $output = "error";
+        $query = "SELECT name, description FROM topics WHERE id = ".$_POST["id"];
+        $result = mysqli_query($db, $query);
+        if (mysqli_num_rows($result) > 0) {
+            $info = mysqli_fetch_assoc($result);
+            $query = "SELECT name FROM subtopics WHERE topic = ".$_POST["id"]." ORDER BY sort";
+            $result = mysqli_query($db, $query);
+            $subtopics = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b WHERE b.topic = ".$_POST["id"]." AND b.prerequisite = a.id";
+            $result = mysqli_query($db, $query);
+            $prereqs = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b WHERE b.prerequisite = ".$_POST["id"]." AND b.topic = a.id";
+            $result = mysqli_query($db, $query);
+            $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            
+            $output = '<h2>'.$info['name'].'</h2>';
+            if (!is_null($info['description'])) {
+                $output .= '<p>'.$info['description'].'</p>';
+            }
+            if (count($subtopics) > 0) {
+                $output .= '<br/><h4>Subtopics</h4><ul>';
+                foreach ($subtopics as $s) {
+                    $output .= '<li>'.$s['name'].'</li>';
+                }
+                $output .= '</ul>';
+            }
+            if (count($prereqs) > 0) {
+                $output .= '<br/><h4>Prerequisite</h4><ul>';
+                foreach ($prereqs as $p) {
+                    $output .= '<li>'.$p['name'].'</li>';
+                }
+                $output .= '</ul>';
+            }
+            if (count($after) > 0) {
+                $output .= '<br/><h4>What you should do next</h4><ul>';
+                foreach ($after as $a) {
+                    $output .= '<li>'.$a['name'].'</li>';
+                }
+                $output .= '</ul>';
+            }
+        }
+        print $output;
     }
 ?>

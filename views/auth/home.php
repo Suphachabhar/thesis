@@ -22,12 +22,11 @@ if (isset($_GET['logout'])) {
     $links = array();
     $i = 0;
     
-    $query = "SELECT id, name, description FROM topics";
+    $query = "SELECT id, name FROM topics";
     $results = mysqli_query($db, $query);
     $topics = mysqli_fetch_all($results, MYSQLI_ASSOC);
     foreach ($topics as $row) {
-        $description = $row["description"] ? $row["description"] : $row["name"];
-        $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"], "description" => $description);
+        $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"]);
         $nodeNum[$row["id"]] = $i;
         $i ++;
     }
@@ -168,6 +167,7 @@ if (isset($_GET['logout'])) {
     <div id="main">
         <div id="mySidenav" class="sidenav">
                 <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                <div id="sideNavContent"></div>
         </div> 
     </div>
 
@@ -227,20 +227,7 @@ if (isset($_GET['logout'])) {
             }).call(force.drag)
             .on("click", function(d) {
                 //window.location.href = "../topic/topic.php?id=" + d.group.toString();
-                
-                openNav();
-                
-            }).on("mouseover", function(d) {
-                div.transition()		
-                    .duration(200)		
-                    .style("opacity", .9);		
-                div.html(d.description)	
-                    .style("left", (d3.event.pageX) + "px")		
-                    .style("top", (d3.event.pageY - 28) + "px");
-            }).on("mouseout", function(d) {
-                div.transition()		
-                    .duration(500)		
-                    .style("opacity", 0);	
+                openNav(d.group);
             });
 
         svg.append("svg:defs").selectAll("marker")
@@ -326,10 +313,17 @@ if (isset($_GET['logout'])) {
     });
 
     
-    function openNav() {
-        
-        document.getElementById("mySidenav").style.width = "550px";
-        document.getElementById("main").style.marginLeft = "550px";
+    function openNav(id) {
+        $.ajax({
+            url: "../topic/topic_handler.php",
+            method: "POST",
+            data: "function=getInfo&id=" + id,
+            success: function(result){
+                $("#sideNavContent").html(result);
+                document.getElementById("mySidenav").style.width = "550px";
+                document.getElementById("main").style.marginLeft = "550px";
+            }
+        });
         
     }
     function closeNav() {
