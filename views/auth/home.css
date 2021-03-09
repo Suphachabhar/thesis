@@ -7,7 +7,6 @@
 body {
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
-    
 }
 
 h1 {
@@ -33,7 +32,7 @@ h1 {
 }
 
 body {
-    position: relative;
+  position: relative;
 }
 
 
@@ -71,8 +70,6 @@ input::-webkit-calendar-picker-indicator {
   right: 16px;
   cursor:pointer;
 }
-
-
 
 .link {
   stroke: #fcfcfc;
