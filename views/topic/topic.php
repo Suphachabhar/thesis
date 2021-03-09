@@ -140,7 +140,45 @@ if (isset($_GET['logout'])) {
 	    </form>
         
 
-        
+        <!-- rearrange/delete subtopic -->
+        <form action="topic_handler.php" method="post">
+		<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modifyModalLabel">Modify subtopics</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <div class="form-group">
+                        <ul id="sortable">
+                            <?php
+                                foreach ($sList as $subtopic) {
+                            ?>
+                                <li id="<?php echo 'subtopic_'.$subtopic[0]; ?>">
+                                    <?php echo $subtopic[1]; ?>
+                                </li>
+                            <?php 
+                                }
+                            ?>
+                            </ul>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" value="Yes">Confirm</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+		<button class="modify-button-topic" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo"></button>
+	    </form>
+       
+
         <!-- delete topic -->
         <form action="topic_handler.php" method="post">
 		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
