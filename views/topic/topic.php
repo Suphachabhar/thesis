@@ -26,6 +26,11 @@ if (isset($_GET['logout'])) {
         $_SESSION['success'] = invalidInputError("topic ID");
         header('location: '.mainPage());
     } else {
+        $query = "SELECT id, name, sort FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
+        $results = mysqli_query($db, $query);
+        $nSubtopics = mysqli_num_rows($results);
+        $sList = mysqli_fetch_all($results);
+            
         $prerequisite = array();
         if (!isAdmin() && count($topic['prerequisite']) > 0) {
             foreach ($topic['prerequisite'] as $p) {
@@ -134,6 +139,41 @@ if (isset($_GET['logout'])) {
         
 	    </form>
         
+        <!-- rearrange/delete subtopic -->
+        <form action="topic_handler.php" method="post">
+		<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modifyModalLabel">Modify subtopics</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="sortable">
+                            <?php
+                                foreach ($sList as $subtopic) {
+                            ?>
+                                <li id="<?php echo 'subtopic_'.$subtopic[0]; ?>">
+                                    <?php echo $subtopic[1]; ?>
+                                </li>
+                            <?php 
+                                }
+                            ?>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" value="Yes">Confirm</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+		<button class="modify-button-topic" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo"></button>
+        
+	    </form>
+        
         <!-- delete topic -->
         <form action="topic_handler.php" method="post">
 		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -201,11 +241,6 @@ if (isset($_GET['logout'])) {
         <!-- showing topic name -->
         <div id="name" class="header">
 		<h3>Learn: <?php echo $topic['name']; ?></h3>
-        <?php 
-            $query = "SELECT id, name, sort FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
-            $results = mysqli_query($db, $query);
-            $nSubtopics = mysqli_num_rows($results);
-        ?>
     </div>
 
     <!-- showing subtopic list -->
@@ -215,7 +250,6 @@ if (isset($_GET['logout'])) {
             <p><?php echo $topic["description"]; ?></p>
             <div class="list-group" id="list-tab" role="tablist">
                 <?php
-                    $sList = mysqli_fetch_all($results);
                     $progress = 0;
                     if (!isAdmin()) {
                         $query = "SELECT progress FROM progresses where topic = ".$_GET['id']." AND student = ".$_SESSION['user']['id'];
@@ -305,7 +339,6 @@ if (isset($_GET['logout'])) {
     <!-- showing a list of subtopic -->
 	<div class="content">
 		<?php
-            $sList = mysqli_fetch_all($results);
             foreach ($sList as $subtopic) {
         ?>
             <div>
@@ -333,41 +366,6 @@ if (isset($_GET['logout'])) {
         ?>
             
     </div>
-    
-    <!-- backend for subtopic   -->
-    <?php if (permission()) { ?>
-        <div id="confirmDeleteSubtopic" class="modal">
-            Are you sure you want to delete the subtopic <font id="subtopicNameToDelete"></font>?
-            <form action="topic_handler.php" method="post">
-                <input name="function" value="deleteSubtopic" hidden>
-                <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-                <input name="subtopic" id="subtopicIDToDelete" hidden>
-                <input type="submit" value="Yes">
-            </form>
-            <button class="no">No</button>
-        </div>
-        <div id="rearrangeSubtopics" class="modal">
-            <span class="close">&times;</span>
-            <ul id="sortable">
-                <?php
-                    foreach ($sList as $subtopic) {
-                ?>
-                    <li id="<?php echo 'subtopic_'.$subtopic[0]; ?>">
-                        <?php echo $subtopic[1]; ?>
-                    </li>
-                <?php 
-                    }
-                ?>
-            </ul>
-            <button class="confirmRearrange">Save</button>
-        </div>
-    <?php } ?>
-
-    
-    
-
-        
-    
     </div>
 
 	
