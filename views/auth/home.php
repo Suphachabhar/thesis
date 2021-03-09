@@ -44,7 +44,7 @@ if (isset($_GET['logout'])) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Course</title>
+	<title>Home</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="home.css" rel="stylesheet">
 
@@ -165,16 +165,20 @@ if (isset($_GET['logout'])) {
 	</form>
 	</nav>
 
-    <div id="mySidenav" class="sidenav">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div id="main">
+        <div id="mySidenav" class="sidenav">
+                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        </div> 
     </div>
 
-    <div id="main">
+	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
 
-        <script>
-            $(document).ready(function () {
-            var width = 1500,
-            height = 650,
+</body>
+
+<script>
+    $(document).ready(function () {
+            width = 850,
+            height = 600,
             r = 12,
             gravity = 0.1,
             distance = 100,
@@ -184,11 +188,13 @@ if (isset($_GET['logout'])) {
             links=<?php echo json_encode($links); ?>;
 
         var svg = d3.select("body").append("svg")
+     
+            svg = d3.select("#main").append("svg")
             .attr("width", width)
             .attr("height", height);
 
         var force = d3.layout.force()
-            .gravity(gravity)
+           
             .distance(distance)
             .charge(charge)
             .size([width, height]);
@@ -209,7 +215,8 @@ if (isset($_GET['logout'])) {
             .attr("class", "node")
             .call(force.drag);
             
-        var div = d3.select("body").append("div")	
+            
+        var div = d3.select("main").append("div")	
             .attr("class", "tooltip")				
             .style("opacity", 0);
 
@@ -219,10 +226,10 @@ if (isset($_GET['logout'])) {
                 return d3.rgb(fill(d.group)).darker();
             }).call(force.drag)
             .on("click", function(d) {
-                window.location.href = "../topic/topic.php?id=" + d.group.toString();
+                //window.location.href = "../topic/topic.php?id=" + d.group.toString();
                 
-                //openNav();
-                console.log("say");
+                openNav();
+                
             }).on("mouseover", function(d) {
                 div.transition()		
                     .duration(200)		
@@ -292,20 +299,7 @@ if (isset($_GET['logout'])) {
                 return "translate(" + d.x + "," + d.y + ")";
             });
         };
-    });
-            </script>
-        
-        </div> 
-
-    
-   
-
-
-	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
-
-</body>
-
-<script>
+     });
     
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
@@ -331,21 +325,12 @@ if (isset($_GET['logout'])) {
         });
     });
 
-    /*
-    
-    $(document).click(function(e) {
-        if (!$(e.target).is("#mySidenav")) {
-            if (document.getElementById("mySidenav").style.width == "250px") {
-                document.getElementById("mySidenav").style.width = "0";
-                console.log("anything");
-            }
-        }
-    });*/
-
     
     function openNav() {
+        
         document.getElementById("mySidenav").style.width = "550px";
         document.getElementById("main").style.marginLeft = "550px";
+        
     }
     function closeNav() {
         document.getElementById("mySidenav").style.width = "0px";

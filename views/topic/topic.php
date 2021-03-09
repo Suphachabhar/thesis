@@ -134,6 +134,7 @@ if (isset($_GET['logout'])) {
         
 	    </form>
         
+        
         <!-- delete topic -->
         <form action="topic_handler.php" method="post">
 		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
