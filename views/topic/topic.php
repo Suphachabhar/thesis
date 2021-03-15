@@ -255,24 +255,27 @@ if (isset($_GET['logout'])) {
             <p><?php echo $topic["description"]; ?></p>
             <div class="subtopicList">
                 <?php
-                    $progress = 0;
-                    if (!isAdmin()) {
+                    if (isAdmin()) {
+                        $progress = $nSubtopics;
+                        $defaultSub = 1;
+                    } else {
                         $query = "SELECT progress FROM progresses where topic = ".$_GET['id']." AND student = ".$_SESSION['user']['id'];
                         $results = mysqli_query($db, $query);
                         if (mysqli_num_rows($results) == 0) {
                             $createProgress = "INSERT INTO progresses (student, topic, progress) VALUES (".$_SESSION['user']['id'].", ".$_GET['id'].", 0)";
                             mysqli_query($db, $createProgress);
-                            $results = mysqli_query($db, $query);
+                            $progress = 0;
+                        } else {
+                            $progress = mysqli_fetch_assoc($results)['progress'];
                         }
-                        $progress = mysqli_fetch_assoc($results)['progress'];
+                        $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
                     }
-                    $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
                     
                     foreach ($sList as $subtopic) {
                 ?>
                     <div class="subtopicSlot<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?>"
                         id="subtopicSlot_<?php echo $subtopic['id']; ?>">
-                        <button class="subtopicName" id="subtopicName_<?php echo $subtopic['id']; ?>" <?php if ($subtopic['sort'] > $defaultSub) echo 'disabled'; ?>><?php echo $subtopic['name']; ?></button>
+                        <button class="subtopicName" id="subtopicName_<?php echo $subtopic['id']; ?>"<?php if (!isAdmin() && $subtopic['sort'] > $defaultSub) echo ' disabled'; ?>><?php echo $subtopic['name']; ?></button>
                 <?php
                         if (isAdmin()) {
                 ?>
