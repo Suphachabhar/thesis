@@ -101,3 +101,68 @@
 body {
     position: relative;
 }
+
+/* subtopic list */
+.subtopicList {
+}
+
+.subtopicSlot {
+    padding: 10px;
+    background-color: white;
+    display: flex;
+    border: 1px solid lightgrey;
+}
+
+.subtopicSlot .subtopicName {
+    border: 0;
+    background-color: transparent;
+    color: black;
+}
+
+.subtopicSlot + .subtopicSlot {
+    border-top: 0;
+}
+
+.subtopicSlot:hover {
+    background-color: #f8f9fa;
+}
+
+.subtopicSlot.selected {
+    background-color: #007bff;
+}
+
+.subtopicSlot.selected .subtopicName {
+    color: white;
+}
+
+.moreButton {
+    background-image: url('../auth/img/more.png');
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    border: 0;
+    background-color: transparent;
+    height: 20px;
+    width: 20px;
+    position: relative;
+    right: 0;
+}
+
+.moreOptions {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.moreOptions a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.moreOptions a:hover {
+    background-color: #ddd;
+}

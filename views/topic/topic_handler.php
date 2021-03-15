@@ -324,7 +324,7 @@
             $query = "SELECT max(sort) AS max FROM subtopics WHERE topic = ".$_POST['topic'];
             $result = mysqli_fetch_assoc(mysqli_query($db, $query));
             if ($result['max'] != $_POST['progress']) {
-                $url = "topic.php?id=".$_POST['topic']."&subtopic=".strval(intval($_POST['progress']) + 1);
+                $url = "topic.php?id=".$_POST['topic'];
             }
         }
         print $url;

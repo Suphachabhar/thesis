@@ -29,7 +29,7 @@ if (isset($_GET['logout'])) {
         $query = "SELECT id, name, sort FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
         $results = mysqli_query($db, $query);
         $nSubtopics = mysqli_num_rows($results);
-        $sList = mysqli_fetch_all($results);
+        $sList = mysqli_fetch_all($results, MYSQLI_ASSOC);
             
         $prerequisite = array();
         if (!isAdmin() && count($topic['prerequisite']) > 0) {
@@ -158,8 +158,8 @@ if (isset($_GET['logout'])) {
                             <?php
                                 foreach ($sList as $subtopic) {
                             ?>
-                                <li id="<?php echo 'subtopic_'.$subtopic[0]; ?>">
-                                    <?php echo $subtopic[1]; ?>
+                                <li id="<?php echo 'subtopic_'.$subtopic['id']; ?>">
+                                    <?php echo $subtopic['name']; ?>
                                 </li>
                             <?php 
                                 }
@@ -253,7 +253,7 @@ if (isset($_GET['logout'])) {
     <div class="row">
         <div class="col-4">
             <p><?php echo $topic["description"]; ?></p>
-            <div class="list-group" id="list-tab" role="tablist">
+            <div class="subtopicList">
                 <?php
                     $progress = 0;
                     if (!isAdmin()) {
@@ -266,111 +266,90 @@ if (isset($_GET['logout'])) {
                         }
                         $progress = mysqli_fetch_assoc($results)['progress'];
                     }
-                    $first = true;
+                    $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
+                    
                     foreach ($sList as $subtopic) {
                 ?>
-                <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
-                    <a class="list-group-item list-group-item-action<?php if ((isset($_GET['subtopic']) && intval($_GET['subtopic']) == $subtopic[2]) || (!isset($_GET['subtopic']) && $first)) {echo " active"; $first = false;} ?>" 
-                        id="subtopicName_<?php echo $subtopic[0]; ?>"<?php if (isAdmin() || $subtopic[2] <= ($progress + 1)) echo ' data-toggle="list" href="#list-profile_'.$subtopic[2].'"';?> 
-                        role="tab"><?php echo $subtopic[1]; ?></a>
+                    <div class="subtopicSlot<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?>"
+                        id="subtopicSlot_<?php echo $subtopic['id']; ?>">
+                        <button class="subtopicName" id="subtopicName_<?php echo $subtopic['id']; ?>" <?php if ($subtopic['sort'] > $defaultSub) echo 'disabled'; ?>><?php echo $subtopic['name']; ?></button>
+                <?php
+                        if (isAdmin()) {
+                ?>
+                        <div>
+                            <button class="moreButton" id="moreButton_<?php echo $subtopic['id']; ?>"></button>
+                            <div class="moreOptions" id="moreOptions_<?php echo $subtopic['id']; ?>">
+                                <a>Rename <?php echo $subtopic['name']; ?></a>
+                                <a>Delete <?php echo $subtopic['name']; ?></a>
+                            </div>
+                        </div>
                 <?php 
+                        }
+                ?>
+                    </div>
+                <?php
                     }
                 ?>
             </div>
         </div>
         <div class="col-8">
-            <div class="tab-content" id="nav-tabContent">
+            <?php
+                foreach ($sList as $subtopic) {
+                    if (!isAdmin() && $subtopic['sort'] > $defaultSub) continue;
+            ?>
+            <div class="subtopicContent<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?>" 
+                id="subtopicContent_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
                 <?php
-                    $first = true;
-                    foreach ($sList as $subtopic) {
-                        if (!isAdmin() && $subtopic[2] > ($progress + 1)) continue;
+                    $directory = '../../files/'.$_GET['id'].'/'.$subtopic['id'];
+                    $has_files = false;
+                    if (is_dir($directory)) {
+                        $files = scandir($directory);
+                        if ($files !== false) {
+                            foreach ($files as $f) {
+                                if ($f == '.' || $f == '..') {continue;}
+                                $has_files = true;
                 ?>
-                <div class="tab-pane fade<?php if ((isset($_GET['subtopic']) && intval($_GET['subtopic']) == $subtopic[2]) || (!isset($_GET['subtopic']) && $first)) {echo " show active"; $first = false;} ?>" 
-                    id="list-profile_<?php echo $subtopic[2]; ?>" role="tabpanel" aria-labelledby="subtopicName_<?php echo $subtopic[0]; ?>">
-                    <?php
-                        $directory = '../../files/'.$_GET['id'].'/'.$subtopic[0];
-                        $has_files = false;
-                        if (is_dir($directory)) {
-                            $files = scandir($directory);
-                            if ($files !== false) {
-                                foreach ($files as $f) {
-                                    if ($f == '.' || $f == '..') {continue;}
-                                        $has_files = true;
-                    ?>
-                        <iframe src="<?php echo $directory.'/'.$f; ?>" width="100%" style="height:600px"></iframe>
-                        <?php
-                                }
+                <iframe src="<?php echo $directory.'/'.$f; ?>" width="100%" style="height:600px"></iframe>
+                <?php
                             }
                         }
-                        if (!isAdmin()) {
-                            if ($subtopic[2] == count($sList) && $subtopic[2] == $progress) {
-                                echo '<a class="list-group-item list-group-item-action" href="../auth/course.php">Finish</a>';
-                            } elseif ($subtopic[2] <= $progress && $subtopic[2] != count($sList)) {
-                                echo '<button class="nextSubtopic" id="nextSubtopic_'.$subtopic[2].'">Next</button>';
-                            } else {
-                                $button = '<button class="progress" id="progress_'.$subtopic[2].'">';
-                                if ($subtopic[2] == count($sList)) {
-                                    $button .= "Finish";
-                                } else {
-                                    $button .= "Next";
-                                }
-                                echo $button.'</button>';
-                            }
-                        }
-                        
-                        if (!$has_files && permission()) {
-                    ?>
-                        <h4>Upload content</h4>
-                        <form action="topic_handler.php" method="post" enctype="multipart/form-data">
-                            <input name="function" value="upload" hidden>
-                            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-                            <input name="subtopic" value="<?php echo $subtopic[0]; ?>" hidden>
-                            <input type="file" name="fileToUpload">
-                            <input type="submit" value="Upload File">
-                        </form>
-                    <?php 
-                        }
-                    ?>
-                </div>
-                <?php 
                     }
+                    if (!isAdmin()) {
+                        if ($subtopic['sort'] == $nSubtopics && $subtopic['sort'] == $progress) {
+                            echo '<a class="list-group-item list-group-item-action" href="../auth/course.php">Finish</a>';
+                        } elseif ($subtopic['sort'] <= $progress && $subtopic['sort'] != $nSubtopics) {
+                            echo '<button class="nextSubtopic" id="nextSubtopic_'.$subtopic['sort'].'">Next</button>';
+                        } else {
+                            $button = '<button class="progress" id="progress_'.$subtopic['sort'].'">';
+                            if ($subtopic['sort'] == $nSubtopics) {
+                                $button .= "Finish";
+                            } else {
+                                $button .= "Next";
+                            }
+                            echo $button.'</button>';
+                        }
+                    }
+                    
+                    if (!$has_files && permission()) {
                 ?>
-            </div>
-        </div>
-    </div>
-    </body>
-    
-  
-    <!-- showing a list of subtopic -->
-	<div class="content">
-		<?php
-            foreach ($sList as $subtopic) {
-        ?>
-            <div>
-                <font id="<?php echo 'title_'.$subtopic[0]; ?>" hidden><?php echo $subtopic[1]; ?></font>
-                <div id="<?php echo 'subtopicHeader_'.$subtopic[0]; ?>" class="subtopicHeader">
-                    <h3 id="<?php echo 'subtopicName_'.$subtopic[0]; ?>"><?php echo $subtopic[1]; ?></h3>
-                    <?php if (permission()) { ?>
-                        
-                        <button id="<?php echo 'deleteSubtopic_'.$subtopic[0]; ?>" class="deleteSubtopic">Delete</button>
-                    <?php } ?>
-                </div>
-                <?php if (permission()) { ?>
                     <h4>Upload content</h4>
                     <form action="topic_handler.php" method="post" enctype="multipart/form-data">
                         <input name="function" value="upload" hidden>
                         <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-                        <input name="subtopic" value="<?php echo $subtopic[0]; ?>" hidden>
+                        <input name="subtopic" value="<?php echo $subtopic['id']; ?>" hidden>
                         <input type="file" name="fileToUpload">
                         <input type="submit" value="Upload File">
                     </form>
-                <?php } ?>
+                <?php 
+                    }
+                ?>
             </div>
-        <?php 
-            }
-        ?>
-            
+            <?php 
+                }
+            ?>
+        </div>
     </div>
+    </body>
     </div>
 
 	
@@ -385,13 +364,28 @@ if (isset($_GET['logout'])) {
         $("#confirmDeleteSubtopic").css("display", "block");
 	}));
     
-	$(document).on("click", ".no", (function () {
-        $(".modal").css("display", "none");
+	$(document).on("click", ".moreButton", (function () {
+		var subID = $(this).attr("id").split("_")[1];
+        $("#moreOptions_" + subID).css("display", "block");
 	}));
     
-	$(document).on("click", ".close", (function () {
-        $(".modal").css("display", "none");
-	}));
+    $(document).on("click", "body", (function(event) {
+        var subID = "";
+        var mouseOut = true;
+        if ($(event.target).hasClass('moreButton')) {
+            subID = "moreOptions_" + $(event.target).attr("id").split("_")[1];
+        } else if ($(event.target).hasClass('moreOptions')) {
+            mouseOut = false;
+        }
+        
+        if (mouseOut) {
+            $(".moreOptions").each(function() {
+                if ($(this).attr("id") != subID) {
+                    $(this).css("display", "none");
+                }
+            });
+        }
+    }));
     <?php
         } else {
     ?>
@@ -410,14 +404,33 @@ if (isset($_GET['logout'])) {
 	$(document).on("click", ".nextSubtopic", (function () {
 		var currID = $(this).attr("id").split("_")[1];
 		var nextID = parseInt(currID, 10) + 1;
-        $("#subtopicName_" + currID).removeClass("active");
-        $("#subtopicName_" + nextID).addClass("active");
-        $("#list-profile_" + currID).removeClass("show active");
-        $("#list-profile_" + nextID).addClass("show active");
+        console.log(currID + " " + nextID);
+        $("#subtopicSlot_" + currID).removeClass("selected");
+        $("#subtopicSlot_" + nextID).addClass("selected");
+        $("#subtopicContent_" + currID).css("display", "none");
+        $("#subtopicContent_" + nextID).css("display", "block");
 	}));
     <?php
         }
     ?>
+    
+	$(document).on("click", ".subtopicName", (function () {
+		var subID = $(this).attr("id").split("_")[1];
+        $(".subtopicSlot").each(function() {
+            if ($(this).attr("id") == "subtopicSlot_" + subID) {
+                $(this).addClass("selected");
+            } else {
+                $(this).removeClass("selected");
+            }
+        });
+        $(".subtopicContent").each(function() {
+            if ($(this).attr("id") == "subtopicContent_" + subID) {
+                $(this).css("display", "block");
+            } else {
+                $(this).css("display", "none");
+            }
+        });
+	}));
 </script>
 
 </body>
