@@ -84,3 +84,7 @@
 body {
     position: relative;
 }
+
+.h2{
+    padding-bottom: 80px;
+  }

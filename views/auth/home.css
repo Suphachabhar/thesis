@@ -4,9 +4,11 @@
 	box-sizing: border-box;
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    overflow: hidden;
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 h1 {
@@ -28,11 +30,7 @@ h1 {
 }
 
 #logo-img img {
-    height: 30px;
-}
-
-body {
-  position: relative;
+  height: 40px;
 }
 
 
@@ -116,15 +114,15 @@ text.shadow {
 }
 
 div.tooltip {
-    position: absolute;
-    text-align: center;
-    max-width: 300px;
-    padding: 10px;
-    font: 12px sans-serif;
-    background: lightblue;
-    border: 0px;
-    border-radius: 8px;
-    pointer-events: none;
+  position: absolute;
+  text-align: center;
+  max-width: 300px;
+  padding: 10px;
+  font: 12px sans-serif;
+  background: lightblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
 }
 
 .sidenav {
@@ -134,11 +132,14 @@ div.tooltip {
   z-index: 1;
   top: 100px;
   left: 50px;
-  background-color: lightgrey;
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
+  background: white;
+  
 }
+
+
 
 .sidenav a {
   padding: 8px 8px 8px 32px;
@@ -147,6 +148,8 @@ div.tooltip {
   color: #818181;
   display: block;
   transition: 0.3s;
+  
+
 }
 
 .sidenav a:hover {
@@ -169,4 +172,9 @@ div.tooltip {
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
+}
+
+h2{
+  padding-bottom: 50px;
+  font-size: 40px;
 }
