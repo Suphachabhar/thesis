@@ -12,10 +12,6 @@
             createSubtopic($db);
             break;
             
-        case "editTopicName":
-            editTopicName($db);
-            break;
-            
         case "editSubtopicName":
             editSubtopicName($db);
             break;
@@ -28,8 +24,8 @@
             deleteSubtopic($db);
             break;
             
-        case "rearrangeSubtopics":
-            rearrangeSubtopics($db);
+        case "editTopic":
+            editTopic($db);
             break;
     
         case "upload":
@@ -114,30 +110,6 @@
         header('location: topic.php?id='.$_POST['topic']);
     }
     
-    function editTopicName($db) {
-        $topic = existingTopicID($_POST['id'], $db);
-        if (is_null($topic)) {
-            $_SESSION['success'] = invalidInputError("topic ID");
-            header('location: '.mainPage());
-            return;
-        }
-        
-        if (!permission()) {
-            $_SESSION['success'] = permissionError("edit topic names");
-        } elseif (empty($_POST['name'])) {
-            $_SESSION['success'] = blankInputError("a topic name");
-        } elseif (strcmp($_POST['name'], $topic['name']) != 0) {
-            if (existingTopicName($_POST['name'], $db)) {
-                $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
-            } else {
-                $query = "UPDATE topics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id'];
-                mysqli_query($db, $query);
-                $_SESSION['success'] = "Topic name has been changed to \"".$_POST['name']."\" successfully.";
-            }
-        }
-        header('location: topic.php?id='.$_POST['id']);
-    }
-    
     function editSubtopicName($db) {
         if (is_null(existingTopicID($_POST['topic'], $db))) {
             $_SESSION['success'] = invalidInputError("topic ID");
@@ -206,55 +178,66 @@
         if (is_null($subtopic)) {
             $_SESSION['success'] = invalidInputError("subtopic ID");
         } elseif (!permission()) {
-            $_SESSION['success'] = permissionError("edit subtopic names");
-        } elseif (empty($_POST['name'])) {
-            $_SESSION['success'] = blankInputError("a topic name");
-        } elseif (strcmp($_POST['name'], $subtopic['name']) != 0) {
-            if (existingSubtopicName($_POST['name'], $_POST['topic'], $db)) {
-                $_SESSION['success'] = clashedInputError('subtopic name', $_POST['name']);
-            } else {
-                $query = "UPDATE subtopics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
-                mysqli_query($db, $query);
-                removeSubtopicDirectory($_POST['topic'], $_POST['id']);
-                $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
-            }
+            $_SESSION['success'] = permissionError("delete subtopics");
+        } else {
+            $query = "DELETE FROM subtopics WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
+            mysqli_query($db, $query);
+            removeSubtopicDirectory($_POST['topic'], $_POST['id']);
+            $_SESSION['success'] = "Subtopic \"".$subtopic['name']."\" has been deleted successfully.";
         }
         header('location: topic.php?id='.$_POST['topic']);
     }
     
-    function rearrangeSubtopics($db) {
-        if (is_null(existingTopicID($_POST['topic'], $db))) {
+    function editTopic($db) {
+        $topic = existingTopicID($_POST['id'], $db);
+        if (is_null($topic)) {
             $_SESSION['success'] = invalidInputError("topic ID");
-            print mainPage();
+            header('location: '.mainPage());
             return;
         }
         
         if (!permission()) {
-            $_SESSION['success'] = permissionError("rearrange subtopics");
+            $_SESSION['success'] = permissionError("edit topic settings");
         } else {
+            $error = false;
             $edits = "";
             $count = 0;
-            $OK = true;
             foreach ($_POST['subtopic'] as $subtopicID) {
-                $subtopic = existingSubtopicID($subtopicID, $_POST['topic'], $db);
+                $subtopic = existingSubtopicID($subtopicID, $_POST['id'], $db);
                 if (is_null($subtopic)) {
                     $_SESSION['success'] = invalidInputError("subtopic ID");
-                    $OK = false;
+                    $error = true;
                     break;
                 } else {
                     $count ++;
                     $edits .= " WHEN id = ".$subtopicID." THEN ".strval($count);
                 }
             }
-            
-            if ($OK && $edits != "") {
-                $query = "UPDATE subtopics SET sort = (CASE".$edits." END) WHERE topic = ".$_POST['topic']." AND id IN (".join(", ", $_POST['subtopic']).")";
+            if (!$error && $edits != "") {
+                $query = "UPDATE subtopics SET sort = (CASE".$edits." END) WHERE topic = ".$_POST['id']." AND id IN (".join(", ", $_POST['subtopic']).")";
                 mysqli_query($db, $query);
-                
-                $_SESSION['success'] = "The subtopics have been rearranged successfully.";
+            }
+            
+            if (!empty($_POST['name']) && strcmp($_POST['name'], $topic['name']) != 0) {
+                if (existingTopicName($_POST['name'], $db)) {
+                    $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
+                    $error = true;
+                } else {
+                    $query = "UPDATE topics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id'];
+                    mysqli_query($db, $query);
+                }
+            }
+            
+            if (strcmp($_POST['description'], $topic['description']) != 0) {
+                $query = "UPDATE topics SET description = '".$_POST['description']."' WHERE id = ".$_POST['id'];
+                mysqli_query($db, $query);
+            }
+            
+            if (!$error) {
+                $_SESSION['success'] = "The topic setting has been saved successfully.";
             }
         }
-        print 'topic.php?id='.$_POST['topic'];
+        header('location: topic.php?id='.$_POST['id']);
     }
     
     function uploadTopicContent($db) {

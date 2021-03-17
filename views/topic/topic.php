@@ -68,11 +68,6 @@ if (isset($_GET['logout'])) {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     
-    <style>
-        #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-        #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
-        #sortable li span { position: absolute; margin-left: -1.3em; }
-    </style>
     <script>
         $( function() {
             $( "#sortable" ).sortable();
@@ -140,7 +135,7 @@ if (isset($_GET['logout'])) {
 	    </form>
         
 
-        <!-- rearrange/delete subtopic -->
+        <!-- rename topic / edit description / rearrange subtopic -->
         <form action="topic_handler.php" method="post">
 		<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
@@ -153,19 +148,31 @@ if (isset($_GET['logout'])) {
                     </div>
                     <div class="modal-body">
                         <form>
-                        <div class="form-group">
-                        <ul id="sortable">
-                            <?php
-                                foreach ($sList as $subtopic) {
-                            ?>
-                                <li id="<?php echo 'subtopic_'.$subtopic['id']; ?>">
-                                    <?php echo $subtopic['name']; ?>
-                                </li>
-                            <?php 
-                                }
-                            ?>
-                            </ul>
-                        </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Name:</label>
+                                <input name="function" value="editTopic" hidden>
+                                <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                                <input name="name" value="<?php echo $topic['name']; ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Description:</label>
+                                <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Subtopic order:</label>
+                                <ul id="sortable">
+                                <?php
+                                    foreach ($sList as $subtopic) {
+                                ?>
+                                    <li>
+                                        <?php echo $subtopic['name']; ?>
+                                        <input name="subtopic[]" value="<?php echo $subtopic['id']; ?>" hidden>
+                                    </li>
+                                <?php 
+                                    }
+                                ?>
+                                </ul>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -282,14 +289,71 @@ if (isset($_GET['logout'])) {
                         <div>
                             <button class="moreButton" id="moreButton_<?php echo $subtopic['id']; ?>"></button>
                             <div class="moreOptions" id="moreOptions_<?php echo $subtopic['id']; ?>">
-                                <a>Rename <?php echo $subtopic['name']; ?></a>
-                                <a>Delete <?php echo $subtopic['name']; ?></a>
+                                <button data-toggle="modal" data-target="#renameSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo">Rename</button>
+                                <button data-toggle="modal" data-target="#deleteSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo">Delete</button>
                             </div>
                         </div>
                 <?php 
                         }
                 ?>
                     </div>
+                    <form action="topic_handler.php" method="post">
+                        <div class="modal fade" id="renameSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="renameSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="renameSubModalLabel_<?php echo $subtopic['id']; ?>">Rename <?php echo $subtopic['name']; ?></h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Name:</label>
+                                        <input name="function" value="editSubtopicName" hidden>
+                                        <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                                        <input name="id" value="<?php echo $subtopic['id']; ?>" hidden>
+                                        <input name="name" value="<?php echo $subtopic['name']; ?>">
+                                    </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" value="Create">Submit</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form action="topic_handler.php" method="post">
+                        <div class="modal fade" id="deleteSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="deleteSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteSubModalLabel_<?php echo $subtopic['id']; ?>">Delete <?php echo $subtopic['name']; ?></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete this subtopic?</p>
+                                        <form>
+                                            <div class="form-group" hidden>
+                                                <input name="function" value="deleteSubtopic">
+                                                <input name="topic" value="<?php echo $_GET['id']; ?>">
+                                                <input name="id" value="<?php echo $subtopic['id']; ?>">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                        <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 <?php
                     }
                 ?>
