@@ -259,7 +259,11 @@ if (isset($_GET['logout'])) {
     <body>
     <div class="row">
         <div class="col-4">
-            <p><?php echo $topic["description"]; ?></p>
+            <?php
+                foreach (explode("\n", $topic["description"]) as $line) {
+                    echo "<p>".$line."</p>";
+                }
+            ?>
             <div class="subtopicList">
                 <?php
                     if (isAdmin()) {
