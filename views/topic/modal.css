@@ -206,3 +206,7 @@ form + .subtopicSlot {
 #sortable li:hover {
     background-color: #f8f9fa;
 }
+
+.description p {
+    margin-bottom: 5px;
+}

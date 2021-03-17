@@ -259,11 +259,13 @@ if (isset($_GET['logout'])) {
     <body>
     <div class="row">
         <div class="col-4">
-            <?php
-                foreach (explode("\n", $topic["description"]) as $line) {
-                    echo "<p>".$line."</p>";
-                }
-            ?>
+            <div class="description">
+                <?php
+                    foreach (explode("\n", $topic["description"]) as $line) {
+                        echo "<p>".$line."</p>";
+                    }
+                ?>
+            </div>
             <div class="subtopicList">
                 <?php
                     if (isAdmin()) {
@@ -369,7 +371,7 @@ if (isset($_GET['logout'])) {
                     if (!isAdmin() && $subtopic['sort'] > $defaultSub) continue;
             ?>
             <div class="subtopicContent<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?>" 
-                id="subtopicContent_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
+                id="subtopicContent_<?php echo $subtopic['id']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
                 <?php
                     $directory = '../../files/'.$_GET['id'].'/'.$subtopic['id'];
                     $has_files = false;
