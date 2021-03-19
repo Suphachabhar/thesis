@@ -36,8 +36,12 @@
             recordProgress($db);
             break;
     
-        case "search":
+        case "searchTopic":
             searchTopic($db);
+            break;
+    
+        case "searchProgress":
+            searchProgress($db);
             break;
     
         case "getInfo":
@@ -325,6 +329,16 @@
             $link = "../topic/topic.php?id=".mysqli_fetch_assoc($result)["id"];
         }
         print $link;
+    }
+    
+    function searchProgress($db) {
+        if (is_numeric($_POST["student"]) && is_int(intval($_POST["student"]))) {
+            $query = "SELECT a.id, b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
+                ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_POST["student"]." GROUP BY a.id";
+            $result = mysqli_query($db, $query);
+            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            print json_encode($rows);
+        }
     }
     
     function getTopicInfo($db) {

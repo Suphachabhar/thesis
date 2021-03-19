@@ -26,7 +26,7 @@ if (isset($_GET['logout'])) {
     $results = mysqli_query($db, $query);
     $topics = mysqli_fetch_all($results, MYSQLI_ASSOC);
     foreach ($topics as $row) {
-        $nodes[] = array("name" => $row["name"], "symbol" => strval($row["id"]), "group" => $row["id"]);
+        $nodes[] = array("name" => $row["name"], "id" => $row["id"]);
         $nodeNum[$row["id"]] = $i;
         $i ++;
     }
@@ -37,6 +37,10 @@ if (isset($_GET['logout'])) {
     foreach ($rows as $row) {
         $links[] = array("source" => $nodeNum[$row["prerequisite"]], "target" => $nodeNum[$row["topic"]], "value" => 1);
     }
+    
+    $query = "SELECT id, username FROM user WHERE user_type = 0";
+    $results = mysqli_query($db, $query);
+    $students = mysqli_fetch_all($results, MYSQLI_ASSOC);
 ?>
 
 <head>
@@ -100,16 +104,29 @@ if (isset($_GET['logout'])) {
     <div class="top-bar-right">
         
         <ul class="navbar-nav mr-auto">
-        <li><input type="text" id="myInput" list="topicList" placeholder="Search for topics.."></li>
-        <datalist id="topicList">
-            <?php
-                foreach ($topics as $row) {
-            ?>
-            <option value="<?php echo $row["name"]; ?>"></option>
-            <?php
-                }
-            ?>
-        </select>
+            <li><input type="text" id="topicInput" list="topicList" placeholder="Search for topics.."></li>
+            <datalist id="topicList">
+                <?php
+                    foreach ($topics as $row) {
+                ?>
+                <option value="<?php echo $row["name"]; ?>"></option>
+                <?php
+                    }
+                ?>
+            </select>
+        </ul>
+        
+        <ul class="navbar-nav mr-auto">
+            <li><input type="text" id="studentInput" list="studentList" placeholder="Check student progress"></li>
+            <datalist id="studentList">
+                <?php
+                    foreach ($students as $row) {
+                ?>
+                <option value="<?php echo $row["username"]; ?>" data-value="<?php echo $row["id"]; ?>"></option>
+                <?php
+                    }
+                ?>
+            </select>
         </ul>
     </div>
 
@@ -176,117 +193,112 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    $(document).ready(function () {
-            width = 850,
-            height = 600,
-            r = 12,
-            gravity = 0.1,
-            distance = 100,
-            charge = -800,
-            fill = d3.scale.category10(),
-            nodes=<?php echo json_encode($nodes); ?>,
-            links=<?php echo json_encode($links); ?>;
+    width = 850,
+    height = 600,
+    r = 12,
+    gravity = 0.1,
+    distance = 100,
+    charge = -800,
+    fill = d3.scale.category10(),
+    nodes=<?php echo json_encode($nodes); ?>,
+    links=<?php echo json_encode($links); ?>;
 
-        var svg = d3.select("body").append("svg")
-     
-            svg = d3.select("#main").append("svg")
-            .attr("width", width)
-            .attr("height", height);
+    var svg = d3.select("body").append("svg")
+ 
+        svg = d3.select("#main").append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-        var force = d3.layout.force()
-           
-            .distance(distance)
-            .charge(charge)
-            .size([width, height]);
+    var force = d3.layout.force()
+       
+        .distance(distance)
+        .charge(charge)
+        .size([width, height]);
 
-        force.nodes(nodes)
-            .links(links)
-            .start();
+    force.nodes(nodes)
+        .links(links)
+        .start();
 
-        var link = svg.selectAll(".link")
-            .data(links)
-            .enter().append("line")
-            .attr("class", "link");
+    var link = svg.selectAll(".link")
+        .data(links)
+        .enter().append("line")
+        .attr("class", "link");
 
-        // enable drag of nodes
-        var node = svg.selectAll(".node")
-            .data(nodes)
-            .enter().append("g")
-            .attr("class", "node")
-            .call(force.drag);
-            
-            
-        var div = d3.select("main").append("div")	
-            .attr("class", "tooltip")				
-            .style("opacity", 0);
+    // enable drag of nodes
+    var node = svg.selectAll(".node")
+        .data(nodes)
+        .enter().append("g")
+        .attr("class", "node")
+        .call(force.drag);
+        
+        
+    var div = d3.select("main").append("div")	
+        .attr("class", "tooltip")				
+        .style("opacity", 0);
 
-        var circle=node.append("svg:circle").attr("r", r - .75).style("fill", function(d) {
-                return fill(d.group);
-            }).style("stroke", function(d) {
-                return d3.rgb(fill(d.group)).darker();
-            }).call(force.drag)
-            .on("click", function(d) {
-                //window.location.href = "../topic/topic.php?id=" + d.group.toString();
-                openNav(d.group);
-            });
+    var circle=node.append("svg:circle").attr("r", r - .75).style("fill", "#4287f5"
+        ).style("stroke", d3.rgb("#4287f5").darker()
+        ).call(force.drag)
+        .on("click", function(d) {
+            openNav(d.id);
+        });
 
-        svg.append("svg:defs").selectAll("marker")
-            .data([1,2,3])
-          .enter().append("svg:marker")
-            .attr("id", String)
-            .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 22)
-            .attr("refY", -1.5)
-            .attr("markerWidth", 6)
-            .attr("markerHeight", 6)
-            .attr("fill-color","#cccccc")
-            .attr("orient", "auto")
-          .append("svg:path")
-            .attr("d", "M0,-5L10,0L0,5");
+    svg.append("svg:defs").selectAll("marker")
+        .data([1,2,3])
+      .enter().append("svg:marker")
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 22)
+        .attr("refY", -1.5)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("fill-color","#cccccc")
+        .attr("orient", "auto")
+      .append("svg:path")
+        .attr("d", "M0,-5L10,0L0,5");
 
-        var path = svg.append("svg:g").selectAll("path")
-            .data(force.links())
-            .enter().append("svg:path")
-            .attr("class", function(d) { return "link " + d.value; })
-            .attr("marker-end", function(d) { return "url(#" + d.value + ")"; });
+    var path = svg.append("svg:g").selectAll("path")
+        .data(force.links())
+        .enter().append("svg:path")
+        .attr("class", function(d) { return "link " + d.value; })
+        .attr("marker-end", function(d) { return "url(#" + d.value + ")"; });
 
-        var text = svg.append("svg:g").selectAll("g")
-            .data(force.nodes())
-            .enter().append("svg:g");
+    var text = svg.append("svg:g").selectAll("g")
+        .data(force.nodes())
+        .enter().append("svg:g");
 
-        text.append("svg:text")
-              .attr("dx", 12)
-              .attr("dy", ".35em")
-              .attr("class", "shadow")
-              .text(function(d) { return d.name;}
-          );
+    text.append("svg:text")
+          .attr("dx", 12)
+          .attr("dy", ".35em")
+          .attr("class", "shadow")
+          .text(function(d) { return d.name;}
+      );
 
-        text.append("svg:text")
-              .attr("dx", 12)
-              .attr("dy", ".35em")
-              .text(function(d) { return d.name;}
-          );
+    text.append("svg:text")
+          .attr("dx", 12)
+          .attr("dy", ".35em")
+          .text(function(d) { return d.name;}
+      );
 
-        force.on("tick", tick);
+    force.on("tick", tick);
 
-        // move circles using force
-        function tick() {
-            path.attr("d", function(d) {
-                var dx = d.target.x - d.source.x,
-                    dy = d.target.y - d.source.y,
-                    dr = 0;
-                return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-            });
+    // move circles using force
+    function tick() {
+        path.attr("d", function(d) {
+            var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+                dr = 0;
+            return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        });
 
-            circle.attr("transform", function(d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
+        circle.attr("transform", function(d) {
+            return "translate(" + d.x + "," + d.y + ")";
+        });
 
-            text.attr("transform", function(d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
-        };
-     });
+        text.attr("transform", function(d) {
+            return "translate(" + d.x + "," + d.y + ")";
+        });
+    };
     
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
@@ -299,14 +311,44 @@ if (isset($_GET['logout'])) {
 	});
 
     
-    $("#myInput").bind('input', function () {
+    $("#topicInput").bind('input', function () {
         $.ajax({
             url: "../topic/topic_handler.php",
             method: "POST",
-            data: "function=search&name=" + $('#myInput').val(),
+            data: "function=searchTopic&name=" + $('#topicInput').val(),
             success: function(result){
                 if (result != "") {
                     window.location = result;
+                }
+            }
+        });
+    });
+    
+    function progressColour(d, progressList) {
+        var id = parseInt(d.id);
+        var colour = "#4287f5";
+        $.each(progressList, function (i, obj) {
+            if (id == obj['id'] && obj['progress'] == obj['nSub']) {
+                colour = "#c0c6cf"; 
+            }
+        });
+        return colour;
+    };
+    
+    $("#studentInput").bind('input', function () {
+        var id = $('#studentList option[value="' + $('#studentInput').val() + '"]').data('value');
+        $.ajax({
+            url: "../topic/topic_handler.php",
+            method: "POST",
+            data: "function=searchProgress&student=" + id,
+            success: function(result){
+                if (result != "") {
+                    var progressList = JSON.parse(result);
+                    circle.transition().duration(500).style("fill", function (d) {
+                        return progressColour(d, progressList); 
+                    }).style("stroke", function (d) {
+                        return d3.rgb(progressColour(d, progressList)).darker(); 
+                    });
                 }
             }
         });
