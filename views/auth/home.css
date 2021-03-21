@@ -13,9 +13,10 @@ h1 {
     padding: 8px;
     border-radius: 8px;
     margin: 0;
-    font-size: 64px;
-    font-family: "Roboto Slab", serif;
+    font-size: 50px;
+    text-transform: uppercase;
 }
+
 
 #logo-img {
     display: flex;
@@ -134,23 +135,23 @@ div.tooltip {
   z-index: 1;
   top: 100px;
   left: 50px;
-  background-color: lightgrey;
+  
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
 }
 
-.sidenav a {
+#sideNavContent a {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 25px;
-  color: #818181;
+  color: darkgrey;
   display: block;
   transition: 0.3s;
 }
 
-.sidenav a:hover {
-  color: #f1f1f1;
+#sideNavContent a:hover {
+  color: grey;
 }
 
 .sidenav .closebtn {
@@ -170,3 +171,8 @@ div.tooltip {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+
+#reminderMenu{
+  width: 600px;
+}
+
