@@ -183,8 +183,9 @@ if (isset($_GET['logout'])) {
 
     <div id="main">
         <div id="mySidenav" class="sidenav">
-                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-                <div id="sideNavContent"></div>
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <div id="sideNavContent"></div>
+            <div id="topicProgress"></div>
         </div> 
     </div>
 
@@ -193,6 +194,9 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
+    var studentID = 0;
+    var topicID = 0;
+
     width = 850,
     height = 600,
     r = 12,
@@ -342,7 +346,12 @@ if (isset($_GET['logout'])) {
             method: "POST",
             data: "function=searchProgress&student=" + id,
             success: function(result){
-                if (result != "") {
+                if (result == "") {
+                    studentID = 0;
+                    circle.transition().duration(500).style("fill", "#4287f5"
+                    ).style("stroke", d3.rgb("#4287f5").darker());
+                } else {
+                    studentID = id;
                     var progressList = JSON.parse(result);
                     circle.transition().duration(500).style("fill", function (d) {
                         return progressColour(d, progressList); 
@@ -350,12 +359,14 @@ if (isset($_GET['logout'])) {
                         return d3.rgb(progressColour(d, progressList)).darker(); 
                     });
                 }
+                showProgressBar();
             }
         });
     });
 
     
     function openNav(id) {
+        topicID = id;
         $.ajax({
             url: "../topic/topic_handler.php",
             method: "POST",
@@ -367,10 +378,29 @@ if (isset($_GET['logout'])) {
             }
         });
         
+        showProgressBar();
     }
+    
     function closeNav() {
+        topicID = 0;
         document.getElementById("mySidenav").style.width = "0px";
         document.getElementById("main").style.marginLeft= "0";
+    }
+
+    
+    function showProgressBar() {
+        if (studentID == 0 || topicID == 0) {
+            $("#topicProgress").html("");
+        } else {
+            $.ajax({
+                url: "../topic/topic_handler.php",
+                method: "POST",
+                data: "function=progressBar&student=" + studentID + "&topic=" + topicID,
+                success: function(result){
+                    $("#topicProgress").html(result);
+                }
+            });
+        }
     }
 
     $(document).ready(function () {
