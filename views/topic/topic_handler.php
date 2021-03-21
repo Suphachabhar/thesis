@@ -36,12 +36,20 @@
             recordProgress($db);
             break;
     
-        case "search":
+        case "searchTopic":
             searchTopic($db);
+            break;
+    
+        case "searchProgress":
+            searchProgress($db);
             break;
     
         case "getInfo":
             getTopicInfo($db);
+            break;
+            
+        case "progressBar":
+            getProgressBar($db);
             break;
     
         default:
@@ -327,6 +335,16 @@
         print $link;
     }
     
+    function searchProgress($db) {
+        if (is_numeric($_POST["student"]) && is_int(intval($_POST["student"]))) {
+            $query = "SELECT a.id, b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
+                ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_POST["student"]." GROUP BY a.id";
+            $result = mysqli_query($db, $query);
+            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            print json_encode($rows);
+        }
+    }
+    
     function getTopicInfo($db) {
         $output = "error";
         $query = "SELECT name, description FROM topics WHERE id = ".$_POST["id"];
@@ -372,5 +390,18 @@
             }
         }
         print $output;
+    }
+    
+    function getProgressBar($db) {
+        if (is_numeric($_POST["student"]) && is_int(intval($_POST["student"])) && is_numeric($_POST["topic"]) && is_int(intval($_POST["topic"]))) {
+            $query = "SELECT d.username, b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
+                ." LEFT JOIN subtopics AS c ON a.id = c.topic LEFT JOIN user AS d ON d.id = b.student WHERE b.student = "
+                .$_POST["student"]." AND a.id = ".$_POST["topic"];
+            $result = mysqli_query($db, $query);
+            $row = mysqli_fetch_assoc($result);
+            $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
+            print '<h4>Progress of '.$row['username'].'</h4><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'.$percentage
+                .'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%">'.$percentage.'%</div></div>';
+        }
     }
 ?>
