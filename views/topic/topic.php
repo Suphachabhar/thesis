@@ -266,6 +266,17 @@ if (isset($_GET['logout'])) {
                     }
                 ?>
             </div>
+            <?php
+                if (!permission()) {
+                    $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
+                        ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_GET["id"];
+                    $result = mysqli_query($db, $query);
+                    $row = mysqli_fetch_assoc($result);
+                    $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
+                    print '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
+                        .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%">'.$percentage.'%</div></div>';
+                }
+            ?>
             <div class="subtopicList">
                 <?php
                     if (isAdmin()) {
