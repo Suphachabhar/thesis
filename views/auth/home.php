@@ -1,6 +1,7 @@
 <?php 
 include('server.php');
 include('../../database.php');
+include('../../checks.php');
 
 if (isset($_GET['logout'])) {
 	session_destroy();
@@ -13,10 +14,6 @@ if (isset($_GET['logout'])) {
 <html lang="en">
 
 <?php
-    if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] != 1) {
-        header('location: index.php');
-    }
-    
     $nodes = array();
     $nodeNum = array();
     $links = array();
@@ -38,9 +35,14 @@ if (isset($_GET['logout'])) {
         $links[] = array("source" => $nodeNum[$row["prerequisite"]], "target" => $nodeNum[$row["topic"]], "value" => 1);
     }
     
-    $query = "SELECT id, username FROM user WHERE user_type = 0";
-    $results = mysqli_query($db, $query);
-    $students = mysqli_fetch_all($results, MYSQLI_ASSOC);
+    if (permission()) {
+        $progresses = array();
+    } else {
+        $query = "SELECT a.id, b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
+                ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION['user']["id"]." GROUP BY a.id";
+        $results = mysqli_query($db, $query);
+        $progresses = mysqli_fetch_all($results, MYSQLI_ASSOC);
+    }
 ?>
 
 <head>
@@ -113,9 +115,15 @@ if (isset($_GET['logout'])) {
                 <?php
                     }
                 ?>
-            </select>
+            </datalist>
         </ul>
         
+        <?php
+            if (permission()) {
+                $query = "SELECT id, username FROM user WHERE user_type = 0";
+                $results = mysqli_query($db, $query);
+                $students = mysqli_fetch_all($results, MYSQLI_ASSOC);
+        ?>
         <ul class="navbar-nav mr-auto">
             <li><input type="text" id="studentInput" list="studentList" placeholder="Check student progress"></li>
             <datalist id="studentList">
@@ -126,11 +134,16 @@ if (isset($_GET['logout'])) {
                 <?php
                     }
                 ?>
-            </select>
+            </datalist>
         </ul>
+        <?php
+            }
+        ?>
     </div>
 
-     
+    <?php
+        if (permission()) {
+    ?>
         <!-- create sub topic -->
         <form action="../topic/topic_handler.php" method="post">
 		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
@@ -178,7 +191,10 @@ if (isset($_GET['logout'])) {
 		</div>
 		<button class="plus-button" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
 
-	</form>
+        </form>
+    <?php
+        }
+    ?>
 	</nav>
 
     <div id="main">
@@ -194,9 +210,6 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var studentID = 0;
-    var topicID = 0;
-
     width = 850,
     height = 600,
     r = 12,
@@ -205,7 +218,8 @@ if (isset($_GET['logout'])) {
     charge = -800,
     fill = d3.scale.category10(),
     nodes=<?php echo json_encode($nodes); ?>,
-    links=<?php echo json_encode($links); ?>;
+    links=<?php echo json_encode($links); ?>,
+    progresses=<?php echo json_encode($progresses); ?>;
 
     var svg = d3.select("body").append("svg")
  
@@ -240,9 +254,11 @@ if (isset($_GET['logout'])) {
         .attr("class", "tooltip")				
         .style("opacity", 0);
 
-    var circle=node.append("svg:circle").attr("r", r - .75).style("fill", "#4287f5"
-        ).style("stroke", d3.rgb("#4287f5").darker()
-        ).call(force.drag)
+    var circle=node.append("svg:circle").attr("r", r - .75).style("fill", function (d) {
+            return progressColour(d); 
+        }).style("stroke", function (d) {
+            return d3.rgb(progressColour(d)).darker(); 
+        }).call(force.drag)
         .on("click", function(d) {
             openNav(d.id);
         });
@@ -328,10 +344,10 @@ if (isset($_GET['logout'])) {
         });
     });
     
-    function progressColour(d, progressList) {
+    function progressColour(d) {
         var id = parseInt(d.id);
         var colour = "#4287f5";
-        $.each(progressList, function (i, obj) {
+        $.each(progresses, function (i, obj) {
             if (id == obj['id'] && obj['progress'] == obj['nSub']) {
                 colour = "#c0c6cf"; 
             }
@@ -339,6 +355,9 @@ if (isset($_GET['logout'])) {
         return colour;
     };
     
+    <?php
+        if (permission()) {
+    ?>
     $("#studentInput").bind('input', function () {
         var id = $('#studentList option[value="' + $('#studentInput').val() + '"]').data('value');
         $.ajax({
@@ -347,26 +366,24 @@ if (isset($_GET['logout'])) {
             data: "function=searchProgress&student=" + id,
             success: function(result){
                 if (result == "") {
-                    studentID = 0;
-                    circle.transition().duration(500).style("fill", "#4287f5"
-                    ).style("stroke", d3.rgb("#4287f5").darker());
+                    progresses = [];
                 } else {
-                    studentID = id;
-                    var progressList = JSON.parse(result);
-                    circle.transition().duration(500).style("fill", function (d) {
-                        return progressColour(d, progressList); 
-                    }).style("stroke", function (d) {
-                        return d3.rgb(progressColour(d, progressList)).darker(); 
-                    });
+                    progresses = JSON.parse(result);
                 }
-                showProgressBar();
+                
+                circle.transition().duration(500).style("fill", function (d) {
+                    return progressColour(d); 
+                }).style("stroke", function (d) {
+                    return d3.rgb(progressColour(d)).darker(); 
+                });
             }
         });
     });
-
+    <?php
+        }
+    ?>
     
     function openNav(id) {
-        topicID = id;
         $.ajax({
             url: "../topic/topic_handler.php",
             method: "POST",
@@ -377,30 +394,11 @@ if (isset($_GET['logout'])) {
                 document.getElementById("main").style.marginLeft = "550px";
             }
         });
-        
-        showProgressBar();
     }
     
     function closeNav() {
-        topicID = 0;
         document.getElementById("mySidenav").style.width = "0px";
         document.getElementById("main").style.marginLeft= "0";
-    }
-
-    
-    function showProgressBar() {
-        if (studentID == 0 || topicID == 0) {
-            $("#topicProgress").html("");
-        } else {
-            $.ajax({
-                url: "../topic/topic_handler.php",
-                method: "POST",
-                data: "function=progressBar&student=" + studentID + "&topic=" + topicID,
-                success: function(result){
-                    $("#topicProgress").html(result);
-                }
-            });
-        }
     }
 
     $(document).ready(function () {

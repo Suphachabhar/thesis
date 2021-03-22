@@ -47,10 +47,6 @@
         case "getInfo":
             getTopicInfo($db);
             break;
-            
-        case "progressBar":
-            getProgressBar($db);
-            break;
     
         default:
             break;
@@ -389,20 +385,17 @@
                 }
                 $output .= '</ul>';
             }
+            
+            if (!permission()) {
+                $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
+                    ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_POST["id"];
+                $result = mysqli_query($db, $query);
+                $row = mysqli_fetch_assoc($result);
+                $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
+                $output .= '<h4>Progress</h4><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
+                    .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%">'.$percentage.'%</div></div>';
+            }
         }
         print $output;
-    }
-    
-    function getProgressBar($db) {
-        if (is_numeric($_POST["student"]) && is_int(intval($_POST["student"])) && is_numeric($_POST["topic"]) && is_int(intval($_POST["topic"]))) {
-            $query = "SELECT d.username, b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
-                ." LEFT JOIN subtopics AS c ON a.id = c.topic LEFT JOIN user AS d ON d.id = b.student WHERE b.student = "
-                .$_POST["student"]." AND a.id = ".$_POST["topic"];
-            $result = mysqli_query($db, $query);
-            $row = mysqli_fetch_assoc($result);
-            $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
-            print '<h4>Progress of '.$row['username'].'</h4><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'.$percentage
-                .'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%">'.$percentage.'%</div></div>';
-        }
     }
 ?>
