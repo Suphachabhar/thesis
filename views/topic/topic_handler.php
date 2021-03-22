@@ -357,9 +357,8 @@
             $result = mysqli_query($db, $query);
             $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
             
-            $output = '<h2>'.$info['name'].'</h2>';
-            $output .= '<button onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$info['name'].'</button>';
-            $output .= '<a href="../topic/topic.php?id='.$_POST["id"].'">'.$info['name'].'</a>';
+            $output = '<h1>'.$info['name'].'</h1>';
+            
             
             if (!is_null($info['description'])) {
                 $output .= '<p>'.$info['description'].'</p>';
@@ -374,14 +373,14 @@
             if (count($prereqs) > 0) {
                 $output .= '<br/><h4>Prerequisite</h4><ul>';
                 foreach ($prereqs as $p) {
-                    $output .= '<li><button onclick="openNav('.$p['id'].')">'.$p['name'].'</button></li>';
+                    $output .= '<li><a onclick="openNav('.$p['id'].')">'.$p['name'].'</a></li>';
                 }
                 $output .= '</ul>';
             }
             if (count($after) > 0) {
                 $output .= '<br/><h4>What you should do next</h4><ul>';
                 foreach ($after as $a) {
-                    $output .= '<li>'.$a['name'].'</li>';
+                    $output .= '<li><a onclick="openNav('.$a['id'].')">'.$a['name'].'</a></li>';
                 }
                 $output .= '</ul>';
             }
