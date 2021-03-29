@@ -89,12 +89,7 @@ if (isset($_GET['logout'])) {
 	</div>
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link" href="course.php">Course</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link disabled" href="#"></a>
-			</li>
+			
 			<li class="nav-item">
 				<a class="nav-link" href="login.php?logout='1'">Logout</a>	
 			</li>
@@ -125,7 +120,7 @@ if (isset($_GET['logout'])) {
                 $students = mysqli_fetch_all($results, MYSQLI_ASSOC);
         ?>
         <ul class="navbar-nav mr-auto">
-            <li><input type="text" id="studentInput" list="studentList" placeholder="Check student progress"></li>
+            <li><input type="text" id="topicInput" list="studentList" placeholder="Check student progress"></li>
             <datalist id="studentList">
                 <?php
                     foreach ($students as $row) {

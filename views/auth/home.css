@@ -37,7 +37,7 @@ body {
 }
 
 
-#myInput {
+#topicInput {
   background-image: url('img/searchicon.png'); /* Add a search icon to input */
   background-size: 18px 18px;
   background-position: 9px 11px; /* Position the search icon */
@@ -47,8 +47,9 @@ body {
   color: grey;
   padding: 10px 40px 10px 40px; /* Add some padding */
   border: 1px solid #ddd; /* Add a grey border */
-  margin-bottom: -10px; /* Add some space below the 4input */
+
   right: -90px;
+  margin: 5px;
 }
 
 input::-webkit-calendar-picker-indicator {
