@@ -52,6 +52,21 @@ body {
   margin: 5px;
 }
 
+#studentInput {
+  background-image: url('img/searchicon.png'); /* Add a search icon to input */
+  background-size: 18px 18px;
+  background-position: 9px 11px; /* Position the search icon */
+  background-repeat: no-repeat; /* Do not repeat the icon image */
+  width: 100%; /* Full-width */
+  font-size: 14px; /* Increase font-size */
+  color: grey;
+  padding: 10px 40px 10px 40px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+
+  right: -90px;
+  margin: 5px;
+}
+
 input::-webkit-calendar-picker-indicator {
   display: none;
 }

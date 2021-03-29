@@ -120,7 +120,7 @@ if (isset($_GET['logout'])) {
                 $students = mysqli_fetch_all($results, MYSQLI_ASSOC);
         ?>
         <ul class="navbar-nav mr-auto">
-            <li><input type="text" id="topicInput" list="studentList" placeholder="Check student progress"></li>
+            <li><input type="text" id="studentInput" list="studentList" placeholder="Check student progress"></li>
             <datalist id="studentList">
                 <?php
                     foreach ($students as $row) {
