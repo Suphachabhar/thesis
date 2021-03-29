@@ -55,7 +55,7 @@
     function createTopic($db) {
         if (!permission()) {
             $_SESSION['success'] = permissionError("create topics");
-            header('location: ../auth/index.php');
+            header('location: ../auth/home.php');
             return;
         } elseif (empty($_POST['name'])) {
             $_SESSION['success'] = blankInputError("a topic name");
@@ -307,16 +307,14 @@
     }
     
     function recordProgress($db) {
-        $url = "../auth/course.php";
+        $url = "topic.php?id=".$_POST['topic'];
         if (!empty($_POST['topic']) && !empty($_POST['progress'])) {
             $query = "UPDATE progresses SET progress = ".$_POST['progress']." WHERE student = ".$_SESSION['user']['id']." AND topic = ".$_POST['topic'];
             mysqli_query($db, $query);
             
             $query = "SELECT max(sort) AS max FROM subtopics WHERE topic = ".$_POST['topic'];
             $result = mysqli_fetch_assoc(mysqli_query($db, $query));
-            if ($result['max'] != $_POST['progress']) {
-                $url = "topic.php?id=".$_POST['topic'];
-            }
+           
         }
         print $url;
     }
