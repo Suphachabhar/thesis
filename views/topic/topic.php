@@ -395,7 +395,7 @@ if (isset($_GET['logout'])) {
                     }
                     if (!isAdmin()) {
                         if ($subtopic['sort'] == $nSubtopics && $subtopic['sort'] == $progress) {
-                            echo '<a class="list-group-item list-group-item-action" href="../auth/course.php">Finish</a>';
+                            echo '<a class="list-group-item list-group-item-action">Finish</a>';
                         } elseif ($subtopic['sort'] <= $progress && $subtopic['sort'] != $nSubtopics) {
                             echo '<button class="nextSubtopic" id="nextSubtopic_'.$subtopic['sort'].'">Next</button>';
                         } else {
