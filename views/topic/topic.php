@@ -17,7 +17,7 @@ if (isset($_GET['logout'])) {
 <html>
 <?php
     if (!isset($_SESSION['user_type'])) {
-        header('location: ../auth/index.php');
+        header('location: ../auth/home.php');
     }
 ?>
 <?php
