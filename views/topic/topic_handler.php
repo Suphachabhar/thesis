@@ -53,6 +53,8 @@
     }
     
     function createTopic($db) {
+        $name = str_replace("'", "''", $_POST["name"]);
+        $description = str_replace("'", "''", $_POST["description"]);
         if (!permission()) {
             $_SESSION['success'] = permissionError("create topics");
             header('location: ../auth/home.php');
@@ -61,24 +63,24 @@
             $_SESSION['success'] = blankInputError("a topic name");
             header('location: ../auth/home.php');
             return;
-        } elseif (existingTopicName($_POST['name'], $db)) {
+        } elseif (existingTopicName($name, $db)) {
             $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
             header('location: ../auth/home.php');
             return;
         }
         
         $attr = "name";
-        $val = "'".$_POST['name']."'";
+        $val = "'".$name."'";
         if (!empty($_POST['description'])) {
             $attr .= ", description";
-            $val .= ", '".$_POST['description']."'";
+            $val .= ", '".$description."'";
         }
         $query = "INSERT INTO topics (".$attr.") VALUES (".$val.")";
         mysqli_query($db, $query); 
         
-        $query = "SELECT id FROM topics WHERE name = '".$_POST['name']."'";
+        $query = "SELECT id FROM topics WHERE name = '".$name."'";
         if (!empty($_POST['description'])) {
-            $query .= " AND description = '".$_POST['description']."'";
+            $query .= " AND description = '".$description."'";
         }
         $query .= " ORDER BY id DESC LIMIT 1";
         $results = mysqli_query($db, $query); 
@@ -93,6 +95,7 @@
     }
     
     function createSubtopic($db) {
+        $name = str_replace("'", "''", $_POST["name"]);
         if (!existingTopicID($_POST['topic'], $db)) {
             $_SESSION['success'] = invalidInputError("topic ID");
             header('location: '.mainPage());
@@ -103,7 +106,7 @@
             $_SESSION['success'] = permissionError("create subtopics");
         } elseif (empty($_POST['name'])) {
             $_SESSION['success'] = blankInputError("a subtopic name");
-        } elseif (existingSubtopicName($_POST['name'], $_POST['topic'], $db)) {
+        } elseif (existingSubtopicName($name, $_POST['topic'], $db)) {
             $_SESSION['success'] = clashedInputError("subtopic name", $_POST['name']);
         } else {
             $query = "SELECT COALESCE(MAX(id), 0) as id, COUNT(*) as sort FROM subtopics WHERE topic = ".$_POST['topic'];
@@ -111,7 +114,7 @@
             $newInfo = mysqli_fetch_assoc($results);
             $id = $newInfo['id'] + 1;
             $sort = $newInfo['sort'] + 1;
-            $query = "INSERT INTO subtopics (topic, id, name, sort) VALUES (".$_POST['topic'].", ".$id.", '".$_POST['name']."', ".$sort.")";
+            $query = "INSERT INTO subtopics (topic, id, name, sort) VALUES (".$_POST['topic'].", ".$id.", '".$name."', ".$sort.")";
             mysqli_query($db, $query);
             $_SESSION['success'] = "Subtopic \"".$_POST['name']."\" has been created successfully.";
         }
@@ -119,6 +122,7 @@
     }
     
     function editSubtopicName($db) {
+        $name = str_replace("'", "''", $_POST["name"]);
         if (is_null(existingTopicID($_POST['topic'], $db))) {
             $_SESSION['success'] = invalidInputError("topic ID");
             header('location: '.mainPage());
@@ -133,10 +137,10 @@
         } elseif (empty($_POST['name'])) {
             $_SESSION['success'] = blankInputError("a topic name");
         } elseif (strcmp($_POST['name'], $subtopic['name']) != 0) {
-            if (existingSubtopicName($_POST['name'], $_POST['topic'], $db)) {
+            if (existingSubtopicName($name, $_POST['topic'], $db)) {
                 $_SESSION['success'] = clashedInputError('subtopic name', $_POST['name']);
             } else {
-                $query = "UPDATE subtopics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
+                $query = "UPDATE subtopics SET name = '".$name."' WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
                 mysqli_query($db, $query);
                 $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
             }
@@ -197,6 +201,8 @@
     }
     
     function editTopic($db) {
+        $name = str_replace("'", "''", $_POST["name"]);
+        $description = str_replace("'", "''", $_POST["description"]);
         $topic = existingTopicID($_POST['id'], $db);
         if (is_null($topic)) {
             $_SESSION['success'] = invalidInputError("topic ID");
@@ -227,17 +233,17 @@
             }
             
             if (!empty($_POST['name']) && strcmp($_POST['name'], $topic['name']) != 0) {
-                if (existingTopicName($_POST['name'], $db)) {
+                if (existingTopicName($name, $db)) {
                     $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
                     $error = true;
                 } else {
-                    $query = "UPDATE topics SET name = '".$_POST['name']."' WHERE id = ".$_POST['id'];
+                    $query = "UPDATE topics SET name = '".$name."' WHERE id = ".$_POST['id'];
                     mysqli_query($db, $query);
                 }
             }
             
             if (strcmp($_POST['description'], $topic['description']) != 0) {
-                $query = "UPDATE topics SET description = '".$_POST['description']."' WHERE id = ".$_POST['id'];
+                $query = "UPDATE topics SET description = '".$description."' WHERE id = ".$_POST['id'];
                 mysqli_query($db, $query);
             }
             
@@ -321,7 +327,7 @@
     
     function searchTopic($db) {
         $link = "";
-        $query = "SELECT id FROM topics WHERE name = '".$_POST["name"]."'";
+        $query = "SELECT id FROM topics WHERE name = '".str_replace("'", "''", $_POST["name"])."'";
         $result = mysqli_query($db, $query);
         if (mysqli_num_rows($result) > 0) {
             $link = "../topic/topic.php?id=".mysqli_fetch_assoc($result)["id"];
