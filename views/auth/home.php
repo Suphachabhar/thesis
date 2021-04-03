@@ -186,6 +186,7 @@ if (isset($_GET['logout'])) {
             <div id="sideNavContent"></div>
             <div id="topicProgress"></div>
         </div> 
+        <div id="topicTree"></div>
     </div>
 
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>
@@ -211,19 +212,13 @@ if (isset($_GET['logout'])) {
     loadSvg(width);
 
     function loadSvg(w) {
-        svg = d3.select("#main").append("svg")
+        svg = d3.select("#topicTree").append("svg")
             .attr("width", w)
             .attr("height", height);
-            
-        svg.append("rect")
-            .attr("width", "100%")
-            .attr("height", height)
-            .attr("fill", "yellow");
         
         var g = svg.append("g").attr("transform", "translate(" + w / 2 + "," + height / 2 + ")");
         svg.call(d3.zoom().on("zoom", function () {
-            g.attr("transform", d3.event.transform)
-                .attr({viewBox: "" + (-w / 2) + " " + (-height / 2) + " " + w + " " + height});
+            svg.attr("transform", d3.event.transform);
         }));
 
         var n = <?php echo count($nodes); ?>;
