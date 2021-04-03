@@ -182,14 +182,7 @@ form + .subtopicSlot {
     margin-left: 20px;
 }
 
-@media screen and (max-width: 1415px) {
-    .top-bar-right img{
-        margin-right: 400px;
-    }
-}
-
-@media screen and (max-width: 900px) {
-    .top-bar-right img{
-        margin-right: 0px;
-    }
+#top-right-corner {
+    position: absolute;
+    right: 20px;
 }

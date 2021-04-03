@@ -82,147 +82,149 @@ if (isset($_GET['logout'])) {
 			<img src="../auth/img/unsw_0.png">
 		</a>
 
-        <?php 
-        if (permission()) {
-        ?>
-        <!-- create sub topic -->
-        <form action="topic_handler.php" method="post">
-		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="courseAddModalLabel">Create new subtopic</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<form>
-					<div class="form-group">
-						<label class="col-form-label">Subtopic:</label>
-                        <input name="function" value="createSubtopic" hidden>
-                        <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-						<input name="name">
-					</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="submit" class="btn btn-primary" value="Create">Submit</button>
-				</div>
-				</div>
-			</div>
-		</div>
-		<button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button> 
-	    </form>
-
-        <!-- rename topic / edit description / rearrange subtopic -->
-        <form action="topic_handler.php" method="post">
-		<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
+        <div id="top-right-corner" class="top-bar-right">
+            <?php 
+            if (permission()) {
+            ?>
+            <!-- create sub topic -->
+            <form action="topic_handler.php" method="post">
+            <div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modifyModalLabel">Topic setting</h5>
+                        <h5 class="modal-title" id="courseAddModalLabel">Create new subtopic</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <form>
-                            <div class="form-group">
-                                <label class="col-form-label">Name:</label>
-                                <input name="function" value="editTopic" hidden>
-                                <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                                <input name="name" value="<?php echo $topic['name']; ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="message-text" class="col-form-label">Description:</label>
-                                <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="message-text" class="col-form-label">Subtopic order:</label>
-                                <ul id="sortable">
-                                <?php
-                                    foreach ($sList as $subtopic) {
-                                ?>
-                                    <li>
-                                        <?php echo $subtopic['name']; ?>
-                                        <input name="subtopic[]" value="<?php echo $subtopic['id']; ?>" hidden>
-                                    </li>
-                                <?php 
-                                    }
-                                ?>
-                                </ul>
-                            </div>
+                        <div class="form-group">
+                            <label class="col-form-label">Subtopic:</label>
+                            <input name="function" value="createSubtopic" hidden>
+                            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                            <input name="name">
+                        </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" value="Yes">Confirm</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" value="Create">Submit</button>
                     </div>
-				</div>
-			</div>
-		</div>
-		<button class="modify-button-topic" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo"></button>
-	    </form>
+                    </div>
+                </div>
+            </div>
+            <button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button> 
+            </form>
 
-        <!-- delete topic -->
-        <form action="topic_handler.php" method="post">
-		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Delete <?php echo $topic['name']; ?></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <?php if (count($topic['prerequisite']) > 0 && count($topic['after']) > 0) { ?>
-                    <div class="modal-body">
-                        <p>The topic you are going to delete is a prerequisite of some other topics. Please tick the box if you want to link these topics to the prerequisites of this topic.</p>
-                        <form>
-                            <div class="form-group">
-                                <input name="function" value="deleteTopic" hidden>
-                                <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                                <?php
-                                    foreach ($topic['prerequisite'] as $p) {
-                                        foreach ($topic['after'] as $a) {
-                                            echo '<input type="checkbox" name="connection[]" value="'.$a['id'].', '.$p['id']
-                                                .' checked"><a href="topic.php?id='.$p['id'].'" target="_blank">'.$p['name']
-                                                .'</a> -> <a href="topic.php?id='.$a['id'].'" target="_blank">'.$a['name'].'</a><br/>';
+            <!-- rename topic / edit description / rearrange subtopic -->
+            <form action="topic_handler.php" method="post">
+            <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modifyModalLabel">Topic setting</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label class="col-form-label">Name:</label>
+                                    <input name="function" value="editTopic" hidden>
+                                    <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                                    <input name="name" value="<?php echo $topic['name']; ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="message-text" class="col-form-label">Description:</label>
+                                    <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message-text" class="col-form-label">Subtopic order:</label>
+                                    <ul id="sortable">
+                                    <?php
+                                        foreach ($sList as $subtopic) {
+                                    ?>
+                                        <li>
+                                            <?php echo $subtopic['name']; ?>
+                                            <input name="subtopic[]" value="<?php echo $subtopic['id']; ?>" hidden>
+                                        </li>
+                                    <?php 
                                         }
-                                    }
-                                ?>
-                            </div>
-                        </form>
+                                    ?>
+                                    </ul>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" value="Yes">Confirm</button>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" value="Yes">Delete this topic</button>
-                    </div>
-                    <?php } else { ?>
-                    <div class="modal-body">
-                        <p>Are you sure you want to delete this topic?</p>
-                        <form>
-                            <div class="form-group" hidden>
-                                <input name="function" value="deleteTopic">
-                                <input name="id" value="<?php echo $_GET['id']; ?>">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                        <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
-                    </div>
-                    <?php } ?>
-				</div>
-			</div>
-		</div>
-		<button class="delete-button-topic" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo"></button>
-	    </form>
-        <?php } ?>
+                </div>
+            </div>
+            <button class="modify-button-topic" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo"></button>
+            </form>
 
-        <a class="btn btn-secondary" id="nav-link" href="../auth/login.php?logout='1'">Logout</a>	
+            <!-- delete topic -->
+            <form action="topic_handler.php" method="post">
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Delete <?php echo $topic['name']; ?></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <?php if (count($topic['prerequisite']) > 0 && count($topic['after']) > 0) { ?>
+                        <div class="modal-body">
+                            <p>The topic you are going to delete is a prerequisite of some other topics. Please tick the box if you want to link these topics to the prerequisites of this topic.</p>
+                            <form>
+                                <div class="form-group">
+                                    <input name="function" value="deleteTopic" hidden>
+                                    <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                                    <?php
+                                        foreach ($topic['prerequisite'] as $p) {
+                                            foreach ($topic['after'] as $a) {
+                                                echo '<input type="checkbox" name="connection[]" value="'.$a['id'].', '.$p['id']
+                                                    .' checked"><a href="topic.php?id='.$p['id'].'" target="_blank">'.$p['name']
+                                                    .'</a> -> <a href="topic.php?id='.$a['id'].'" target="_blank">'.$a['name'].'</a><br/>';
+                                            }
+                                        }
+                                    ?>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" value="Yes">Delete this topic</button>
+                        </div>
+                        <?php } else { ?>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this topic?</p>
+                            <form>
+                                <div class="form-group" hidden>
+                                    <input name="function" value="deleteTopic">
+                                    <input name="id" value="<?php echo $_GET['id']; ?>">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+            <button class="delete-button-topic" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo"></button>
+            </form>
+            <?php } ?>
+
+            <a class="btn btn-secondary" id="nav-link" href="../auth/login.php?logout='1'">Logout</a>
+        </div>
 	</div>
     
 			
