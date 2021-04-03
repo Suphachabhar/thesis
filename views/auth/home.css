@@ -169,3 +169,7 @@ text.shadow {
       left: auto;
     }
 }
+
+#topicTree {
+    overflow: hidden;
+}
