@@ -82,59 +82,45 @@ if (isset($_GET['logout'])) {
 </head>
 
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-white">
-	<div id="logo-img">
-		<a href="home.php">
+    <div class="top-bar-right">
+        <a href="home.php">
 			<img src="img/unsw_0.png" href="home.php">
 		</a>
-	</div>
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			
-			<li class="nav-item">
-				<a class="nav-link" href="login.php?logout='1'">Logout</a>	
-			</li>
-		</ul>
 
-        
-	</div>
-
-    <div class="top-bar-right">
-        
-        <ul class="navbar-nav mr-auto">
-            <li><input type="text" id="topicInput" list="topicList" placeholder="Search for topics.."></li>
-            <datalist id="topicList">
-                <?php
-                    foreach ($topics as $row) {
-                ?>
-                <option value="<?php echo $row["name"]; ?>"></option>
-                <?php
-                    }
-                ?>
-            </datalist>
-        </ul>
-        
+        <input type="text" id="topicInput" list="topicList" placeholder="Search for topics..">
+        <datalist id="topicList">
+            <?php
+                foreach ($topics as $row) {
+            ?>
+            <option value="<?php echo $row["name"]; ?>"></option>
+            <?php
+                }
+            ?>
+        </datalist>
+            
         <?php
             if (permission()) {
                 $query = "SELECT id, username FROM user WHERE user_type = 0";
                 $results = mysqli_query($db, $query);
                 $students = mysqli_fetch_all($results, MYSQLI_ASSOC);
         ?>
-        <ul class="navbar-nav mr-auto">
-            <li><input type="text" id="studentInput" list="studentList" placeholder="Check student progress"></li>
-            <datalist id="studentList">
-                <?php
-                    foreach ($students as $row) {
-                ?>
-                <option value="<?php echo $row["username"]; ?>" data-value="<?php echo $row["id"]; ?>"></option>
-                <?php
-                    }
-                ?>
-            </datalist>
-        </ul>
+        
+        <input type="text" id="studentInput" list="studentList" placeholder="Check student progress">
+        <datalist id="studentList">
+            <?php
+                foreach ($students as $row) {
+            ?>
+            <option value="<?php echo $row["username"]; ?>" data-value="<?php echo $row["id"]; ?>"></option>
+            <?php
+                }
+            ?>
+        </datalist>
+            
         <?php
             }
         ?>
+        <button class="plus-button" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
+		<a class="btn btn-secondary" id="nav-link" href="login.php?logout='1'">Logout</a>	 
     </div>
 
     <?php
@@ -185,9 +171,10 @@ if (isset($_GET['logout'])) {
 				</div>
 			</div>
 		</div>
-		<button class="plus-button" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
+		
 
         </form>
+        
     <?php
         }
     ?>
@@ -206,8 +193,8 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var width = window.innerWidth - 45,
-        height = 600,
+    var width = window.innerWidth - 25,
+        height = 635,
         r = 18,
         nodes=<?php echo json_encode($nodes); ?>,
         links=<?php echo json_encode($links); ?>,
@@ -381,7 +368,7 @@ if (isset($_GET['logout'])) {
             success: function(result){
                 $("#sideNavContent").html(result);
                 document.getElementById("mySidenav").style.width = "550px";
-                document.getElementById("main").style.marginLeft = "550px";
+                //document.getElementById("main").style.marginLeft = "550px";
                 svg.remove();
                 loadSvg(width - 550);
             }
