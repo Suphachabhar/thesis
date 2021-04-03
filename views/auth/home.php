@@ -23,7 +23,7 @@ if (isset($_GET['logout'])) {
     $results = mysqli_query($db, $query);
     $topics = mysqli_fetch_all($results, MYSQLI_ASSOC);
     foreach ($topics as $row) {
-        $nodes[] = array("name" => $row["name"], "id" => $row["id"]);
+        $nodes[] = array("name" => $row["name"], "id" => $row["id"], "num" => $i);
         $nodeNum[$row["id"]] = $i;
         $i ++;
     }
@@ -78,6 +78,7 @@ if (isset($_GET['logout'])) {
     <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"> </script>
     
     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 
 <body>
@@ -208,60 +209,36 @@ if (isset($_GET['logout'])) {
     width = 850,
     height = 600,
     r = 12,
-    gravity = 0.1,
-    distance = 100,
-    charge = -800,
-    fill = d3.scale.category10(),
     nodes=<?php echo json_encode($nodes); ?>,
     links=<?php echo json_encode($links); ?>,
     progresses=<?php echo json_encode($progresses); ?>;
 
-    var svg = d3.select("body").append("svg")
- 
-        svg = d3.select("#main").append("svg")
+    var svg = d3.select("#main").append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    var force = d3.layout.force()
-       
-        .distance(distance)
-        .charge(charge)
-        .size([width, height]);
+    var g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-    force.nodes(nodes)
-        .links(links)
-        .start();
+    var n = <?php echo count($nodes); ?>;
 
-    var link = svg.selectAll(".link")
-        .data(links)
-        .enter().append("line")
-        .attr("class", "link");
+    var simulation = d3.forceSimulation(nodes)
+        .force("charge", d3.forceManyBody().strength(-200))
+        .force("link", d3.forceLink(links).distance(70).strength(1).iterations(10))
+        .force("x", d3.forceX())
+        .force("y", d3.forceY())
+        .stop();
+        
+    var circle;
 
-    // enable drag of nodes
-    var node = svg.selectAll(".node")
+    d3.timeout(function() {
+      for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
+        simulation.tick();
+      }
+        
+    g.append("defs").selectAll("marker")
         .data(nodes)
-        .enter().append("g")
-        .attr("class", "node")
-        .call(force.drag);
-        
-        
-    var div = d3.select("main").append("div")	
-        .attr("class", "tooltip")				
-        .style("opacity", 0);
-
-    var circle=node.append("svg:circle").attr("r", r - .75).style("fill", function (d) {
-            return progressColour(d); 
-        }).style("stroke", function (d) {
-            return d3.rgb(progressColour(d)).darker(); 
-        }).call(force.drag)
-        .on("click", function(d) {
-            openNav(d.id);
-        });
-
-    svg.append("svg:defs").selectAll("marker")
-        .data([1,2,3])
-      .enter().append("svg:marker")
-        .attr("id", String)
+      .enter().append("marker")
+        .attr("id", function(d) {return d.id;})
         .attr("viewBox", "0 -5 10 10")
         .attr("refX", 22)
         .attr("refY", -1.5)
@@ -269,52 +246,59 @@ if (isset($_GET['logout'])) {
         .attr("markerHeight", 6)
         .attr("fill-color","#cccccc")
         .attr("orient", "auto")
-      .append("svg:path")
+      .append("path")
         .attr("d", "M0,-5L10,0L0,5");
 
-    var path = svg.append("svg:g").selectAll("path")
-        .data(force.links())
-        .enter().append("svg:path")
-        .attr("class", function(d) { return "link " + d.value; })
-        .attr("marker-end", function(d) { return "url(#" + d.value + ")"; });
-
-    var text = svg.append("svg:g").selectAll("g")
-        .data(force.nodes())
-        .enter().append("svg:g");
-
-    text.append("svg:text")
-          .attr("dx", 12)
-          .attr("dy", ".35em")
-          .attr("class", "shadow")
-          .text(function(d) { return d.name;}
-      );
-
-    text.append("svg:text")
-          .attr("dx", 12)
-          .attr("dy", ".35em")
-          .text(function(d) { return d.name;}
-      );
-
-    force.on("tick", tick);
-
-    // move circles using force
-    function tick() {
-        path.attr("d", function(d) {
-            var dx = d.target.x - d.source.x,
-                dy = d.target.y - d.source.y,
-                dr = 0;
-            return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+    var path = g.append("g")
+          .attr("stroke", "#000")
+          .attr("stroke-width", 1.5)
+        .selectAll("path")
+        .data(links)
+        .enter().append("line")
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; })
+          .attr("marker-end", function(d) { return "url(#" + d.target.id + ")"; });
+        
+    circle = g.append("g")
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 1.5)
+        .selectAll("circle")
+        .data(nodes)
+        .enter().append("circle")
+          .attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; })
+          .attr("r", r - .75)
+        .style("fill", function (d) {
+            return progressColour(d); 
+        }).style("stroke", function (d) {
+            return d3.rgb(progressColour(d)).darker(); 
+        }).on("click", function(d) {
+            openNav(d.id);
         });
-
-        circle.attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")";
-        });
-
-        text.attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")";
-        });
-    };
     
+        g.append("g").selectAll("circle")
+        .data(nodes)
+        .enter().append("text")
+          .attr("x", function(d) { return d.x; })
+          .attr("y", function(d) { return d.y + 18; })
+          .attr("dy", ".35em")
+              .attr("class", "shadow")
+              .style("text-anchor", "middle")
+              .text(function(d) { return d.name;}
+          );
+
+        g.append("g").selectAll("circle")
+        .data(nodes)
+        .enter().append("text")
+          .attr("x", function(d) { return d.x; })
+          .attr("y", function(d) { return d.y + 18; })
+          .attr("dy", ".35em")
+          .style("text-anchor", "middle")
+              .text(function(d) { return d.name;}
+          );
+    });
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget) // Button that triggered the modal
