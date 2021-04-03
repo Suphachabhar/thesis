@@ -216,10 +216,14 @@ if (isset($_GET['logout'])) {
             .attr("width", w)
             .attr("height", height);
         
-        var g = svg.append("g").attr("transform", "translate(" + w / 2 + "," + height / 2 + ")");
+        var container = svg.append("g")
+            .attr("width", "100%")
+            .attr("height", "100%");
         svg.call(d3.zoom().on("zoom", function () {
-            svg.attr("transform", d3.event.transform);
+            container.attr("transform", d3.event.transform);
         }));
+
+        var g = container.append("g").attr("transform", "translate(" + w / 2 + "," + height / 2 + ")");
 
         var n = <?php echo count($nodes); ?>;
             
