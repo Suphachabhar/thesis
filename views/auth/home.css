@@ -126,11 +126,11 @@ text.shadow {
   transition: 0.5s;
   padding-top: -10px;
   display: none;
-
+  padding-left: 25px;
+  padding-right: 15px;
 }
 
 #sideNavContent a {
-  
   font-size: 25px;
   color: darkgrey;
 }
@@ -142,11 +142,12 @@ text.shadow {
 .sidenav .closebtn {
   font-size: 36px;
   position: relative;
-  left: 480px;
+  padding-left: 490px;
 }
 
 .sidenav .closebtn:hover {
-  color: grey;
+  cursor:pointer;
+  
 }
 
 #main {
@@ -164,7 +165,7 @@ text.shadow {
     .sidenav .closebtn {
       font-size: 36px;
       position: absolute;
-      right: 10px;
+      right: 30px;
       left: auto;
     }
 }
