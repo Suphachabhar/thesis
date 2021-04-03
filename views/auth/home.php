@@ -206,26 +206,13 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    width = 850,
-    height = 600,
-    r = 18,
-    nodes=<?php echo json_encode($nodes); ?>,
-    links=<?php echo json_encode($links); ?>,
-    progresses=<?php echo json_encode($progresses); ?>;
-
-    var svg = d3.select("#main").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-        
-    svg.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("fill", "yellow");
-
-    var g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-    var n = <?php echo count($nodes); ?>;
-
+    var width = window.innerWidth - 45,
+        height = 600,
+        r = 18,
+        nodes=<?php echo json_encode($nodes); ?>,
+        links=<?php echo json_encode($links); ?>,
+        progresses=<?php echo json_encode($progresses); ?>;
+    
     var simulation = d3.forceSimulation(nodes)
         .force("charge", d3.forceManyBody().strength(-250))
         .force("link", d3.forceLink(links).distance(100).strength(1).iterations(10))
@@ -233,77 +220,95 @@ if (isset($_GET['logout'])) {
         .force("y", d3.forceY())
         .stop();
         
-    var circle;
+    var svg;
+    loadSvg(width);
 
-    d3.timeout(function() {
-      for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
-        simulation.tick();
-      }
+    function loadSvg(w) {
+        svg = d3.select("#main").append("svg")
+            .attr("width", w)
+            .attr("height", height);
+            
+        svg.append("rect")
+            .attr("width", "100%")
+            .attr("height", height)
+            .attr("fill", "yellow");
         
-    g.append("defs").selectAll("marker")
-        .data(nodes)
-      .enter().append("marker")
-        .attr("id", function(d) {return d.id;})
-        .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 30)
-        .attr("refY", 0)
-        .attr("markerWidth", 6)
-        .attr("markerHeight", 6)
-        .attr("fill-color","#cccccc")
-        .attr("orient", "auto")
-      .append("path")
-        .attr("d", "M0,-5L10,0L0,5");
+        var g = svg.append("g").attr("transform", "translate(" + w / 2 + "," + height / 2 + ")");
 
-    var path = g.append("g")
-          .attr("stroke", "#000")
-          .attr("stroke-width", 1.5)
-        .selectAll("path")
-        .data(links)
-        .enter().append("line")
-          .attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; })
-          .attr("marker-end", function(d) { return "url(#" + d.target.id + ")"; });
+        var n = <?php echo count($nodes); ?>;
+            
+        var circle;
+
+        d3.timeout(function() {
+          for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
+            simulation.tick();
+          }
+            
+        g.append("defs").selectAll("marker")
+            .data(nodes)
+          .enter().append("marker")
+            .attr("id", function(d) {return d.id;})
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 30)
+            .attr("refY", 0)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("fill-color","#cccccc")
+            .attr("orient", "auto")
+          .append("path")
+            .attr("d", "M0,-5L10,0L0,5");
+
+        var path = g.append("g")
+              .attr("stroke", "#000")
+              .attr("stroke-width", 1.5)
+            .selectAll("path")
+            .data(links)
+            .enter().append("line")
+              .attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; })
+              .attr("marker-end", function(d) { return "url(#" + d.target.id + ")"; });
+            
+        circle = g.append("g")
+              .attr("stroke", "#fff")
+              .attr("stroke-width", 1.5)
+            .selectAll("circle")
+            .data(nodes)
+            .enter().append("circle")
+              .attr("cx", function(d) { return d.x; })
+              .attr("cy", function(d) { return d.y; })
+              .attr("r", r - .75)
+            .style("fill", function (d) {
+                return progressColour(d); 
+            }).style("stroke", function (d) {
+                return d3.rgb(progressColour(d)).darker(); 
+            }).on("click", function(d) {
+                openNav(d.id);
+            });
         
-    circle = g.append("g")
-          .attr("stroke", "#fff")
-          .attr("stroke-width", 1.5)
-        .selectAll("circle")
-        .data(nodes)
-        .enter().append("circle")
-          .attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; })
-          .attr("r", r - .75)
-        .style("fill", function (d) {
-            return progressColour(d); 
-        }).style("stroke", function (d) {
-            return d3.rgb(progressColour(d)).darker(); 
-        }).on("click", function(d) {
-            openNav(d.id);
-        });
-    
-        g.append("g").selectAll("circle")
-        .data(nodes)
-        .enter().append("text")
-          .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y + r + 10; })
-          .attr("dy", ".35em")
-              .attr("class", "shadow")
+            g.append("g").selectAll("circle")
+            .data(nodes)
+            .enter().append("text")
+              .attr("x", function(d) { return d.x; })
+              .attr("y", function(d) { return d.y + r + 10; })
+              .attr("dy", ".35em")
+                  .attr("class", "shadow")
+                  .style("text-anchor", "middle")
+                  .text(function(d) { return d.name;}
+              );
+
+            g.append("g").selectAll("circle")
+            .data(nodes)
+            .enter().append("text")
+              .attr("x", function(d) { return d.x; })
+              .attr("y", function(d) { return d.y + r + 10; })
+              .attr("dy", ".35em")
               .style("text-anchor", "middle")
-              .text(function(d) { return d.name;}
-          );
-
-        g.append("g").selectAll("circle")
-        .data(nodes)
-        .enter().append("text")
-          .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y + r + 10; })
-          .attr("dy", ".35em")
-          .style("text-anchor", "middle")
-              .text(function(d) { return d.name;}
-          );
-    });
+                  .text(function(d) { return d.name;}
+              );
+        });
+    }
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget) // Button that triggered the modal
@@ -377,6 +382,8 @@ if (isset($_GET['logout'])) {
                 $("#sideNavContent").html(result);
                 document.getElementById("mySidenav").style.width = "550px";
                 document.getElementById("main").style.marginLeft = "550px";
+                svg.remove();
+                loadSvg(width - 550);
             }
         });
     }
@@ -385,6 +392,8 @@ if (isset($_GET['logout'])) {
         document.getElementById("mySidenav").style.width = "0px";
         document.getElementById("main").style.marginLeft= "0";
         document.getElementById("mySidenav").style.display = "none";
+        svg.remove();
+        loadSvg(width);
     }
 
     $(document).ready(function () {
@@ -392,6 +401,13 @@ if (isset($_GET['logout'])) {
             select: '#prerequisite'
 
         });
+    });
+    
+    $(window).resize(function () {
+        width = window.innerWidth - 45;
+        var w = $("#mySidenav").css("display") == "none" ? width : width - 550;
+        svg.remove();
+        loadSvg(w);
     });
 </script>
 
