@@ -126,7 +126,7 @@ text.shadow {
   transition: 0.5s;
   padding-top: -10px;
   display: none;
-  padding: 8px 8px 8px 32px;
+
 }
 
 #sideNavContent a {
@@ -154,7 +154,6 @@ text.shadow {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin-top: -15px;
 }
 
 @media screen and (max-width: 1000px) {
