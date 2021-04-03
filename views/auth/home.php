@@ -214,8 +214,8 @@ if (isset($_GET['logout'])) {
         progresses=<?php echo json_encode($progresses); ?>;
     
     var simulation = d3.forceSimulation(nodes)
-        .force("charge", d3.forceManyBody().strength(-250))
-        .force("link", d3.forceLink(links).distance(100).strength(1).iterations(10))
+        .force("charge", d3.forceManyBody().strength(-1000))
+        .force("link", d3.forceLink(links).distance(100).strength(2).iterations(10))
         .force("x", d3.forceX())
         .force("y", d3.forceY())
         .stop();
@@ -234,6 +234,10 @@ if (isset($_GET['logout'])) {
             .attr("fill", "yellow");
         
         var g = svg.append("g").attr("transform", "translate(" + w / 2 + "," + height / 2 + ")");
+        svg.call(d3.zoom().on("zoom", function () {
+            g.attr("transform", d3.event.transform)
+                .attr({viewBox: "" + (-w / 2) + " " + (-height / 2) + " " + w + " " + height});
+        }));
 
         var n = <?php echo count($nodes); ?>;
             
@@ -291,7 +295,7 @@ if (isset($_GET['logout'])) {
             .data(nodes)
             .enter().append("text")
               .attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y + r + 10; })
+              .attr("y", function(d) { return d.y + r + 6; })
               .attr("dy", ".35em")
                   .attr("class", "shadow")
                   .style("text-anchor", "middle")
@@ -302,7 +306,7 @@ if (isset($_GET['logout'])) {
             .data(nodes)
             .enter().append("text")
               .attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y + r + 10; })
+              .attr("y", function(d) { return d.y + r + 6; })
               .attr("dy", ".35em")
               .style("text-anchor", "middle")
                   .text(function(d) { return d.name;}
