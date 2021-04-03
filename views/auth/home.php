@@ -182,7 +182,7 @@ if (isset($_GET['logout'])) {
 
     <div id="main">
         <div id="mySidenav" class="sidenav">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <span href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</span>
             <div id="sideNavContent"></div>
             <div id="topicProgress"></div>
         </div> 
@@ -193,7 +193,7 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var width = window.innerWidth - 25,
+    var width = $("body").prop("clientWidth") - 20,
         height = 635,
         r = 18,
         nodes=<?php echo json_encode($nodes); ?>,
@@ -231,45 +231,45 @@ if (isset($_GET['logout'])) {
         var circle;
 
         d3.timeout(function() {
-          for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
-            simulation.tick();
-          }
+            for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
+                simulation.tick();
+            }
             
-        g.append("defs").selectAll("marker")
-            .data(nodes)
-          .enter().append("marker")
-            .attr("id", function(d) {return d.id;})
-            .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 30)
-            .attr("refY", 0)
-            .attr("markerWidth", 6)
-            .attr("markerHeight", 6)
-            .attr("fill-color","#cccccc")
-            .attr("orient", "auto")
-          .append("path")
-            .attr("d", "M0,-5L10,0L0,5");
+            g.append("defs").selectAll("marker")
+                .data(nodes)
+            .enter().append("marker")
+                .attr("id", function(d) {return d.id;})
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 30)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("fill-color","#cccccc")
+                .attr("orient", "auto")
+            .append("path")
+                .attr("d", "M0,-5L10,0L0,5");
 
-        var path = g.append("g")
-              .attr("stroke", "#000")
-              .attr("stroke-width", 1.5)
-            .selectAll("path")
-            .data(links)
+            var path = g.append("g")
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1.5)
+                .selectAll("path")
+                .data(links)
             .enter().append("line")
-              .attr("x1", function(d) { return d.source.x; })
-              .attr("y1", function(d) { return d.source.y; })
-              .attr("x2", function(d) { return d.target.x; })
-              .attr("y2", function(d) { return d.target.y; })
-              .attr("marker-end", function(d) { return "url(#" + d.target.id + ")"; });
-            
-        circle = g.append("g")
-              .attr("stroke", "#fff")
-              .attr("stroke-width", 1.5)
-            .selectAll("circle")
-            .data(nodes)
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; })
+                .attr("marker-end", function(d) { return "url(#" + d.target.id + ")"; });
+                
+            circle = g.append("g")
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1.5)
+                .selectAll("circle")
+                .data(nodes)
             .enter().append("circle")
-              .attr("cx", function(d) { return d.x; })
-              .attr("cy", function(d) { return d.y; })
-              .attr("r", r - .75)
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; })
+                .attr("r", r - .75)
             .style("fill", function (d) {
                 return progressColour(d); 
             }).style("stroke", function (d) {
@@ -279,15 +279,15 @@ if (isset($_GET['logout'])) {
             });
         
             g.append("g").selectAll("circle")
-            .data(nodes)
+                .data(nodes)
             .enter().append("text")
-              .attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y + r + 6; })
-              .attr("dy", ".35em")
-                  .attr("class", "shadow")
-                  .style("text-anchor", "middle")
-                  .text(function(d) { return d.name;}
-              );
+                .attr("x", function(d) { return d.x; })
+                .attr("y", function(d) { return d.y + r + 6; })
+                .attr("dy", ".35em")
+                    .attr("class", "shadow")
+                    .style("text-anchor", "middle")
+                    .text(function(d) { return d.name;}
+                );
 
             g.append("g").selectAll("circle")
             .data(nodes)
@@ -371,20 +371,15 @@ if (isset($_GET['logout'])) {
             data: "function=getInfo&id=" + id,
             success: function(result){
                 $("#sideNavContent").html(result);
-                document.getElementById("mySidenav").style.width = "550px";
-                //document.getElementById("main").style.marginLeft = "550px";
-                svg.remove();
-                loadSvg(width - 550);
+                document.getElementById("mySidenav").style.display = "block";
+                resizeSvgAndSidebar();
             }
         });
     }
     
     function closeNav() {
-        document.getElementById("mySidenav").style.width = "0px";
-        document.getElementById("main").style.marginLeft= "0";
         document.getElementById("mySidenav").style.display = "none";
-        svg.remove();
-        loadSvg(width);
+        resizeSvgAndSidebar();
     }
 
     $(document).ready(function () {
@@ -395,11 +390,25 @@ if (isset($_GET['logout'])) {
     });
     
     $(window).resize(function () {
-        width = window.innerWidth - 45;
-        var w = $("#mySidenav").css("display") == "none" ? width : width - 550;
-        svg.remove();
-        loadSvg(w);
+        width = $("body").prop("clientWidth") - 20;
+        resizeSvgAndSidebar();
     });
+    
+    function resizeSvgAndSidebar() {
+        if ($("#mySidenav").css("display") == "none") {
+            document.getElementById("mySidenav").style.width = "0px";
+            svg.remove();
+            loadSvg(width);
+        } else if (window.innerWidth > 1000) {
+            document.getElementById("mySidenav").style.width = "550px";
+            svg.remove();
+            loadSvg(width - 550);
+        } else {
+            document.getElementById("mySidenav").style.width = "100%";
+            svg.remove();
+            loadSvg(width);
+        }
+    }
 </script>
 
 </html>

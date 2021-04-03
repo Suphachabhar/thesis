@@ -122,7 +122,6 @@ text.shadow {
   stroke-opacity: .8;
 }
 
-
 .sidenav {
   transition: 0.5s;
   padding-top: -10px;
@@ -142,13 +141,16 @@ text.shadow {
 
 .sidenav .closebtn {
   font-size: 36px;
-  margin-left: 490px;
-  margin-top: -15px;
+  position: relative;
+  left: 480px;
+}
+
+.sidenav .closebtn:hover {
+  color: grey;
 }
 
 #main {
   transition: margin-left .5s;
-  padding: 10px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -156,13 +158,14 @@ text.shadow {
 }
 
 @media screen and (max-width: 1000px) {
-   #main{
-    flex-direction: column;
-   }
+    #main{
+        flex-direction: column;
+    }
 
+    .sidenav .closebtn {
+      font-size: 36px;
+      position: absolute;
+      right: 10px;
+      left: auto;
+    }
 }
-
-
-
-
-
