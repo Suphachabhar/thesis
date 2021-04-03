@@ -208,7 +208,7 @@ if (isset($_GET['logout'])) {
 <script>
     width = 850,
     height = 600,
-    r = 12,
+    r = 18,
     nodes=<?php echo json_encode($nodes); ?>,
     links=<?php echo json_encode($links); ?>,
     progresses=<?php echo json_encode($progresses); ?>;
@@ -216,14 +216,19 @@ if (isset($_GET['logout'])) {
     var svg = d3.select("#main").append("svg")
         .attr("width", width)
         .attr("height", height);
+        
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", "yellow");
 
     var g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
     var n = <?php echo count($nodes); ?>;
 
     var simulation = d3.forceSimulation(nodes)
-        .force("charge", d3.forceManyBody().strength(-200))
-        .force("link", d3.forceLink(links).distance(70).strength(1).iterations(10))
+        .force("charge", d3.forceManyBody().strength(-250))
+        .force("link", d3.forceLink(links).distance(100).strength(1).iterations(10))
         .force("x", d3.forceX())
         .force("y", d3.forceY())
         .stop();
@@ -240,8 +245,8 @@ if (isset($_GET['logout'])) {
       .enter().append("marker")
         .attr("id", function(d) {return d.id;})
         .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 22)
-        .attr("refY", -1.5)
+        .attr("refX", 30)
+        .attr("refY", 0)
         .attr("markerWidth", 6)
         .attr("markerHeight", 6)
         .attr("fill-color","#cccccc")
@@ -282,7 +287,7 @@ if (isset($_GET['logout'])) {
         .data(nodes)
         .enter().append("text")
           .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y + 18; })
+          .attr("y", function(d) { return d.y + r + 10; })
           .attr("dy", ".35em")
               .attr("class", "shadow")
               .style("text-anchor", "middle")
@@ -293,7 +298,7 @@ if (isset($_GET['logout'])) {
         .data(nodes)
         .enter().append("text")
           .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y + 18; })
+          .attr("y", function(d) { return d.y + r + 10; })
           .attr("dy", ".35em")
           .style("text-anchor", "middle")
               .text(function(d) { return d.name;}
@@ -363,6 +368,7 @@ if (isset($_GET['logout'])) {
     ?>
     
     function openNav(id) {
+        document.getElementById("mySidenav").style.display = "block";
         $.ajax({
             url: "../topic/topic_handler.php",
             method: "POST",
@@ -378,6 +384,7 @@ if (isset($_GET['logout'])) {
     function closeNav() {
         document.getElementById("mySidenav").style.width = "0px";
         document.getElementById("main").style.marginLeft= "0";
+        document.getElementById("mySidenav").style.display = "none";
     }
 
     $(document).ready(function () {
