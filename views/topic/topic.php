@@ -77,26 +77,14 @@ if (isset($_GET['logout'])) {
 </head>
     
 <body>
-    <!-- nav bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white">
-	<div class="logo-img">
+	<div class="top-bar-right">
 		<a href="../auth/home.php">
 			<img src="../auth/img/unsw_0.png">
 		</a>
-	</div>
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			
-			<li class="nav-item">
-				<a class="nav-link" href="../auth/login.php?logout='1'">Logout</a>	
-			</li>
-		</ul>
-	</div>
 
-  
-    <?php 
+        <?php 
         if (permission()) {
-    ?>
+        ?>
         <!-- create sub topic -->
         <form action="topic_handler.php" method="post">
 		<div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
@@ -125,10 +113,8 @@ if (isset($_GET['logout'])) {
 				</div>
 			</div>
 		</div>
-		<button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
-        
+		<button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button> 
 	    </form>
-        
 
         <!-- rename topic / edit description / rearrange subtopic -->
         <form action="topic_handler.php" method="post">
@@ -179,7 +165,6 @@ if (isset($_GET['logout'])) {
 		</div>
 		<button class="modify-button-topic" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo"></button>
 	    </form>
-       
 
         <!-- delete topic -->
         <form action="topic_handler.php" method="post">
@@ -234,12 +219,24 @@ if (isset($_GET['logout'])) {
 			</div>
 		</div>
 		<button class="delete-button-topic" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo"></button>
-        
 	    </form>
-    <?php } ?>
+        <?php } ?>
+
+        <a class="btn btn-secondary" id="nav-link" href="../auth/login.php?logout='1'">Logout</a>	
+	</div>
+    
+			
+
+    
+        
+
+        
+       
+
+        
     
     
-    </nav>
+  
 
    
     

@@ -122,12 +122,11 @@ text.shadow {
   stroke-opacity: .8;
 }
 
-
 .sidenav {
   transition: 0.5s;
   padding-top: -10px;
   display: none;
-  padding: 8px 8px 8px 32px;
+
 }
 
 #sideNavContent a {
@@ -143,22 +142,19 @@ text.shadow {
 .sidenav .closebtn {
   font-size: 36px;
   margin-left: 490px;
-  margin-top: -15px;
 }
 
 #main {
   transition: margin-left .5s;
-  padding: 10px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin-top: -15px;
 }
 
 @media screen and (max-width: 1000px) {
-   #main{
-    flex-direction: column;
-   }
+  #main{
+  flex-direction: column;
+  }
 
 }
 
