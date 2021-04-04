@@ -423,8 +423,8 @@ if (isset($_GET['logout'])) {
             document.getElementById("mySidenav").style.width = "0px";
         } else {
             if (window.innerWidth > 1000) {
-                w -= 550;
-                document.getElementById("mySidenav").style.width = "550px";
+                w -= 650;
+                document.getElementById("mySidenav").style.width = "650px";
             } else {
                 document.getElementById("mySidenav").style.width = "100%";
             }
