@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 23, 2021 at 02:18 AM
+-- Generation Time: Apr 04, 2021 at 01:48 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -39,15 +39,15 @@ CREATE TABLE `subtopics` (
 --
 
 INSERT INTO `subtopics` (`topic`, `id`, `name`, `sort`) VALUES
-(25, 1, 'Integers', 1),
-(26, 1, 'Bitwise Operations', 1),
-(26, 2, 'rtyfghj', 2),
-(27, 1, 'Floating Point', 1),
-(28, 1, 'Files', 1),
-(29, 1, 'MIPS Basic', 1),
-(29, 2, 'MIPS Control', 2),
-(29, 3, 'MIPS Data', 3),
-(29, 4, 'MIPS Functions', 4);
+(51, 1, 'Syntax', 1),
+(51, 2, 'Ecosystem', 2),
+(52, 1, 'Intro', 1),
+(52, 2, 'DOM', 2),
+(52, 3, 'Loading order', 3),
+(53, 1, 'Intro', 1),
+(53, 2, 'Basic CSS usage', 2),
+(54, 1, 'NPM Intro', 1),
+(58, 1, 'd\'d', 1);
 
 --
 -- Indexes for dumped tables

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 27, 2021 at 08:36 AM
+-- Generation Time: Apr 04, 2021 at 01:48 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -38,12 +38,18 @@ CREATE TABLE `topics` (
 --
 
 INSERT INTO `topics` (`id`, `name`, `description`) VALUES
-(25, 'Integers', 'Learn how to use integers in C language'),
-(26, 'Bitwise Operations', NULL),
-(27, 'Floating Point', NULL),
-(28, 'Files', NULL),
-(29, 'MIPS', NULL),
-(39, 'test', 'lorem ipsum');
+(51, 'Basic JavaScript', 'Basic coding for JavaScript'),
+(52, 'Vanilla JavaScript', 'Plain JavaScript without external libraries'),
+(53, 'ReactJS', 'React is a library for building user interfaces.\r\nIt allows you to build isolated UI components in a simple, declarative way. When the state of your application changes, affected components will react accordingly by re-rendering to reflect the new state.'),
+(54, 'Infrastructure', 'The infrastructure for front-end developers'),
+(57, 'tes\'s', 'This is great, because it means you don\'t have to worry about what\'s happening under the hood. You can change the state, and the web page will \"magically\" update for you!'),
+(58, 'a\'a', 'b\'b'),
+(59, 'Single Page Application', NULL),
+(60, 'useContext', NULL),
+(61, 'NodeJS', NULL),
+(62, 'Class Components', NULL),
+(63, 'asdf', NULL),
+(64, 'hhh', NULL);
 
 --
 -- Indexes for dumped tables
@@ -63,7 +69,7 @@ ALTER TABLE `topics`
 -- AUTO_INCREMENT for table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
