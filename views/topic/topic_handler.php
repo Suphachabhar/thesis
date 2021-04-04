@@ -361,7 +361,7 @@
             $result = mysqli_query($db, $query);
             $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
             
-            $output = '<h1>'.$info['name'].'<span><button type="button" class="btn btn-link" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">&nearr;</button></span></h1>';
+            $output = '<h1 onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$info['name'].'<span><button type="button" class="btn btn-link"  onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">&nearr;</button></span></h1>';
             
             
             if (!is_null($info['description'])) {
