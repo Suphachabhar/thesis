@@ -79,15 +79,6 @@ if (isset($_GET['logout'])) {
     
     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://d3js.org/d3-color.v2.min.js"></script>
-    <script src="https://d3js.org/d3-dispatch.v2.min.js"></script>
-    <script src="https://d3js.org/d3-ease.v2.min.js"></script>
-    <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
-    <script src="https://d3js.org/d3-selection.v2.min.js"></script>
-    <script src="https://d3js.org/d3-timer.v2.min.js"></script>
-    <script src="https://d3js.org/d3-transition.v2.min.js"></script>
-    <script src="https://d3js.org/d3-drag.v2.min.js"></script>
-    <script src="https://d3js.org/d3-zoom.v2.min.js"></script>
 </head>
 
 <body>
@@ -208,8 +199,6 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    const zoom = d3.zoom();
-
     var selectedTopic = 0;
         currX = 0,
         currY = 0;
@@ -238,7 +227,7 @@ if (isset($_GET['logout'])) {
         .attr("height", height);
         
     svg.call(d3.zoom().on("zoom", function () {
-        container.attr("transform", zoom.transform);
+        container.attr("transform", d3.event.transform);
     }));
 
     var g = container.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
@@ -291,7 +280,7 @@ if (isset($_GET['logout'])) {
             return progressColour(d, false); 
         }).style("stroke", function (d) {
             return progressColour(d, true);
-        }).on("click", function(_, d) {
+        }).on("click", function(d) {
             openNav(d.id);
         });
     
@@ -428,10 +417,13 @@ if (isset($_GET['logout'])) {
     });
     
     function resizeSvgAndSidebar() {
-        var w = width;
-        var transform = "translate(" + (w - initWidth)/2 + "," + 0 + ")";
+        var w = width,
+            scale = 1,
+            x = (w - initWidth)/2,
+            y = 0;
         if ($("#mySidenav").css("display") == "none") {
             document.getElementById("mySidenav").style.width = "0px";
+            changed = true;
         } else {
             if (window.innerWidth > 1000) {
                 w -= 650;
@@ -439,14 +431,18 @@ if (isset($_GET['logout'])) {
             } else {
                 document.getElementById("mySidenav").style.width = "100%";
             }
-            transform = "scale(2) translate(" + -((2 * initWidth - w)/4 + currX) + "," + -(height/4 + currY) + ")";
+            scale = 2;
+            x = -((2 * initWidth - w)/4 + currX);
+            y = -(height/4 + currY);
+            changed = true;
         }
         svg.attr("width", w);
         container.attr("width", w);
         
         container.transition()
             .duration(750)
-            .attr("transform", transform);
+            .attr("transform", "scale(" + scale + ") translate(" + x + "," + y + ")");
+        svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
     }
 </script>
 
