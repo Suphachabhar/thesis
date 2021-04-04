@@ -15,7 +15,7 @@ h1 {
     margin: 0;
     font-size: 40px;
     text-transform: uppercase;
-    cursor:pointer;
+    
 }
 
 #topicInput {
@@ -41,6 +41,7 @@ h1 {
 .top-bar-right img{
   padding: 27px;
   width: 200px;
+  
 }
 
 #nav-link{
@@ -143,6 +144,7 @@ text.shadow {
   margin-left: 20px;
   width: 30px;
   padding-bottom: 10px;
+  cursor:pointer;
 }
 
 .sidenav .access_course{

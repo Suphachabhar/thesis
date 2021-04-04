@@ -361,7 +361,27 @@
             $result = mysqli_query($db, $query);
             $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
             
-            $output = '<h1 onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$info['name'].'<span><img src="../auth/img/expand.png" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'"></span></h1>';
+            $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM prerequisites AS a LEFT JOIN progresses AS b ON a.prerequisite = b.topic"
+                ." LEFT JOIN subtopics AS c ON a.prerequisite = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.topic = ".$_POST["id"];
+            $result = mysqli_query($db, $query);
+            $prereqCheck = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $addLink = true;
+            if(!permission()){
+                foreach ($prereqs as $p) {
+                    $query = "SELECT count(a.id) AS subtopics, b.progress FROM subtopics AS a, progresses AS b WHERE b.student = ".$_SESSION['user']['id']
+                        ." AND b.topic = ".$p['id']." AND b.topic = a.topic";
+                    $results = mysqli_query($db, $query);
+                    $progress = mysqli_fetch_assoc($results);
+                    if (is_null($progress) || $progress['subtopics'] != $progress['progress']) {
+                        $addLink = false;
+                    }
+                }
+            }
+            $output = '<h1>'.$info['name'];
+            if ($addLink) {
+                $output .= '<span><img src="../auth/img/expand.png" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'"></span>';
+            }
+            $output .= '</h1>';
             
             
             if (!is_null($info['description'])) {
