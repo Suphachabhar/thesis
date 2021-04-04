@@ -199,8 +199,7 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var showNav = false,
-        selectedTopic = 0;
+    var selectedTopic = 0;
         currX = 0,
         currY = 0;
 
@@ -282,8 +281,7 @@ if (isset($_GET['logout'])) {
         }).style("stroke", function (d) {
             return progressColour(d, true);
         }).on("click", function(d) {
-            selectedTopic = d.id;
-            openNav();
+            openNav(d.id);
         });
     
         g.append("g").selectAll("circle")
@@ -321,8 +319,7 @@ if (isset($_GET['logout'])) {
     $("#topicInput").bind('input', function () {
         var id = $('#topicList option[value="' + $('#topicInput').val() + '"]').data('value');
         if (id !== undefined) {
-            selectedTopic = id;
-            openNav();
+            openNav(id);
         }
     });
     
@@ -372,8 +369,8 @@ if (isset($_GET['logout'])) {
         }
     ?>
     
-    function openNav() {
-        showNav = true;
+    function openNav(id) {
+        selectedTopic = id;
         $.each(nodes, function (i, obj) {
             if (selectedTopic == obj['id']) {
                 currX = obj['x'];
@@ -386,6 +383,7 @@ if (isset($_GET['logout'])) {
             data: "function=getInfo&id=" + selectedTopic,
             success: function(result){
                 $("#sideNavContent").html(result);
+                $('#mySidenav').show();
                 resizeSvgAndSidebar();
                 circle.style("stroke", function (d) {
                     return progressColour(d, true);
@@ -398,6 +396,7 @@ if (isset($_GET['logout'])) {
         showNav = false;
         currX = 0;
         currY = 0;
+        $('#mySidenav').hide();
         resizeSvgAndSidebar();
         selectedTopic = 0;
         circle.style("stroke", function (d) {
@@ -420,13 +419,9 @@ if (isset($_GET['logout'])) {
     function resizeSvgAndSidebar() {
         var w = width;
         var transform = "translate(" + (w - initWidth)/2 + "," + 0 + ")";
-        if (!showNav) {
-            if ($("#mySidenav").css("display") == "block") {
-                document.getElementById("mySidenav").style.width = "0px";
-                $("#mySidenav").css("display", "none");
-            }
+        if ($("#mySidenav").css("display") == "none") {
+            document.getElementById("mySidenav").style.width = "0px";
         } else {
-            $("#mySidenav").css("display", "block");
             if (window.innerWidth > 1000) {
                 w -= 550;
                 document.getElementById("mySidenav").style.width = "550px";
@@ -442,11 +437,6 @@ if (isset($_GET['logout'])) {
             .duration(750)
             .attr("transform", transform);
     }
-    
-    $('body').click(function () {
-        showNav = false;
-        resizeSvgAndSidebar();
-    });
 </script>
 
 </html>
