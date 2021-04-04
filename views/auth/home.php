@@ -391,17 +391,6 @@ if (isset($_GET['logout'])) {
             }
         });
     }
-    
-    function closeNav() {
-        currX = 0;
-        currY = 0;
-        $('#mySidenav').hide();
-        resizeSvgAndSidebar();
-        selectedTopic = 0;
-        circle.style("stroke", function (d) {
-            return progressColour(d, true);
-        });
-    }
 
     $(document).ready(function () {
         var instance = new SlimSelect({
@@ -422,7 +411,6 @@ if (isset($_GET['logout'])) {
             y = 0;
         if ($("#mySidenav").css("display") == "none") {
             document.getElementById("mySidenav").style.width = "0px";
-            changed = true;
         } else {
             if (window.innerWidth > 1000) {
                 w -= 650;
@@ -433,7 +421,6 @@ if (isset($_GET['logout'])) {
             scale = 2;
             x = -((2 * initWidth - w)/4 + currX);
             y = -(height/4 + currY);
-            changed = true;
         }
         svg.attr("width", w);
         container.attr("width", w);
@@ -444,12 +431,18 @@ if (isset($_GET['logout'])) {
         svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
     }
     
-    /*
-    $('body').click(function () {
-        $('div#mySidenav').hide();
-        resizeSvgAndSidebar();
+    $('body').click(function (event) {
+        if (event.target.nodeName != "circle" && $(event.target).attr("id") != "mySidenav") {
+            $('div#mySidenav').hide();
+            resizeSvgAndSidebar();
+            currX = 0;
+            currY = 0;
+            selectedTopic = 0;
+            circle.style("stroke", function (d) {
+                return progressColour(d, true);
+            });
+        }
     });
-    */
     
 </script>
 
