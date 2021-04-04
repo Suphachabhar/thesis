@@ -428,8 +428,8 @@ if (isset($_GET['logout'])) {
         } else {
             $("#mySidenav").css("display", "block");
             if (window.innerWidth > 1000) {
-                w -= 550;
-                document.getElementById("mySidenav").style.width = "550px";
+                w -= 650;
+                document.getElementById("mySidenav").style.width = "650px";
             } else {
                 document.getElementById("mySidenav").style.width = "100%";
             }
@@ -444,9 +444,11 @@ if (isset($_GET['logout'])) {
     }
     
     $('body').click(function () {
-        showNav = false;
+        $('div#mySidenav').hide();
+        //showNav = false;
         resizeSvgAndSidebar();
     });
+    
 </script>
 
 </html>
