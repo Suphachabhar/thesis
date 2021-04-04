@@ -93,7 +93,7 @@ if (isset($_GET['logout'])) {
             <?php
                 foreach ($topics as $row) {
             ?>
-            <option value="<?php echo $row["name"]; ?>"></option>
+            <option value="<?php echo $row["name"]; ?>" data-value="<?php echo $row["id"]; ?>"></option>
             <?php
                 }
             ?>
@@ -198,9 +198,12 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var showNav = false;
+    var showNav = false,
+        selectedTopic = 0;
+        currX = 0,
+        currY = 0;
 
-    var initWidth = $("body").prop("clientWidth") - 20
+    var initWidth = $("body").prop("clientWidth") - 20;
     var width = initWidth,
         height = 635,
         r = 18,
@@ -274,11 +277,12 @@ if (isset($_GET['logout'])) {
             .attr("cy", function(d) { return d.y; })
             .attr("r", r - .75)
         .style("fill", function (d) {
-            return progressColour(d); 
+            return progressColour(d, false); 
         }).style("stroke", function (d) {
-            return d3.rgb(progressColour(d)).darker(); 
+            return progressColour(d, true);
         }).on("click", function(d) {
-            openNav(d.id);
+            selectedTopic = d.id;
+            openNav();
         });
     
         g.append("g").selectAll("circle")
@@ -314,26 +318,28 @@ if (isset($_GET['logout'])) {
 
     
     $("#topicInput").bind('input', function () {
-        $.ajax({
-            url: "../topic/topic_handler.php",
-            method: "POST",
-            data: "function=searchTopic&name=" + $('#topicInput').val(),
-            success: function(result){
-                if (result != "") {
-                    window.location = result;
-                }
-            }
-        });
+        var id = $('#topicList option[value="' + $('#topicInput').val() + '"]').data('value');
+        if (id !== undefined) {
+            selectedTopic = id;
+            openNav();
+        }
     });
     
-    function progressColour(d) {
+    function progressColour(d, stroke) {
         var id = parseInt(d.id);
         var colour = "#4287f5";
-        $.each(progresses, function (i, obj) {
-            if (id == obj['id'] && obj['progress'] == obj['nSub']) {
-                colour = "#c0c6cf"; 
+        if (id == selectedTopic && stroke) {
+            colour = "#ff0000";
+        } else {
+            $.each(progresses, function (i, obj) {
+                if (id == obj['id'] && obj['progress'] == obj['nSub']) {
+                    colour = "#c0c6cf"; 
+                }
+            });
+            if (stroke) {
+                colour = d3.rgb(colour).darker();
             }
-        });
+        }
         return colour;
     };
     
@@ -354,9 +360,9 @@ if (isset($_GET['logout'])) {
                 }
                 
                 circle.transition().duration(500).style("fill", function (d) {
-                    return progressColour(d); 
+                    return progressColour(d, false); 
                 }).style("stroke", function (d) {
-                    return d3.rgb(progressColour(d)).darker(); 
+                    return progressColour(d, true); 
                 });
             }
         });
@@ -365,22 +371,37 @@ if (isset($_GET['logout'])) {
         }
     ?>
     
-    function openNav(id) {
+    function openNav() {
         showNav = true;
+        $.each(nodes, function (i, obj) {
+            if (selectedTopic == obj['id']) {
+                currX = obj['x'];
+                currY = obj['y'];
+            }
+        });
         $.ajax({
             url: "../topic/topic_handler.php",
             method: "POST",
-            data: "function=getInfo&id=" + id,
+            data: "function=getInfo&id=" + selectedTopic,
             success: function(result){
                 $("#sideNavContent").html(result);
-                resizeSvgAndSidebar(id);
+                resizeSvgAndSidebar();
+                circle.style("stroke", function (d) {
+                    return progressColour(d, true);
+                });
             }
         });
     }
     
     function closeNav() {
         showNav = false;
-        resizeSvgAndSidebar(0);
+        currX = 0;
+        currY = 0;
+        resizeSvgAndSidebar();
+        selectedTopic = 0;
+        circle.style("stroke", function (d) {
+            return progressColour(d, true);
+        });
     }
 
     $(document).ready(function () {
@@ -392,40 +413,39 @@ if (isset($_GET['logout'])) {
     
     $(window).resize(function () {
         width = $("body").prop("clientWidth") - 20;
-        resizeSvgAndSidebar(0);
+        resizeSvgAndSidebar();
     });
     
-    function resizeSvgAndSidebar(id) {
+    function resizeSvgAndSidebar() {
         var w = width;
+        var transform = "translate(" + (w - initWidth)/2 + "," + 0 + ")";
         if (!showNav) {
             if ($("#mySidenav").css("display") == "block") {
                 document.getElementById("mySidenav").style.width = "0px";
                 $("#mySidenav").css("display", "none");
-                container.transition()
-                    .duration(750)
-                    .attr("transform", "translate(" + (w - initWidth)/2 + "," + 0 + ")");
             }
-        } else if (window.innerWidth > 1000) {
-            w -= 550;
-            $("#mySidenav").css("display", "block");
-            document.getElementById("mySidenav").style.width = "550px";
         } else {
             $("#mySidenav").css("display", "block");
-            document.getElementById("mySidenav").style.width = "100%";
+            if (window.innerWidth > 1000) {
+                w -= 550;
+                document.getElementById("mySidenav").style.width = "550px";
+            } else {
+                document.getElementById("mySidenav").style.width = "100%";
+            }
+            transform = "scale(2) translate(" + -((2 * initWidth - w)/4 + currX) + "," + -(height/4 + currY) + ")";
         }
         svg.attr("width", w);
         container.attr("width", w);
         
-        if (id != 0) {
-            $.each(nodes, function (i, obj) {
-                if (id == obj['id']) {
-                    container.transition()
-                        .duration(750)
-                        .attr("transform", "scale(2) translate(" + -((2 * initWidth - w)/4 + obj['x']) + "," + -(height/4 + obj['y']) + ")");
-                }
-            });
-        }
+        container.transition()
+            .duration(750)
+            .attr("transform", transform);
     }
+    
+    $('body').click(function () {
+        showNav = false;
+        resizeSvgAndSidebar();
+    });
 </script>
 
 </html>
