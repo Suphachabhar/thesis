@@ -4,6 +4,11 @@
     overflow: auto;
 }
 
+@media screen and (max-width: 1000px) {
+    .row{
+        flex-direction: column;
+    }
+}
 
 
 .plus-button-topic{
@@ -166,7 +171,7 @@ form + .subtopicSlot {
 }
 
 .containner{
-    margin-bottom: 50px;
+    margin-bottom: 100px;
     margin-left: 50px;
     margin-right: 50px;
 }
@@ -196,3 +201,10 @@ form + .subtopicSlot {
     right: 20px;
 }
 
+.afterContent {
+    margin-top: 20px;
+    position: absolute;
+    right: 20px;
+    bottom: -60px;
+
+}
