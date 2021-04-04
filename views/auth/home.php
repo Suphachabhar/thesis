@@ -79,6 +79,15 @@ if (isset($_GET['logout'])) {
     
     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-color.v2.min.js"></script>
+    <script src="https://d3js.org/d3-dispatch.v2.min.js"></script>
+    <script src="https://d3js.org/d3-ease.v2.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
+    <script src="https://d3js.org/d3-selection.v2.min.js"></script>
+    <script src="https://d3js.org/d3-timer.v2.min.js"></script>
+    <script src="https://d3js.org/d3-transition.v2.min.js"></script>
+    <script src="https://d3js.org/d3-drag.v2.min.js"></script>
+    <script src="https://d3js.org/d3-zoom.v2.min.js"></script>
 </head>
 
 <body>
@@ -199,6 +208,8 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
+    const zoom = d3.zoom();
+
     var selectedTopic = 0;
         currX = 0,
         currY = 0;
@@ -227,7 +238,7 @@ if (isset($_GET['logout'])) {
         .attr("height", height);
         
     svg.call(d3.zoom().on("zoom", function () {
-        container.attr("transform", d3.event.transform);
+        container.attr("transform", zoom.transform);
     }));
 
     var g = container.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
@@ -280,7 +291,7 @@ if (isset($_GET['logout'])) {
             return progressColour(d, false); 
         }).style("stroke", function (d) {
             return progressColour(d, true);
-        }).on("click", function(d) {
+        }).on("click", function(_, d) {
             openNav(d.id);
         });
     
