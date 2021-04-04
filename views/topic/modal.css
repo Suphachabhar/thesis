@@ -4,6 +4,8 @@
     overflow: auto;
 }
 
+
+
 .plus-button-topic{
     background-image: url('../auth/img/plusicon.png'); 
     background-size: 18px 18px;
@@ -159,9 +161,16 @@ form + .subtopicSlot {
     background-color: #f8f9fa;
 }
 
-.description p {
-    margin-bottom: 5px;
+.header{
+    margin-bottom: 40px;
 }
+
+.containner{
+    margin-bottom: 50px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
 
 .top-bar-right{
     display: flex;
