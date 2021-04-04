@@ -361,7 +361,7 @@
             $result = mysqli_query($db, $query);
             $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
             
-            $output = '<h1>'.$info['name'].'<span><button type="button" class="btn btn-link">&nearr;</button></span></h1>';
+            $output = '<h1>'.$info['name'].'<span><button type="button" class="btn btn-link" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">&nearr;</button></span></h1>';
             
             
             if (!is_null($info['description'])) {
@@ -382,7 +382,7 @@
             if (count($subtopics) > 0) {
                 $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
-                    $output .= '<tr><td>'.$s['name'].'</td></tr>';
+                    $output .= '<tr><td onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'].'</td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
