@@ -86,6 +86,7 @@ if (isset($_GET['logout'])) {
         <a href="home.php">
 			<img src="img/unsw_0.png" href="home.php">
 		</a>
+        
 
         <input type="text" id="topicInput" list="topicList" placeholder="Search for topics..">
         <datalist id="topicList">
@@ -167,6 +168,7 @@ if (isset($_GET['logout'])) {
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 					<button type="submit" class="btn btn-primary" value="Create">Submit</button>
+                    
 				</div>
 				</div>
 			</div>
@@ -180,11 +182,13 @@ if (isset($_GET['logout'])) {
     ?>
 	</nav>
 
+    
+
     <div id="main">
+        
         <div id="mySidenav" class="sidenav">
             <span href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</span>
             <div id="sideNavContent"></div>
-            <div id="topicProgress"></div>
         </div> 
         <div id="topicTree"></div>
     </div>

@@ -367,28 +367,7 @@
             if (!is_null($info['description'])) {
                 $output .= '<p>'.$info['description'].'</p>';
             }
-            if (count($subtopics) > 0) {
-                $output .= '<br/><h4>Subtopics</h4><ul>';
-                foreach ($subtopics as $s) {
-                    $output .= '<li>'.$s['name'].'</li>';
-                }
-                $output .= '</ul>';
-            }
-            if (count($prereqs) > 0) {
-                $output .= '<br/><h4>Prerequisite</h4><ul>';
-                foreach ($prereqs as $p) {
-                    $output .= '<li><a onclick="openNav('.$p['id'].')">'.$p['name'].'</a></li>';
-                }
-                $output .= '</ul>';
-            }
-            if (count($after) > 0) {
-                $output .= '<br/><h4>What you should do next</h4><ul>';
-                foreach ($after as $a) {
-                    $output .= '<li><a onclick="openNav('.$a['id'].')">'.$a['name'].'</a></li>';
-                }
-                $output .= '</ul>';
-            }
-            
+
             if (!permission()) {
                 $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
                     ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_POST["id"];
@@ -396,8 +375,34 @@
                 $row = mysqli_fetch_assoc($result);
                 $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
                 $output .= '<h4>Progress</h4><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
-                    .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%">'.$percentage.'%</div></div>';
+                    .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
+
+            
+            if (count($subtopics) > 0) {
+                $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
+                foreach ($subtopics as $s) {
+                    $output .= '<tr><td>'.$s['name'].'</td></tr>';
+                }
+                $output .= '</tbody></table></div>';
+            }
+            if (count($prereqs) > 0) {
+                $output .= '<br/><h4>Prerequisite</h4><div class="card-body"><table class="table table-hover"><tbody>';
+                foreach ($prereqs as $p) {
+                    $output .= '<tr><td onclick="openNav('.$p['id'].')">'.$p['name'].'</td></tr>';
+                }
+                $output .= '</tbody></table></div>';
+            }
+            if (count($after) > 0) {
+                $output .= '<br/><h4>What you should do next</h4><div class="card-body"><table class="table table-hover"><tbody>';
+                foreach ($after as $a) {
+                    $output .= '<tr><td onclick="openNav('.$a['id'].')">'.$a['name'].'</td></tr>';
+                }
+                $output .= '</tbody></table></div>';
+            }
+            
+            
+            
         }
         print $output;
     }

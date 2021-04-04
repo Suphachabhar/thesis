@@ -14,6 +14,7 @@ h1 {
     margin: 0;
     font-size: 50px;
     text-transform: uppercase;
+    
 }
 
 #topicInput {
@@ -56,6 +57,7 @@ h1 {
   color: grey;
   padding: 10px 40px 10px 40px; 
   border: 1px solid #ddd; 
+  margin-right: 15px;
 }
 
 input::-webkit-calendar-picker-indicator {
@@ -74,7 +76,7 @@ input::-webkit-calendar-picker-indicator {
 	width: 3em;
 	border-radius: 999px;
   padding: 10px 40px 10px 5px; 
-  margin-left: 10px;
+  margin-left: -5px;
   cursor:pointer;
 }
 
@@ -128,11 +130,32 @@ text.shadow {
   display: none;
   padding-left: 25px;
   padding-right: 15px;
+  padding-bottom: 80px;
 }
+
+.sidenav .access_course{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 
 #sideNavContent a {
   font-size: 25px;
   color: darkgrey;
+  margin-bottom: 10px;
+
+}
+
+#sideNavContent h1 {
+  text-align: center;
+  margin-bottom: 10px;
+
+}
+
+#sideNavContent tr {
+  cursor:pointer;
+
 }
 
 #sideNavContent a:hover {
@@ -155,7 +178,10 @@ text.shadow {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  padding-bottom: 50px;
 }
+
+
 
 @media screen and (max-width: 1000px) {
     #main{
@@ -172,4 +198,5 @@ text.shadow {
 
 #topicTree {
     overflow: hidden;
+    background-color: orange;
 }

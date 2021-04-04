@@ -108,47 +108,7 @@ if (isset($_GET['logout'])) {
 
 	<h4>Learning map</h4>
 
-	<a class="dropdown-toggle" data-toggle="dropdown" style="font-size:18px; cursor:pointer;" aria-expanded="true">hello</a>
-    <div id="reminderMenu" class="dropdown-menu">
-        <div class="card-body">
-			<?php
-				$query = "SELECT * FROM topics";
-				$query_run = mysqli_query($db, $query);
-			?>
-			<table class="table table-hover">
-				<thead >
-					<tr>
-					<th scope="col" colspan="5">Course</th>
-					</tr>
-				</thead>
-
-				<?php
-					if($query_run){
-						foreach($query_run as $row){ 
-				?>
-				<tbody>
-					<tr data-href="../topic/topic.php?id=<?php echo $row['id']; ?>">
-					<td scope="row"><?php echo $row['name']; ?></td>
-					</tr>
-				</tbody>
-				<?php
-						}
-					}else{
-						echo "NO course found";
-					}	
-				?>
-			</table>
-			<script>
-				document.addEventListener("DOMContentLoaded", () => {
-					const rows = document.querySelectorAll("tr[data-href]");
-					rows.forEach(row => {
-						row.addEventListener("click", () => {
-							window.location.href = row.dataset.href;
-						});
-					});
-				});
-			</script>
-        </div>
+	
     </div>
 	
 
