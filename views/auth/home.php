@@ -187,10 +187,11 @@ if (isset($_GET['logout'])) {
     <div id="main">
         
         <div id="mySidenav" class="sidenav">
-            <span href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</span>
+            
             <div id="sideNavContent"></div>
         </div> 
         <div id="topicTree"></div>
+        
     </div>
 
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>

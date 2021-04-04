@@ -6,6 +6,7 @@
 
 body {
   font-family: 'Poppins', sans-serif;
+  background-color: white;
 }
 
 h1 {
@@ -131,6 +132,7 @@ text.shadow {
   padding-left: 25px;
   padding-right: 15px;
   padding-bottom: 80px;
+  
 }
 
 .sidenav .access_course{
@@ -198,5 +200,8 @@ text.shadow {
 
 #topicTree {
     overflow: hidden;
-    background-color: orange;
+    background-color: white;
+    
+
 }
+
