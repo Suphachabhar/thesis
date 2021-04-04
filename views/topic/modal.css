@@ -4,11 +4,7 @@
     overflow: auto;
 }
 
-@media screen and (max-width: 1000px) {
-    .row{
-        flex-direction: column;
-    }
-}
+
 
 
 .plus-button-topic{
@@ -189,7 +185,6 @@ form + .subtopicSlot {
 .top-bar-right img{
     padding: 27px;
     width: 200px;
-    margin-right: 950px;
 }
 
 #nav-link{
