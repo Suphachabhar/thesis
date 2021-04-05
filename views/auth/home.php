@@ -203,7 +203,8 @@ if (isset($_GET['logout'])) {
 <script>
     var selectedTopic = 0;
         currX = 0,
-        currY = 0;
+        currY = 0,
+        isStudent = <?php echo permission() ? "false" : "true"; ?>;
 
     var initWidth = $("body").prop("clientWidth") - 20;
     var width = initWidth,
@@ -325,17 +326,42 @@ if (isset($_GET['logout'])) {
         }
     });
     
+    const defaultColour = "#4287f5",
+        finishedColour = "#c0c6cf",
+        nextColour = "#11d975",
+        selectedColour = "#ff0000";
+    
     function progressColour(d, stroke) {
         var id = parseInt(d.id);
-        var colour = "#4287f5";
+        var colour = defaultColour;
         if (id == selectedTopic && stroke) {
-            colour = "#ff0000";
+            colour = selectedColour;
         } else {
-            $.each(progresses, function (i, obj) {
-                if (id == obj['id'] && obj['progress'] == obj['nSub']) {
-                    colour = "#c0c6cf"; 
+            if (isStudent) {
+                $.each(progresses, function (_, obj) {
+                    if (id == obj.id) {
+                        if (obj.progress == obj.nSub) {
+                            colour = finishedColour;
+                        }
+                    }
+                });
+                
+                if (colour == defaultColour) {
+                    var initial = true;
+                    $.each(links, function (_, l) {
+                        if (id == l.target.id) {
+                            initial = false;
+                            if (progressColour(l.source, false) == finishedColour) {
+                                console.log(l.source.name + ' -> ' + d.name);
+                                colour = nextColour;
+                            }
+                        }
+                    });
+                    if (initial) {
+                        colour = nextColour;
+                    }
                 }
-            });
+            }
             if (stroke) {
                 colour = d3.rgb(colour).darker();
             }
@@ -355,8 +381,10 @@ if (isset($_GET['logout'])) {
             success: function(result){
                 if (result == "") {
                     progresses = [];
+                    isStudent = false;
                 } else {
                     progresses = JSON.parse(result);
+                    isStudent = true;
                 }
                 
                 circle.transition().duration(500).style("fill", function (d) {
