@@ -15,6 +15,10 @@
         }
         $return = mysqli_fetch_assoc($results);
         
+        $query = "SELECT a.id, a.name FROM categories AS a, topic_categories AS b where a.id = b.category AND b.topic = ".$id;
+        $results = mysqli_query($db, $query);
+        $return['category'] = mysqli_fetch_all($results, MYSQLI_ASSOC);
+        
         $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b where a.id = b.prerequisite AND b.topic = ".$id;
         $results = mysqli_query($db, $query);
         $return['prerequisite'] = mysqli_fetch_all($results, MYSQLI_ASSOC);

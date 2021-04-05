@@ -91,6 +91,11 @@
             $query = "INSERT INTO prerequisites (topic, prerequisite) VALUES (".$id.", ".$p.")";
             mysqli_query($db, $query);
         }
+        
+        foreach ($_POST['category'] as $c) {
+            $query = "INSERT INTO topic_categories (topic, category) VALUES (".$id.", ".$c.")";
+            mysqli_query($db, $query);
+        }
         header('location: topic.php?id='.$id);
     }
     
@@ -216,6 +221,7 @@
             $error = false;
             $edits = "";
             $count = 0;
+            // subtopic order
             foreach ($_POST['subtopic'] as $subtopicID) {
                 $subtopic = existingSubtopicID($subtopicID, $_POST['id'], $db);
                 if (is_null($subtopic)) {
@@ -232,6 +238,39 @@
                 mysqli_query($db, $query);
             }
             
+            // category
+            $existingCat = array_map(function($cat) {
+                return strval($cat['id']);
+            }, $topic['category']);
+            $catToKeep = array_intersect($_POST['category'], $existingCat);
+            $query = "DELETE FROM topic_categories WHERE topic = ".$_POST['id']." AND category IN (".join(", ", array_diff($existingCat, $catToKeep)).")";
+            mysqli_query($db, $query);
+            $values = array();
+            foreach (array_diff($_POST['category'], $catToKeep) as $cat) {
+                $values[] = "(".$_POST['id'].", ".$cat.")";
+            }
+            if (count($values) > 0) {
+                $query = "INSERT INTO topic_categories (topic, category) VALUES ".join(", ", $values);
+                mysqli_query($db, $query);
+            }
+            
+            // prerequisite
+            $existingPrereq = array_map(function($prereq) {
+                return strval($prereq['id']);
+            }, $topic['prerequisite']);
+            $prereqToKeep = array_intersect($_POST['prerequisite'], $existingPrereq);
+            $query = "DELETE FROM prerequisites WHERE topic = ".$_POST['id']." AND prerequisite IN (".join(", ", array_diff($existingPrereq, $prereqToKeep)).")";
+            mysqli_query($db, $query);
+            $values = array();
+            foreach (array_diff($_POST['prerequisite'], $prereqToKeep) as $prereq) {
+                $values[] = "(".$_POST['id'].", ".$prereq.")";
+            }
+            if (count($values) > 0) {
+                $query = "INSERT INTO prerequisites (topic, prerequisite) VALUES ".join(", ", $values);
+                mysqli_query($db, $query);
+            }
+            
+            // topic name
             if (!empty($_POST['name']) && strcmp($_POST['name'], $topic['name']) != 0) {
                 if (existingTopicName($name, $db)) {
                     $_SESSION['success'] = clashedInputError('topic name', $_POST['name']);
@@ -242,6 +281,7 @@
                 }
             }
             
+            // description
             if (strcmp($_POST['description'], $topic['description']) != 0) {
                 $query = "UPDATE topics SET description = '".$description."' WHERE id = ".$_POST['id'];
                 mysqli_query($db, $query);

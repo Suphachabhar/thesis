@@ -148,6 +148,20 @@ if (isset($_GET['logout'])) {
 						<input name="name" type="text" class="form-control">
 					</div>
 					<div class="form-group">
+						<label for="message-text" class="col-form-label">Category:</label>
+                        <select id="category" name="category[]" multiple>
+                            <?php
+                                $query = "SELECT id, name FROM categories ORDER BY name";
+                                $results = mysqli_query($db, $query);
+                                foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                            ?>
+                            <option value="<?php echo $row["id"]; ?>"><?php echo $row["name"]; ?></option>
+                            <?php
+                                }
+                            ?>
+                        </select>
+					</div>
+					<div class="form-group">
 						<label for="message-text" class="col-form-label">Description:</label>
 						<textarea class="form-control" id="message-text" name="description"></textarea>
 					</div>
@@ -408,6 +422,15 @@ if (isset($_GET['logout'])) {
             }
         });
     });
+
+    $(document).ready(function () {
+        var instance = new SlimSelect({
+            select: '#prerequisite'
+        });
+        var instance2 = new SlimSelect({
+            select: '#category'
+        });
+    });
     <?php
         }
     ?>
@@ -436,13 +459,6 @@ if (isset($_GET['logout'])) {
             }
         });
     }
-
-    $(document).ready(function () {
-        var instance = new SlimSelect({
-            select: '#prerequisite'
-
-        });
-    });
     
     $(window).resize(function () {
         width = $("body").prop("clientWidth") - 20;

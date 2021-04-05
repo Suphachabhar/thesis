@@ -68,6 +68,9 @@ if (isset($_GET['logout'])) {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     
+    <link href="../../node_modules/slim-select/dist/slimselect.css" rel="stylesheet">
+    <script src="../../node_modules/slim-select/dist/slimselect.js"></script>
+    
     <script>
         $( function() {
             $( "#sortable" ).sortable();
@@ -137,8 +140,46 @@ if (isset($_GET['logout'])) {
                                     <input name="name" value="<?php echo $topic['name']; ?>">
                                 </div>
                                 <div class="form-group">
+                                    <label for="message-text" class="col-form-label">Category:</label>
+                                    <select id="category" name="category[]" multiple>
+                                        <?php
+                                            $cat_ids = array_map(function($cat) {
+                                                return $cat['id'];
+                                            }, $topic['category']);
+                                        
+                                            $query = "SELECT id, name FROM categories ORDER BY name";
+                                            $results = mysqli_query($db, $query);
+                                            foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                                        ?>
+                                        <option value="<?php echo $row["id"]; ?>"<?php if (in_array($row["id"], $cat_ids)) echo "selected"; ?>>
+                                            <?php echo $row["name"]; ?>
+                                        </option>
+                                        <?php
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="message-text" class="col-form-label">Description:</label>
                                     <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message-text" class="col-form-label">Prerequisite:</label>
+                                    <select id="prerequisite" name="prerequisite[]" multiple>
+                                        <?php
+                                            $prereq_ids = array_map(function($prereq) {
+                                                return $prereq['id'];
+                                            }, $topic['prerequisite']);
+                                            
+                                            $query = "SELECT id, name FROM topics ORDER BY name";
+                                            $results = mysqli_query($db, $query);
+                                            foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                                        ?>
+                                        <option value="<?php echo $row["id"]; ?>"<?php if (in_array($row["id"], $prereq_ids)) echo "selected"; ?>><?php echo $row["name"]; ?></option>
+                                        <?php
+                                            }
+                                        ?>
+                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="message-text" class="col-form-label">Subtopic order:</label>
@@ -490,6 +531,15 @@ if (isset($_GET['logout'])) {
             });
         }
     }));
+
+    $(document).ready(function () {
+        var instance = new SlimSelect({
+            select: '#prerequisite'
+        });
+        var instance2 = new SlimSelect({
+            select: '#category'
+        });
+    });
     <?php
         } else {
     ?>
