@@ -295,8 +295,7 @@ if (isset($_GET['logout'])) {
             .attr("dy", ".35em")
                 .attr("class", "shadow")
                 .style("text-anchor", "middle")
-                .text(function(d) { return d.name;}
-            );
+                .text(function(d) { return d.name;});
 
         g.append("g").selectAll("circle")
         .data(nodes)
@@ -305,8 +304,7 @@ if (isset($_GET['logout'])) {
           .attr("y", function(d) { return d.y + r + 6; })
           .attr("dy", ".35em")
           .style("text-anchor", "middle")
-              .text(function(d) { return d.name;}
-          );
+              .text(function(d) { return d.name;});
     });
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
@@ -317,7 +315,6 @@ if (isset($_GET['logout'])) {
 		modal.find('.modal-title').text('New message to ' + recipient)
 		modal.find('.modal-body input').val(recipient)
 	});
-
     
     $("#topicInput").bind('input', function () {
         var id = $('#topicList option[value="' + $('#topicInput').val() + '"]').data('value');
@@ -340,10 +337,10 @@ if (isset($_GET['logout'])) {
         .attr("y2", "0%");
     inProgress.append("stop")
         .attr("offset", "50%")
-        .attr("stop-color", finishedColour)
+        .attr("stop-color", finishedColour);
     inProgress.append("stop")
         .attr("offset", "50%")
-        .attr("stop-color", nextColour)
+        .attr("stop-color", nextColour);
     
     function progressColour(d, stroke) {
         var id = parseInt(d.id);
@@ -357,7 +354,7 @@ if (isset($_GET['logout'])) {
                         if (obj.progress == obj.nSub) {
                             colour = finishedColour;
                         } else if (obj.progress > 0) {
-                            colour = "url(#inProgress)";
+                            colour = stroke ? "#87c4a6" : "url(#inProgress)";
                         }
                     }
                 });
@@ -429,7 +426,9 @@ if (isset($_GET['logout'])) {
             data: "function=getInfo&id=" + selectedTopic,
             success: function(result){
                 $("#sideNavContent").html(result);
-                $('#mySidenav').show();
+                if ($("#mySidenav").css("display") == "none") {
+                    $('#mySidenav').show();
+                }
                 resizeSvgAndSidebar();
                 circle.style("stroke", function (d) {
                     return progressColour(d, true);
@@ -459,7 +458,7 @@ if (isset($_GET['logout'])) {
             document.getElementById("mySidenav").style.width = "0px";
         } else {
             if (window.innerWidth > 1000) {
-                w -= 680;
+                w -= 700;
                 document.getElementById("mySidenav").style.width = "630px";
             } else {
                 document.getElementById("mySidenav").style.width = "100%";
