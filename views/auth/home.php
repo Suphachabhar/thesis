@@ -330,6 +330,20 @@ if (isset($_GET['logout'])) {
         finishedColour = "#c0c6cf",
         nextColour = "#11d975",
         selectedColour = "#ff0000";
+        
+    const inProgress = g.append("defs")
+    .append("linearGradient")
+        .attr("id", "inProgress")
+        .attr("x1", "0%")
+        .attr("x2", "0%")
+        .attr("y1", "100%")
+        .attr("y2", "0%");
+    inProgress.append("stop")
+        .attr("offset", "50%")
+        .attr("stop-color", finishedColour)
+    inProgress.append("stop")
+        .attr("offset", "50%")
+        .attr("stop-color", nextColour)
     
     function progressColour(d, stroke) {
         var id = parseInt(d.id);
@@ -342,6 +356,8 @@ if (isset($_GET['logout'])) {
                     if (id == obj.id) {
                         if (obj.progress == obj.nSub) {
                             colour = finishedColour;
+                        } else if (obj.progress > 0) {
+                            colour = "url(#inProgress)";
                         }
                     }
                 });
