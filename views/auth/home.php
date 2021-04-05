@@ -477,8 +477,8 @@ if (isset($_GET['logout'])) {
     }
     
     $('body').click(function (event) {
-        if (event.target.nodeName != "circle" && $(event.target).attr("id") != "mySidenav") {
-            $('div#mySidenav').hide();
+        if (event.target.nodeName != "circle" && !sideNavClicked($(event.target))) {
+            $('#mySidenav').hide();
             resizeSvgAndSidebar();
             currX = 0;
             currY = 0;
@@ -488,6 +488,16 @@ if (isset($_GET['logout'])) {
             });
         }
     });
+    
+    function sideNavClicked(element) {
+        if (element.attr("id") == "mySidenav") {
+            return true;
+        }
+        var parents = element.parents().map(function () {
+            return $(this).attr("id") == "mySidenav";
+        });
+        return $.inArray(true, parents) >= 0;
+    }
     
 </script>
 
