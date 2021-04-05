@@ -116,11 +116,13 @@ if (isset($_GET['logout'])) {
                 }
             ?>
         </datalist>
+
+        <button class="plus-button" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
             
         <?php
             }
         ?>
-        <button class="plus-button" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button>
+        
 		<a class="btn btn-secondary" id="nav-link" href="login.php?logout='1'">Logout</a>	 
     </div>
 

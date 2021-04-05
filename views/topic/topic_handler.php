@@ -398,14 +398,14 @@
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
 
-            
+            /*
             if (count($subtopics) > 0) {
                 $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
                     $output .= '<tr><td onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'].'</td></tr>';
                 }
                 $output .= '</tbody></table></div>';
-            }
+            }*/
             if (count($prereqs) > 0) {
                 $output .= '<br/><h4>Prerequisite</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($prereqs as $p) {
