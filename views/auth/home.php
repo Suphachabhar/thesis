@@ -295,6 +295,10 @@ if (isset($_GET['logout'])) {
     var n = <?php echo count($nodes); ?>;
         
     var path, circle, text, text_shadow;
+        
+    var nodeStatus = d3.select("body").append("div")
+        .attr("class", "nodeStatus")
+        .style("opacity", 0);
 
     d3.timeout(function() {
         for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
@@ -342,6 +346,19 @@ if (isset($_GET['logout'])) {
             return progressColour(d, true);
         }).on("click", function(d) {
             openNav(d.id);
+        }).on("mouseover", function(d) {
+            if (isStudent) {
+                nodeStatus.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                nodeStatus.html(nodeStatusMessage(d))	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");
+            }
+        }).on("mouseout", function(d) {
+            nodeStatus.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
         });
     
         text_shadow = g.append("g").selectAll("circle")
@@ -402,6 +419,19 @@ if (isset($_GET['logout'])) {
     inProgress.append("stop")
         .attr("offset", "50%")
         .attr("stop-color", nextColour);
+        
+    function nodeStatusMessage(d) {
+        switch (progressColour(d, false)) {
+            case unavailableColour:
+                return "Prerequisite not completed";
+            case nextColour:
+                return "Available to study";
+            case "url(#inProgress)":
+                return "In progress";
+            default:
+                return "Completed";
+        }
+    };
     
     function progressColour(d, stroke) {
         var id = parseInt(d.id);
