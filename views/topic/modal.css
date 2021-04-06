@@ -167,7 +167,7 @@ form + .subtopicSlot {
     margin-bottom: 40px;
 }
 
-.container{
+.containner{
     margin-bottom: 100px;
     margin-left: 50px;
     margin-right: 50px;
@@ -179,7 +179,8 @@ form + .subtopicSlot {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-   
+    margin-left: 25px;
+    margin-right: 25px;
   
 }
 
