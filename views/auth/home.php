@@ -138,6 +138,8 @@ if (isset($_GET['logout'])) {
             }
         ?>
 
+        
+
         <div class="btn-group">
             <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Select category
@@ -234,6 +236,8 @@ if (isset($_GET['logout'])) {
 		
 
         </form>
+        
+   
         
     <?php
         }
@@ -591,6 +595,10 @@ if (isset($_GET['logout'])) {
             text_shadow.attr("opacity", 1);
         }
     });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>
 
 </html>

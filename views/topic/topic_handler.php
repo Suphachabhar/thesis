@@ -439,12 +439,12 @@
             if (count($subtopics) > 0) {
                 $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
-                    $output .= '<tr><td onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'];
+                    $output .= '<tr><td style="width: 90%" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'];
                     if (!permission()) {
                         if ($subsFinished >= $s['sort']) {
-                            $output .= '<span><img src="../auth/img/tick.png"></span>';
+                            $output .= '<td><img src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<span><img src="../auth/img/warning.png"></span>';
+                            $output .= '<td><img src="../auth/img/warning.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
@@ -455,12 +455,12 @@
                 $output .= '<br/><h4>Prerequisite</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($prereqs as $p) {
                     $pid = $p['id'];
-                    $output .= '<tr><td onclick="openNav('.$pid.')">'.$p['name'];
+                    $output .= '<tr><td style="width: 90%"  onclick="openNav('.$pid.')">'.$p['name'];
                     if (!permission()) {
                         if ($prereqCheck[$pid]) {
-                            $output .= '<span><img src="../auth/img/tick.png"></span>';
+                            $output .= '<td><img src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<span><img src="../auth/img/warning.png"></span>';
+                            $output .= '<td><img src="../auth/img/warning.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
@@ -471,13 +471,13 @@
                 $output .= '<br/><h4>What you should do next</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($after as $a) {
                     $aid = $a['id'];
-                    $output .= '<tr><td onclick="openNav('.$aid.')">'.$a['name'];
+                    $output .= '<tr><td style="width: 90%"  onclick="openNav('.$aid.')">'.$a['name'];
                     if (!permission()) {
                         $progress = getUserProgress($aid, $db);
                         if (!is_null($progress) && $progress['nSub'] == $progress['progress']) {
-                            $output .= '<span><img src="../auth/img/tick.png"></span>';
+                            $output .= '<td><img src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<span><img src="../auth/img/warning.png"></span>';
+                            $output .= '<td><img src="../auth/img/warning.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';

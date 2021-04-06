@@ -286,6 +286,10 @@ if (isset($_GET['logout'])) {
     <!-- showing the responding of the system -->
     <div class="containner">
         <!-- showing topic name -->
+        
+    
+  
+</table>
         <div id="name" class="header">
             <h1><?php echo $topic['name']; ?></h1>
             <div class="descAndNav">
@@ -587,6 +591,10 @@ if (isset($_GET['logout'])) {
             }
         });
 	}));
+
+    
+
+    
 </script>
 
 </body>

@@ -160,7 +160,7 @@ text.shadow {
 
 .sidenav img{
   width: 15px;
-
+  
 }
 
 .tooltiptext {
@@ -223,11 +223,11 @@ text.shadow {
 }
 
 #sideNavContent td {
-  cursor:pointer;
-  display: flex;
-  flex-direction: row;
-  
+  width: 50px;
+
 }
+
+
 
 .card-body{
   margin-top: -5px;
@@ -259,7 +259,6 @@ text.shadow {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
- 
   margin-top: 10px;
 }
 
