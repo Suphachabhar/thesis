@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2021 at 03:22 AM
+-- Generation Time: Apr 06, 2021 at 09:29 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -31,6 +31,24 @@ CREATE TABLE `topic_categories` (
   `topic` int(11) NOT NULL,
   `category` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `topic_categories`
+--
+
+INSERT INTO `topic_categories` (`topic`, `category`) VALUES
+(66, 2),
+(66, 4),
+(51, 5),
+(52, 5),
+(53, 5),
+(54, 5),
+(57, 1),
+(58, 1),
+(59, 5),
+(60, 5),
+(61, 5),
+(62, 5);
 
 --
 -- Indexes for dumped tables

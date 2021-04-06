@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 04, 2021 at 01:48 PM
+-- Generation Time: Apr 06, 2021 at 09:29 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -49,7 +49,8 @@ INSERT INTO `topics` (`id`, `name`, `description`) VALUES
 (61, 'NodeJS', NULL),
 (62, 'Class Components', NULL),
 (63, 'asdf', NULL),
-(64, 'hhh', NULL);
+(64, 'hhh', NULL),
+(66, 'test', NULL);
 
 --
 -- Indexes for dumped tables
@@ -69,7 +70,7 @@ ALTER TABLE `topics`
 -- AUTO_INCREMENT for table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

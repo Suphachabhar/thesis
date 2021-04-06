@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 04, 2021 at 01:48 PM
+-- Generation Time: Apr 06, 2021 at 09:29 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -40,8 +40,8 @@ CREATE TABLE `progresses` (
 INSERT INTO `progresses` (`student`, `topic`, `progress`) VALUES
 (4, 51, 2),
 (4, 52, 3),
-(4, 53, 1),
-(4, 54, 0);
+(4, 53, 2),
+(4, 54, 1);
 
 --
 -- Indexes for dumped tables
