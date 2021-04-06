@@ -223,7 +223,8 @@ text.shadow {
 }
 
 #sideNavContent td {
-  width: 50px;
+
+  cursor: pointer;
 
 }
 
