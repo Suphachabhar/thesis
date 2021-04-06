@@ -416,7 +416,7 @@ if (isset($_GET['logout'])) {
                         if (obj.progress == obj.nSub) {
                             colour = defaultColour;
                         } else if (obj.progress > 0) {
-                            colour = stroke ? "#87c4a6" : "url(#inProgress)";
+                            colour = stroke ? "#27e3da" : "url(#inProgress)";
                         }
                     }
                 });
@@ -572,10 +572,6 @@ if (isset($_GET['logout'])) {
         if (catChecked.length > 0) {
             circle.attr("opacity", function (d) {
                 return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
-            }).on("click", function(d) {
-                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
-                    openNav(d.id);
-                }
             });
             path.attr("opacity", function (d) {
                 var src = d.source.id;
@@ -589,10 +585,7 @@ if (isset($_GET['logout'])) {
                 return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
             });
         } else {
-            circle.attr("opacity", 1)
-            .on("click", function(d) {
-                openNav(d.id);
-            });
+            circle.attr("opacity", 1);
             path.attr("opacity", 1);
             text.attr("opacity", 1);
             text_shadow.attr("opacity", 1);

@@ -393,7 +393,7 @@
         $result = mysqli_query($db, $query);
         if (mysqli_num_rows($result) > 0) {
             $info = mysqli_fetch_assoc($result);
-            $query = "SELECT name FROM subtopics WHERE topic = ".$_POST["id"]." ORDER BY sort";
+            $query = "SELECT name, sort FROM subtopics WHERE topic = ".$_POST["id"]." ORDER BY sort";
             $result = mysqli_query($db, $query);
             $subtopics = mysqli_fetch_all($result, MYSQLI_ASSOC);
             $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b WHERE b.topic = ".$_POST["id"]." AND b.prerequisite = a.id";
@@ -403,18 +403,14 @@
             $result = mysqli_query($db, $query);
             $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
             
-            $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM prerequisites AS a LEFT JOIN progresses AS b ON a.prerequisite = b.topic"
-                ." LEFT JOIN subtopics AS c ON a.prerequisite = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.topic = ".$_POST["id"];
-            $result = mysqli_query($db, $query);
-            $prereqCheck = mysqli_fetch_all($result, MYSQLI_ASSOC);
             $addLink = true;
+            $prereqCheck = array();
             if(!permission()){
                 foreach ($prereqs as $p) {
-                    $query = "SELECT count(a.id) AS subtopics, b.progress FROM subtopics AS a, progresses AS b WHERE b.student = ".$_SESSION['user']['id']
-                        ." AND b.topic = ".$p['id']." AND b.topic = a.topic";
-                    $results = mysqli_query($db, $query);
-                    $progress = mysqli_fetch_assoc($results);
-                    if (is_null($progress) || $progress['subtopics'] != $progress['progress']) {
+                    $pid = $p['id'];
+                    $progress = getUserProgress($pid, $db);
+                    $prereqCheck[$pid] = !is_null($progress) && $progress['nSub'] == $progress['progress'];
+                    if (!$prereqCheck[$pid]) {
                         $addLink = false;
                     }
                 }
@@ -430,12 +426,11 @@
                 $output .= '<p>'.$info['description'].'</p>';
             }
 
+            $subsFinished = 0;
             if (!permission()) {
-                $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
-                    ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_POST["id"];
-                $result = mysqli_query($db, $query);
-                $row = mysqli_fetch_assoc($result);
-                $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
+                $row = getUserProgress($_POST["id"], $db);
+                $subsFinished = $row['progress'];
+                $percentage = $row['nSub'] == 0 ? 0 : round(($subsFinished / $row['nSub']) * 100);
                 $output .= '<h4>Progress</h4><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
@@ -444,21 +439,48 @@
             if (count($subtopics) > 0) {
                 $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
-                    $output .= '<tr><td onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'].'<span><img src="../auth/img/tick.png"></span></td></tr>';
+                    $output .= '<tr><td onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'];
+                    if (!permission()) {
+                        if ($subsFinished >= $s['sort']) {
+                            $output .= '<span><img src="../auth/img/tick.png"></span>';
+                        } else {
+                            $output .= '<span><img src="../auth/img/warning.png"></span>';
+                        }
+                    }
+                    $output .= '</td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
             if (count($prereqs) > 0) {
                 $output .= '<br/><h4>Prerequisite</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($prereqs as $p) {
-                    $output .= '<tr><td onclick="openNav('.$p['id'].')">'.$p['name'].'<span><img src="../auth/img/tick.png"></span></td></tr>';
+                    $pid = $p['id'];
+                    $output .= '<tr><td onclick="openNav('.$pid.')">'.$p['name'];
+                    if (!permission()) {
+                        if ($prereqCheck[$pid]) {
+                            $output .= '<span><img src="../auth/img/tick.png"></span>';
+                        } else {
+                            $output .= '<span><img src="../auth/img/warning.png"></span>';
+                        }
+                    }
+                    $output .= '</td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
             if (count($after) > 0) {
                 $output .= '<br/><h4>What you should do next</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($after as $a) {
-                    $output .= '<tr><td onclick="openNav('.$a['id'].')">'.$a['name'].'<span><img src="../auth/img/warning.png"></span></td></tr>';
+                    $aid = $a['id'];
+                    $output .= '<tr><td onclick="openNav('.$aid.')">'.$a['name'];
+                    if (!permission()) {
+                        $progress = getUserProgress($aid, $db);
+                        if (!is_null($progress) && $progress['nSub'] == $progress['progress']) {
+                            $output .= '<span><img src="../auth/img/tick.png"></span>';
+                        } else {
+                            $output .= '<span><img src="../auth/img/warning.png"></span>';
+                        }
+                    }
+                    $output .= '</td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
