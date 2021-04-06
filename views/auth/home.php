@@ -371,9 +371,9 @@ if (isset($_GET['logout'])) {
         }
     });
     
-    const defaultColour = "#4287f5",
-        finishedColour = "#c0c6cf",
-        nextColour = "#11d975",
+    const defaultColour = "#11d975",
+        unavailableColour = "#c0c6cf",
+        nextColour = "#4287f5",
         selectedColour = "#ff0000";
         
     const inProgress = g.append("defs")
@@ -385,7 +385,7 @@ if (isset($_GET['logout'])) {
         .attr("y2", "0%");
     inProgress.append("stop")
         .attr("offset", "50%")
-        .attr("stop-color", finishedColour);
+        .attr("stop-color", defaultColour);
     inProgress.append("stop")
         .attr("offset", "50%")
         .attr("stop-color", nextColour);
@@ -397,23 +397,23 @@ if (isset($_GET['logout'])) {
             colour = selectedColour;
         } else {
             if (isStudent) {
+                colour = unavailableColour;
                 $.each(progresses, function (_, obj) {
                     if (id == obj.id) {
                         if (obj.progress == obj.nSub) {
-                            colour = finishedColour;
+                            colour = defaultColour;
                         } else if (obj.progress > 0) {
                             colour = stroke ? "#87c4a6" : "url(#inProgress)";
                         }
                     }
                 });
                 
-                if (colour == defaultColour) {
+                if (colour == unavailableColour) {
                     var initial = true;
                     $.each(links, function (_, l) {
                         if (id == l.target.id) {
                             initial = false;
-                            if (progressColour(l.source, false) == finishedColour) {
-                                console.log(l.source.name + ' -> ' + d.name);
+                            if (progressColour(l.source, false) == defaultColour) {
                                 colour = nextColour;
                             }
                         }
