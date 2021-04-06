@@ -62,6 +62,20 @@ h1 {
   margin-right: 15px;
 }
 
+.btn.btn-light.dropdown-toggle{
+  background-image: url('img/searchicon.png'); 
+  background-size: 18px 18px;
+  background-position: 9px 11px; 
+  background-repeat: no-repeat; 
+  width: 100%; 
+  font-size: 14px; 
+  color: grey;
+  padding: 10px 40px 10px 40px; 
+  border: 1px solid #ddd; 
+  margin-right: 15px;
+  background-color: white;
+}
+
 input::-webkit-calendar-picker-indicator {
   display: none;
 }
