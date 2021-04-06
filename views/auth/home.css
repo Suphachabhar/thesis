@@ -162,6 +162,13 @@ text.shadow {
   cursor:pointer;
 }
 
+.sidenav button{
+  margin-left: 10px;
+  margin-bottom: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
 .sidenav .access_course{
   display: flex;
   flex-direction: row;
