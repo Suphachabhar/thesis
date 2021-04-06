@@ -360,7 +360,9 @@
             
             $query = "SELECT max(sort) AS max FROM subtopics WHERE topic = ".$_POST['topic'];
             $result = mysqli_fetch_assoc(mysqli_query($db, $query));
-           
+            if ($result['max'] == intval($_POST['progress'])) {
+                $url = "../auth/home.php?topic=".$_POST['topic'];
+            }
         }
         print $url;
     }

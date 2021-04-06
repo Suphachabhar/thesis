@@ -228,7 +228,7 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var selectedTopic = 0;
+    var selectedTopic = <?php echo isset($_GET['topic']) ? $_GET['topic'] : 0; ?>;
         currX = 0,
         currY = 0,
         isStudent = <?php echo permission() ? "false" : "true"; ?>;
@@ -332,6 +332,10 @@ if (isset($_GET['logout'])) {
           .attr("dy", ".35em")
           .style("text-anchor", "middle")
               .text(function(d) { return d.name;});
+              
+        if (selectedTopic != 0) {
+            openNav(selectedTopic);
+        }
     });
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
