@@ -74,7 +74,7 @@ h1 {
   color: grey;
   padding: 10px 40px 10px 40px; 
   border: 1px solid #ddd; 
-  margin-right: 15px;
+
   background-color: white;
 }
 
@@ -94,8 +94,8 @@ input::-webkit-calendar-picker-indicator {
 	width: 3em;
 	border-radius: 999px;
   padding: 10px 40px 10px 5px; 
-  margin-left: -5px;
   cursor:pointer;
+  margin-left: 10px;
 }
 
 .link {
