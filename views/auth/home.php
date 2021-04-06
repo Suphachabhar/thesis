@@ -22,11 +22,26 @@ if (isset($_GET['logout'])) {
     $query = "SELECT id, name FROM topics";
     $results = mysqli_query($db, $query);
     $topics = mysqli_fetch_all($results, MYSQLI_ASSOC);
+    $topicCat = array();
     foreach ($topics as $row) {
-        $nodes[] = array("name" => $row["name"], "id" => $row["id"]);
-        $nodeNum[$row["id"]] = $i;
+        $id = $row["id"];
+        $nodes[] = array("name" => $row["name"], "id" => $id);
+        $nodeNum[$id] = $i;
         $i ++;
+        
+        $topicCat[$id] = array();
     }
+    
+    $query = "SELECT topic, category FROM topic_categories";
+    $results = mysqli_query($db, $query);
+    $rows = mysqli_fetch_all($results, MYSQLI_ASSOC);
+    foreach ($rows as $row) {
+        $topicCat[$row['topic']][] = $row['category'];
+    }
+    
+    $query = "SELECT id, name FROM categories ORDER BY name";
+    $results = mysqli_query($db, $query);
+    $categories = mysqli_fetch_all($results, MYSQLI_ASSOC);
     
     $query = "SELECT topic, prerequisite FROM prerequisites";
     $results = mysqli_query($db, $query);
@@ -129,9 +144,6 @@ if (isset($_GET['logout'])) {
             </button>
             <div class="dropdown-menu" id="categoryList">
                 <?php
-                    $query = "SELECT id, name FROM categories ORDER BY name";
-                    $results = mysqli_query($db, $query);
-                    $categories = mysqli_fetch_all($results, MYSQLI_ASSOC);
                     foreach ($categories as $cat) {
                 ?>
                 <a class="dropdown-item"><input type="checkbox" name="category" value="<?php echo $cat['id']; ?>"/>  <?php echo $cat['name']; ?></a>
@@ -256,7 +268,8 @@ if (isset($_GET['logout'])) {
         r = 18,
         nodes=<?php echo json_encode($nodes); ?>,
         links=<?php echo json_encode($links); ?>,
-        progresses=<?php echo json_encode($progresses); ?>;
+        progresses=<?php echo json_encode($progresses); ?>,
+        topicCat=<?php echo json_encode($topicCat); ?>;
     
     var simulation = d3.forceSimulation(nodes)
         .force("charge", d3.forceManyBody().strength(-1000))
@@ -281,7 +294,7 @@ if (isset($_GET['logout'])) {
 
     var n = <?php echo count($nodes); ?>;
         
-    var circle;
+    var path, circle, text, text_shadow;
 
     d3.timeout(function() {
         for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
@@ -302,7 +315,7 @@ if (isset($_GET['logout'])) {
         .append("path")
             .attr("d", "M0,-5L10,0L0,5");
 
-        var path = g.append("g")
+        path = g.append("g")
             .attr("stroke", "#000")
             .attr("stroke-width", 1.5)
             .selectAll("path")
@@ -331,7 +344,7 @@ if (isset($_GET['logout'])) {
             openNav(d.id);
         });
     
-        g.append("g").selectAll("circle")
+        text_shadow = g.append("g").selectAll("circle")
             .data(nodes)
         .enter().append("text")
             .attr("x", function(d) { return d.x; })
@@ -341,7 +354,7 @@ if (isset($_GET['logout'])) {
                 .style("text-anchor", "middle")
                 .text(function(d) { return d.name;});
 
-        g.append("g").selectAll("circle")
+        text = g.append("g").selectAll("circle")
         .data(nodes)
         .enter().append("text")
           .attr("x", function(d) { return d.x; })
@@ -477,6 +490,7 @@ if (isset($_GET['logout'])) {
                 currY = obj['y'];
             }
         });
+
         $.ajax({
             url: "../topic/topic_handler.php",
             method: "POST",
@@ -550,13 +564,38 @@ if (isset($_GET['logout'])) {
     }
     
     $('input[name="category"]').change(function () {
-        var data = "";
+        var catChecked = [];
         $('input[name="category"]:checked').each(function() {
-            data += "&category[]=" + $(this).val();
+            catChecked.push($(this).val());
         });
         
-        if (data != "") {
-            void 0;
+        if (catChecked.length > 0) {
+            circle.attr("opacity", function (d) {
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
+            }).on("click", function(d) {
+                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
+                    openNav(d.id);
+                }
+            });
+            path.attr("opacity", function (d) {
+                var src = d.source.id;
+                var tar = d.target.id;
+                return ((topicCat[src].length == 0 || $(topicCat[src]).filter(catChecked).length > 0) && (topicCat[tar].length == 0 || $(topicCat[tar]).filter(catChecked).length > 0)) ? 1 : 0.1;
+            });
+            text.attr("opacity", function (d) {
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
+            });
+            text_shadow.attr("opacity", function (d) {
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
+            });
+        } else {
+            circle.attr("opacity", 1)
+            .on("click", function(d) {
+                openNav(d.id);
+            });
+            path.attr("opacity", 1);
+            text.attr("opacity", 1);
+            text_shadow.attr("opacity", 1);
         }
     });
 </script>
