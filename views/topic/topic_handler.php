@@ -421,11 +421,10 @@
             }
             $output = '<h1>'.$info['name'];
             if ($addLink) {
-                $output .= '<span><button type="button" class="btn btn-primary btn-sm">access</button></span>';
+                $output .= '<span><button type="button" class="btn btn-primary btn-sm" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">access</button></span>';
             }
             $output .= '</h1>';
-            //<img src="../auth/img/expand.png" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">
-            
+          
             
             if (!is_null($info['description'])) {
                 $output .= '<p>'.$info['description'].'</p>';
