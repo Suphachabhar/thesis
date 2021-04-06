@@ -264,7 +264,7 @@ if (isset($_GET['logout'])) {
 
     var initWidth = $("body").prop("clientWidth") - 20;
     var width = initWidth,
-        height = 635,
+        height = 620,
         r = 18,
         nodes=<?php echo json_encode($nodes); ?>,
         links=<?php echo json_encode($links); ?>,
