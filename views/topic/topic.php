@@ -463,7 +463,7 @@ if (isset($_GET['logout'])) {
                                 if ($f == '.' || $f == '..') {continue;}
                                 $has_files = true;
                 ?>
-                <iframe src="<?php echo $directory.'/'.$f; ?>" style="height:700px; width:100%"></iframe>
+                <iframe src="<?php echo $directory.'/'.$f; ?>" style="height:680px; width:100%"></iframe>
                 <?php
                             }
                         }
