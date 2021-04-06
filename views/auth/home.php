@@ -138,7 +138,7 @@ if (isset($_GET['logout'])) {
             }
         ?>
 
-        
+
 
         <div class="btn-group">
             <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -629,6 +629,8 @@ if (isset($_GET['logout'])) {
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
+
+    
 </script>
 
 </html>

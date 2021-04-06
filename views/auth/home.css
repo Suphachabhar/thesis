@@ -291,8 +291,9 @@ text.shadow {
     max-width: 300px;
     padding: 10px;
     font: 12px sans-serif;
-    background: lightblue;
-    border: 0px;
+    background: white;
+    border: 2px solid #ddd; 
     border-radius: 8px;
     pointer-events: none;
+    color: black;
 }

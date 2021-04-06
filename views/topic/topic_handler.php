@@ -1,3 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+});
+</script>
+
+</body>
+</html>
 <?php
     session_start();
     require_once("../../database.php");
@@ -442,9 +462,9 @@
                     $output .= '<tr><td style="width: 90%" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'];
                     if (!permission()) {
                         if ($subsFinished >= $s['sort']) {
-                            $output .= '<td><img src="../auth/img/tick.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img src="../auth/img/warning.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
@@ -458,9 +478,9 @@
                     $output .= '<tr><td style="width: 90%"  onclick="openNav('.$pid.')">'.$p['name'];
                     if (!permission()) {
                         if ($prereqCheck[$pid]) {
-                            $output .= '<td><img src="../auth/img/tick.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img src="../auth/img/warning.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
@@ -475,9 +495,9 @@
                     if (!permission()) {
                         $progress = getUserProgress($aid, $db);
                         if (!is_null($progress) && $progress['nSub'] == $progress['progress']) {
-                            $output .= '<td><img src="../auth/img/tick.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img src="../auth/img/warning.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
