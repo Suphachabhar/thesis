@@ -135,6 +135,19 @@ if (isset($_GET['logout'])) {
         <?php
             }
         ?>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Select category
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="#/"><input type="checkbox" />  Action</a>
+                <a class="dropdown-item" href="#/"><input type="checkbox" />  Another action</a>
+                <a class="dropdown-item" href="#/"><input type="checkbox" />  Something else here</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#/"><input type="checkbox" />  Separated link</a>
+            </div>
+        </div>
         
 		<a class="btn btn-secondary" id="nav-link" href="login.php?logout='1'">Logout</a>	 
     </div>
