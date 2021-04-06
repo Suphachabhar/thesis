@@ -167,7 +167,7 @@ form + .subtopicSlot {
     margin-bottom: 40px;
 }
 
-.containner{
+.container{
     margin-bottom: 100px;
     margin-left: 50px;
     margin-right: 50px;
@@ -197,10 +197,14 @@ form + .subtopicSlot {
     right: 20px;
 }
 
-.afterContent {
-    margin-top: 20px;
-    position: absolute;
-    right: 20px;
-    bottom: -60px;
+.descAndNav {
+    display: flex;
+}
 
+.description {
+    width: calc(100% - 65px);
+}
+
+.afterContent {
+    width: 67px;
 }
