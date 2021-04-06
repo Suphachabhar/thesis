@@ -439,7 +439,7 @@ if (isset($_GET['logout'])) {
 
                     if (!isAdmin()) {
                         if ($subtopic['sort'] == $nSubtopics && $subtopic['sort'] == $progress) {
-                            echo '<button class="afterContent btn btn-primary" id="progressbtn">Finish</button>';
+                            echo '<a class="afterContent btn btn-primary" href="../auth/home.php?topic='.$_GET['id'].'">Finish</a>';
                         } elseif ($subtopic['sort'] <= $progress && $subtopic['sort'] != $nSubtopics) {
                             echo '<button class="afterContent nextSubtopic btn btn-primary" id="nextSubtopic_'.$subtopic['sort'].'">Next</button>';
                         } else {
@@ -472,29 +472,7 @@ if (isset($_GET['logout'])) {
             ?>
             </div>
             </div>
-        
     </div>
-
-
-   
-    
-            
-            
-            
-                
-                    
-                    
-                
-                
-            
-     
-            
-            
-   
-                
-              
-                    
-
     </div>
 
 	
