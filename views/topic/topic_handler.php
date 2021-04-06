@@ -444,21 +444,21 @@
             if (count($subtopics) > 0) {
                 $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
-                    $output .= '<tr><td onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'].'</td></tr>';
+                    $output .= '<tr><td onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'].'<span><img src="../auth/img/tick.png"></span></td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
             if (count($prereqs) > 0) {
                 $output .= '<br/><h4>Prerequisite</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($prereqs as $p) {
-                    $output .= '<tr><td onclick="openNav('.$p['id'].')">'.$p['name'].'</td></tr>';
+                    $output .= '<tr><td onclick="openNav('.$p['id'].')">'.$p['name'].'<span><img src="../auth/img/tick.png"></span></td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
             if (count($after) > 0) {
                 $output .= '<br/><h4>What you should do next</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($after as $a) {
-                    $output .= '<tr><td onclick="openNav('.$a['id'].')">'.$a['name'].'</td></tr>';
+                    $output .= '<tr><td onclick="openNav('.$a['id'].')">'.$a['name'].'<span><img src="../auth/img/warning.png"></span></td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
