@@ -23,7 +23,7 @@ if (isset($_GET['logout'])) {
     $results = mysqli_query($db, $query);
     $topics = mysqli_fetch_all($results, MYSQLI_ASSOC);
     foreach ($topics as $row) {
-        $nodes[] = array("name" => $row["name"], "id" => $row["id"], "num" => $i);
+        $nodes[] = array("name" => $row["name"], "id" => $row["id"]);
         $nodeNum[$row["id"]] = $i;
         $i ++;
     }
@@ -127,12 +127,17 @@ if (isset($_GET['logout'])) {
             <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Select category
             </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#/"><input type="checkbox" />  Action</a>
-                <a class="dropdown-item" href="#/"><input type="checkbox" />  Another action</a>
-                <a class="dropdown-item" href="#/"><input type="checkbox" />  Something else here</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#/"><input type="checkbox" />  Separated link</a>
+            <div class="dropdown-menu" id="categoryList">
+                <?php
+                    $query = "SELECT id, name FROM categories ORDER BY name";
+                    $results = mysqli_query($db, $query);
+                    $categories = mysqli_fetch_all($results, MYSQLI_ASSOC);
+                    foreach ($categories as $cat) {
+                ?>
+                <a class="dropdown-item"><input type="checkbox" name="category" value="<?php echo $cat['id']; ?>"/>  <?php echo $cat['name']; ?></a>
+                <?php
+                    }
+                ?>
             </div>
         </div>
 
@@ -544,6 +549,16 @@ if (isset($_GET['logout'])) {
         return $.inArray(true, parents) >= 0;
     }
     
+    $('input[name="category"]').change(function () {
+        var data = "";
+        $('input[name="category"]:checked').each(function() {
+            data += "&category[]=" + $(this).val();
+        });
+        
+        if (data != "") {
+            void 0;
+        }
+    });
 </script>
 
 </html>
