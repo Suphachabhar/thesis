@@ -140,6 +140,10 @@ if (isset($_GET['logout'])) {
                                     <input name="name" value="<?php echo $topic['name']; ?>">
                                 </div>
                                 <div class="form-group">
+                                    <label for="message-text" class="col-form-label">Description:</label>
+                                    <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
+                                </div>
+                                <div class="form-group">
                                     <label for="message-text" class="col-form-label">Category:</label>
                                     <select id="category" name="category[]" multiple>
                                         <?php
@@ -158,10 +162,6 @@ if (isset($_GET['logout'])) {
                                             }
                                         ?>
                                     </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="col-form-label">Description:</label>
-                                    <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="message-text" class="col-form-label">Prerequisite:</label>

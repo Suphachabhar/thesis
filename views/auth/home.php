@@ -148,6 +148,10 @@ if (isset($_GET['logout'])) {
 						<input name="name" type="text" class="form-control">
 					</div>
 					<div class="form-group">
+						<label for="message-text" class="col-form-label">Description:</label>
+						<textarea class="form-control" id="message-text" name="description"></textarea>
+					</div>
+					<div class="form-group">
 						<label for="message-text" class="col-form-label">Category:</label>
                         <select id="category" name="category[]" multiple>
                             <?php
@@ -160,10 +164,6 @@ if (isset($_GET['logout'])) {
                                 }
                             ?>
                         </select>
-					</div>
-					<div class="form-group">
-						<label for="message-text" class="col-form-label">Description:</label>
-						<textarea class="form-control" id="message-text" name="description"></textarea>
 					</div>
 					<div class="form-group">
 						<label for="message-text" class="col-form-label">Prerequisite:</label>
