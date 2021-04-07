@@ -496,6 +496,7 @@ if (isset($_GET['logout'])) {
 
 	
 <script>
+    console.log('<?php echo $_SESSION["success"]; ?>');
     <?php
         if (isAdmin()) {
     ?>

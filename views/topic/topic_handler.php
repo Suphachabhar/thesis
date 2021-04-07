@@ -199,6 +199,8 @@
         } else {
             $query = "DELETE FROM subtopics WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
             mysqli_query($db, $query);
+            $query = "UPDATE subtopics SET sort = (sort - 1) WHERE topic = ".$_POST['topic']." AND sort > ".$subtopic['sort'];
+            mysqli_query($db, $query);
             removeSubtopicDirectory($_POST['topic'], $_POST['id']);
             $_SESSION['success'] = "Subtopic \"".$subtopic['name']."\" has been deleted successfully.";
         }
