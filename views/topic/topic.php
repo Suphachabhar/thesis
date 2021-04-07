@@ -339,6 +339,7 @@ if (isset($_GET['logout'])) {
                                 echo $button.'</button>';
                             }
                     ?>
+                    <div> </div>
                 </div>
                 <?php 
                         }
@@ -496,7 +497,6 @@ if (isset($_GET['logout'])) {
 
 	
 <script>
-    console.log('<?php echo $_SESSION["success"]; ?>');
     <?php
         if (isAdmin()) {
     ?>

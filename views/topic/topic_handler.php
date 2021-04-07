@@ -47,6 +47,10 @@
         case "getInfo":
             getTopicInfo($db);
             break;
+            
+        case "exportTopic":
+            exportTopicFiles($db);
+            break;
     
         default:
             break;
@@ -216,7 +220,7 @@
             header('location: '.mainPage());
             return;
         }
-        
+            
         if (!permission()) {
             $_SESSION['success'] = permissionError("edit topic settings");
         } else {
@@ -512,5 +516,53 @@
         </html>';
     }
 
- 
+    
+    function exportTopicFiles($db) {
+        $topic = existingTopicID($_POST['id'], $db);
+        if (is_null($topic)) {
+            $_SESSION['success'] = invalidInputError("topic ID");
+            header('location: '.mainPage());
+            return;
+        }
+        
+        if (!permission()) {
+            $_SESSION['success'] = permissionError("export topics");
+        } else {
+            $filename = $topic['name'].".zip";
+            $zip = new ZipArchive();
+            $canExport = false;
+            if ($zip->open("./".$filename, ZipArchive::CREATE) !== true) {
+                $_SESSION['success'] = 'The files are unable to be exported';
+            } else {
+                $topicDir = "../../files/".$_POST["id"];
+                if (is_dir($topicDir)) {
+                    $query = "SELECT id, name FROM subtopics WHERE topic = ".$_POST['id'];
+                    $result = mysqli_query($db, $query);
+                    $subtopics = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                    foreach ($subtopics as $s) {
+                        $subDir = $topicDir."/".$s['id']
+                        if (is_dir($subDir) && $dh = opendir($subDir)) {
+                            while (($file = readdir($dh)) !== false) {
+                                $zip->addFile($subDir."/".$file, $s['name']);
+                                $canExport = true;
+                            }
+                        }
+                        closedir($dh);
+                    }
+                }
+            }
+            $zip->close();
+            
+            if ($canExport) {
+                header('Content-Type: application/zip');
+                header('Content-Disposition: attachment; filename="'.basename($filename).'"');
+                header('Content-Length: '.filesize($filename));
+                $_SESSION['success'] = 'The topic "'.$topic['name'].'" has been exported';
+                
+                flush();
+                readfile($filename);
+                unlink($filename);
+            }
+        }
+    }
 ?>
