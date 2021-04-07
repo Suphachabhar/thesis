@@ -318,7 +318,15 @@ if (isset($_GET['logout'])) {
                         $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
                     }
                     
-                    if (!isAdmin()) {
+                    if (isAdmin()) {
+                ?>
+                <form method='post' action='topic_handler.php'>
+                    <input name="function" value="exportTopic" hidden>
+                    <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                    <input class="afterContent btn btn-primary" type="submit" value="Export">
+                </form>
+                <?php
+                    } else {
                         foreach ($sList as $subtopic) {
                             if ($subtopic['sort'] > $defaultSub) continue;
                 ?>
@@ -339,7 +347,6 @@ if (isset($_GET['logout'])) {
                                 echo $button.'</button>';
                             }
                     ?>
-                    <div> </div>
                 </div>
                 <?php 
                         }
