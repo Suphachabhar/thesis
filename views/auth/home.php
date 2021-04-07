@@ -247,13 +247,10 @@ if (isset($_GET['logout'])) {
     
 
     <div id="main">
-        
         <div id="mySidenav" class="sidenav">
-            
             <div id="sideNavContent"></div>
         </div> 
         <div id="topicTree"></div>
-        
     </div>
 
 	<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.js"></script>

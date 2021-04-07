@@ -228,15 +228,13 @@ text.shadow {
 
 }
 
-
-
 .card-body{
   margin-top: -5px;
 }
 
-.progress{
+.progress.progressss{
   margin-top: 20px;
-  background: white;
+  background-color: white;
 }
 
 #sideNavContent a:hover {

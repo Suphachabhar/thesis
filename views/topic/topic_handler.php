@@ -431,7 +431,7 @@
                 $row = getUserProgress($_POST["id"], $db);
                 $subsFinished = $row['progress'];
                 $percentage = $row['nSub'] == 0 ? 0 : round(($subsFinished / $row['nSub']) * 100);
-                $output .= '<h4>Progress</h4><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
+                $output .= '<h4>Progress</h4><div class="progress progressss"><div class="progress-bar" role="progressbar" aria-valuenow="'
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
 
@@ -489,20 +489,26 @@
             
         }
         print $output;
+        print '<!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        </head>
+        <body>
+        
+        <script>
+        $(document).ready(function(){
+            $(\'[data-toggle="tooltip"]\').tooltip();   
+        });
+        </script>
+        
+        </body>
+        </html>';
     }
 
-    '<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    </head>
-    <body>
-    
-   
-    </body>
-    </html>'
+ 
 ?>
