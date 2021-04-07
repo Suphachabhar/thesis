@@ -302,9 +302,10 @@ if (isset($_GET['logout'])) {
                 </div>
                 
                 <?php
+                    $defaultSub = 1;
+                    $progress = $nSubtopics;
                     if (isAdmin()) {
-                        $progress = $nSubtopics;
-                        $defaultSub = 1;
+                        $defaultSub = isset($_GET['subtopic']) ? intval($_GET['subtopic']) : 1;
                     } else {
                         $query = "SELECT progress FROM progresses where topic = ".$_GET['id']." AND student = ".$_SESSION['user']['id'];
                         $results = mysqli_query($db, $query);
@@ -316,6 +317,9 @@ if (isset($_GET['logout'])) {
                             $progress = mysqli_fetch_assoc($results)['progress'];
                         }
                         $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
+                        if (isset($_GET['subtopic']) && intval($_GET['subtopic']) < $defaultSub) {
+                            $defaultSub = intval($_GET['subtopic']);
+                        }
                     }
                     
                     if (isAdmin()) {

@@ -571,7 +571,7 @@ if (isset($_GET['logout'])) {
         svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
     }
     
-    $('body').click(function (event) {
+    $('svg').click(function (event) {
         if (event.target.nodeName != "circle" && !sideNavClicked($(event.target))) {
             $('#mySidenav').hide();
             resizeSvgAndSidebar();
@@ -623,9 +623,9 @@ if (isset($_GET['logout'])) {
         }
     });
 
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
+    if (isStudent) {
+        $('[data-toggle="tooltip"]').tooltip();
+    };
 
     
 </script>

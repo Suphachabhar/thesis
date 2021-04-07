@@ -445,15 +445,19 @@
             if (count($subtopics) > 0) {
                 $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
-                    $output .= '<tr><td style="width: 90%" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">'.$s['name'];
+                    $onclick = ' onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'&subtopic='.$s['sort'].'\'"';
+                    $subStatus = "";
                     if (!permission()) {
                         if ($subsFinished >= $s['sort']) {
-                            $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
+                            $subStatus = '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
+                            $subStatus = '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
+                            if (($subsFinished + 1) < $s['sort']) {
+                                $onclick = ' data-toggle="tooltip" title="Unavailable to study"';
+                            }
                         }
                     }
-                    $output .= '</td></tr>';
+                    $output .= '<tr><td style="width: 90%"'.$onclick.'>'.$s['name'].$subStatus.'</td></tr>';
                 }
                 $output .= '</tbody></table></div>';
             }
