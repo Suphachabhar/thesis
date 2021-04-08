@@ -290,10 +290,6 @@ if (isset($_GET['logout'])) {
     var container = svg.append("g")
         .attr("width", width)
         .attr("height", height);
-        
-    svg.call(d3.zoom().on("zoom", function () {
-        container.attr("transform", d3.event.transform);
-    }));
 
     var g = container.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -368,25 +364,109 @@ if (isset($_GET['logout'])) {
             .attr("x", function(d) { return d.x; })
             .attr("y", function(d) { return d.y + r + 6; })
             .attr("dy", ".35em")
-                .attr("class", "shadow")
-                .style("text-anchor", "middle")
-                .text(function(d) { return d.name;});
+            .attr("class", "shadow")
+            .style("text-anchor", "middle")
+            .text(function(d) { return d.name;});
 
         text = g.append("g").selectAll("circle")
-        .data(nodes)
+            .data(nodes)
         .enter().append("text")
             .attr("id", function(d) { return "text_" + d.id; })
             .attr("x", function(d) { return d.x; })
             .attr("y", function(d) { return d.y + r + 6; })
             .attr("dy", ".35em")
             .style("text-anchor", "middle")
-                .text(function(d) { return d.name;});
-              
+            .text(function(d) { return d.name;});
+            
+        // display sidenav if a topic is selected on HTTP GET
         if (selectedTopic != 0) {
             openNav(selectedTopic);
         }
         
+        // set zooming size to display all nodes
         defaultZoomSize();
+        
+        // display main topic in a node cluster when zooming out enough
+        var nodeGroups = [];
+        var nodesQueue = [];
+        var j = 0;
+        for (var i = 0; i < nodes.length; i++) {
+            var d = nodes[i];
+            if ($.inArray(d, nodesQueue) < 0) {
+                nodesQueue.push(d);
+                var group = [];
+                while (j < nodesQueue.length) {
+                    var node = nodesQueue[j];
+                    var count = 0;
+                    $(links).each(function (_, l) {
+                        if (l.source == node || l.target == node) {
+                            count++;
+                            var anotherNode = l.source == node ? l.target : l.source;
+                            if ($.inArray(anotherNode, nodesQueue) < 0) {
+                                nodesQueue.push(anotherNode);
+                            }
+                        }
+                    });
+                    group.push([node, count]);
+                    j++;
+                }
+                nodeGroups.push(group);
+            }
+        }
+        
+        var bigText = [];
+        $(nodeGroups).each(function (_, group) {
+            var xs = [],
+                ys = [],
+                bestNode = group[0];
+            $(group).each(function (_, node) {
+                xs.push(node[0].x);
+                ys.push(node[0].y);
+                if (node[1] > bestNode[1]) {
+                    bestNode = node;
+                }
+            });
+            bigText.push({
+                x: (Math.min.apply(Math, xs) + Math.max.apply(Math, xs))/2,
+                y: (Math.min.apply(Math, ys) + Math.max.apply(Math, ys))/2,
+                name: bestNode[0].name
+            });
+        });
+        
+        var groupShadow = g.append("g").selectAll("circle")
+            .data(bigText)
+        .enter().append("text")
+            .attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y; })
+            .attr("class", "shadow")
+            .style("text-anchor", "middle")
+            .style("font-size", 100)
+            .text(function(d) { return d.name;});
+
+        var groupText = g.append("g").selectAll("circle")
+            .data(bigText)
+        .enter().append("text")
+            .attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y; })
+            .style("text-anchor", "middle")
+            .style("font-size", 100)
+            .text(function(d) { return d.name;});
+        
+        svg.call(d3.zoom().on("zoom", function () {
+            container.attr("transform", d3.event.transform);
+            var normalOpacity = d3.event.transform.k < 0.3 ? 0.2 : 1;
+            var groupOpacity = d3.event.transform.k < 0.3 ? 1 : 0;
+            circle.attr("opacity", normalOpacity);
+            path.attr("opacity", normalOpacity);
+            text.attr("opacity", normalOpacity);
+            text_shadow.attr("opacity", normalOpacity);
+            groupText.attr("opacity", groupOpacity);
+            groupShadow.attr("opacity", groupOpacity);
+            console.log(groupOpacity);
+        }));
+        
+        groupText.attr("opacity", 0);
+        groupShadow.attr("opacity", 0);
     });
     
     function calculateZoomSize(xs, ys) {
