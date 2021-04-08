@@ -263,6 +263,7 @@ if (isset($_GET['logout'])) {
     var selectedTopic = <?php echo isset($_GET['topic']) ? $_GET['topic'] : 0; ?>,
         defaultX = 0,
         defaultY = 0,
+        defaultScale = 1,
         currX = 0,
         currY = 0,
         isStudent = <?php echo permission() ? "false" : "true"; ?>;
@@ -384,7 +385,37 @@ if (isset($_GET['logout'])) {
         if (selectedTopic != 0) {
             openNav(selectedTopic);
         }
+        
+        defaultZoomSize();
     });
+    
+    function calculateZoomSize(xs, ys) {
+        if (xs.length > 0) {
+            var w = $("svg").attr("width");
+            var xMin = Math.min.apply(Math, xs) - 2*r;
+            var xMax = Math.max.apply(Math, xs) + 2*r;
+            var yMin = Math.min.apply(Math, ys) - 2*r;
+            var yMax = Math.max.apply(Math, ys) + 2*r;
+            var xScale = w/(xMax - xMin);
+            var yScale = height/(yMax - yMin);
+            
+            defaultScale = xScale < yScale ? xScale : yScale;
+            var m = (.5 - 1 / (2 * defaultScale));
+            defaultX = -(xMax + xMin)/2 - m * w;
+            defaultY = -(yMax + yMin)/2 - m * height;
+            svgTransform(defaultScale, defaultX + (w - initWidth)/2, defaultY);
+        }
+    }
+    
+    function defaultZoomSize() {
+        var xs = [],
+            ys = [];
+        $(nodes).each(function (_, d) {
+            xs.push(d.x);
+            ys.push(d.y);
+        });
+        calculateZoomSize(xs, ys);
+    }
     
     function circleOnMouseOver(id) {
         if (isStudent) {
@@ -608,7 +639,7 @@ if (isset($_GET['logout'])) {
     
     function resizeSvgAndSidebar(transform) {
         var w = width,
-            scale = 1,
+            scale = defaultScale,
             x = w == initWidth ? defaultX : defaultX + (w - initWidth)/2,
             y = defaultY;
         if ($("#mySidenav").css("display") == "none") {
@@ -691,11 +722,7 @@ if (isset($_GET['logout'])) {
                 return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0;
             });
             
-            if (xs.length > 0) {
-                defaultX = -(Math.max.apply(Math, xs) + Math.min.apply(Math, xs))/2;
-                defaultY = -(Math.max.apply(Math, ys) + Math.min.apply(Math, ys))/2;
-                svgTransform(1, defaultX, defaultY);
-            }
+            calculateZoomSize(xs, ys);
         } else {
             circle.attr("opacity", 1)
             .on("click", function(d) {
@@ -706,9 +733,7 @@ if (isset($_GET['logout'])) {
             path.attr("opacity", 1);
             text.attr("opacity", 1);
             text_shadow.attr("opacity", 1);
-            defaultX = 0;
-            defaultY = 0;
-            svgTransform(1, defaultX, defaultY);
+            defaultZoomSize();
         }
     });
 
