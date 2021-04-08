@@ -332,7 +332,7 @@ if (isset($_GET['logout'])) {
                 <?php
                     } else {
                         foreach ($sList as $subtopic) {
-                            if ($subtopic['sort'] > $defaultSub) continue;
+                            if ($subtopic['sort'] > ($progress + 1)) continue;
                 ?>
                 <div class="navigation" 
                     id="navigation_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
@@ -380,7 +380,7 @@ if (isset($_GET['logout'])) {
                 
                 <div class="subtopicSlot<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?>"
                     id="subtopicSlot_<?php echo $subtopic['sort']; ?>">
-                    <button class="subtopicName" id="subtopicName_<?php echo $subtopic['sort']; ?>"<?php if (!isAdmin() && $subtopic['sort'] > $defaultSub) echo ' disabled'; ?>><?php echo $subtopic['name']; ?></button>
+                    <button class="subtopicName" id="subtopicName_<?php echo $subtopic['sort']; ?>"<?php if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) echo ' disabled'; ?>><?php echo $subtopic['name']; ?></button>
                 <?php
                     if (isAdmin()) {
                 ?>
@@ -464,7 +464,7 @@ if (isset($_GET['logout'])) {
 
             <?php
                 foreach ($sList as $subtopic) {
-                    if (!isAdmin() && $subtopic['sort'] > $defaultSub) continue;
+                    if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) continue;
             ?>
 
             <div class="subtopicContent" 
