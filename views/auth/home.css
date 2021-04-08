@@ -11,11 +11,11 @@ body {
 }
 
 h1 {
-    padding: 8px;
-    border-radius: 8px;
-    margin: 0;
-    font-size: 40px;
-    text-transform: uppercase;
+  padding: 8px;
+  border-radius: 8px;
+  margin: 0;
+  font-size: 40px;
+  text-transform: uppercase;
     
 }
 
@@ -37,7 +37,10 @@ h1 {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  
+}
+
+.top-bar-right button{
+  margin-bottom: 5px;
 }
 
 .top-bar-right img{
