@@ -258,12 +258,15 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var selectedTopic = <?php echo isset($_GET['topic']) ? $_GET['topic'] : 0; ?>;
+    var initWidth = $("body").prop("clientWidth") - 20;
+    
+    var selectedTopic = <?php echo isset($_GET['topic']) ? $_GET['topic'] : 0; ?>,
+        defaultX = 0,
+        defaultY = 0,
         currX = 0,
         currY = 0,
         isStudent = <?php echo permission() ? "false" : "true"; ?>;
 
-    var initWidth = $("body").prop("clientWidth") - 20;
     var width = initWidth,
         height = 620,
         r = 18,
@@ -552,14 +555,14 @@ if (isset($_GET['logout'])) {
         if ($("#circle_" + selectedTopic).attr("opacity") == 0) {
             $("#circle_" + selectedTopic).attr("opacity", 0.1)
             .on("click", function() {
-                openNav(selectedTopic);
+                openNav(id);
             }).on("mouseover", function(event) {
                 if (isStudent) {
-                    circleOnMouseOver(selectedTopic);
+                    circleOnMouseOver(id);
                     nodeStatus.transition()		
                         .duration(200)		
                         .style("opacity", .9);		
-                    nodeStatus.html(nodeStatusMessage(selectedTopic))	
+                    nodeStatus.html(nodeStatusMessage(id))	
                         .style("left", (event.pageX) + "px")		
                         .style("top", (event.pageY - 28) + "px");
                 }
@@ -596,11 +599,18 @@ if (isset($_GET['logout'])) {
         resizeSvgAndSidebar(false);
     });
     
+    function svgTransform(scale, x, y) {
+        container.transition()
+            .duration(750)
+            .attr("transform", "scale(" + scale + ") translate(" + x + "," + y + ")");
+        svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
+    }
+    
     function resizeSvgAndSidebar(transform) {
         var w = width,
             scale = 1,
-            x = (w - initWidth)/2,
-            y = 0;
+            x = w == initWidth ? defaultX : defaultX + (w - initWidth)/2,
+            y = defaultY;
         if ($("#mySidenav").css("display") == "none") {
             document.getElementById("mySidenav").style.width = "0px";
         } else {
@@ -618,10 +628,7 @@ if (isset($_GET['logout'])) {
         container.attr("width", w);
         
         if (transform) {
-            container.transition()
-                .duration(750)
-                .attr("transform", "scale(" + scale + ") translate(" + x + "," + y + ")");
-            svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
+            svgTransform(scale, x, y);
         }
     }
     
@@ -655,8 +662,14 @@ if (isset($_GET['logout'])) {
         });
         
         if (catChecked.length > 0) {
+            var xs = [], ys = [];
             circle.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0;
+                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
+                    xs.push(d.x);
+                    ys.push(d.y);
+                    return 1;
+                }
+                return 0;
             }).on("click", function(d) {
                 if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
                     openNav(d.id);
@@ -677,6 +690,12 @@ if (isset($_GET['logout'])) {
             text_shadow.attr("opacity", function (d) {
                 return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0;
             });
+            
+            if (xs.length > 0) {
+                defaultX = -(Math.max.apply(Math, xs) + Math.min.apply(Math, xs))/2;
+                defaultY = -(Math.max.apply(Math, ys) + Math.min.apply(Math, ys))/2;
+                svgTransform(1, defaultX, defaultY);
+            }
         } else {
             circle.attr("opacity", 1)
             .on("click", function(d) {
@@ -687,6 +706,9 @@ if (isset($_GET['logout'])) {
             path.attr("opacity", 1);
             text.attr("opacity", 1);
             text_shadow.attr("opacity", 1);
+            defaultX = 0;
+            defaultY = 0;
+            svgTransform(1, defaultX, defaultY);
         }
     });
 
