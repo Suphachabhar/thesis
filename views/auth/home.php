@@ -103,7 +103,7 @@ if (isset($_GET['logout'])) {
 		</a>
         
 
-        <input type="text" id="topicInput" list="topicList" placeholder="Search for topics..">
+        <input type="text" id="topicInput" placeholder="Search for topics..">
         <datalist id="topicList">
             <?php
                 foreach ($topics as $row) {
@@ -258,12 +258,15 @@ if (isset($_GET['logout'])) {
 </body>
 
 <script>
-    var selectedTopic = <?php echo isset($_GET['topic']) ? $_GET['topic'] : 0; ?>;
+    var initWidth = $("body").prop("clientWidth") - 20;
+    
+    var selectedTopic = <?php echo isset($_GET['topic']) ? $_GET['topic'] : 0; ?>,
+        defaultX = 0,
+        defaultY = 0,
         currX = 0,
         currY = 0,
         isStudent = <?php echo permission() ? "false" : "true"; ?>;
 
-    var initWidth = $("body").prop("clientWidth") - 20;
     var width = initWidth,
         height = 620,
         r = 18,
@@ -326,6 +329,7 @@ if (isset($_GET['logout'])) {
             .selectAll("path")
             .data(links)
         .enter().append("line")
+            .attr("id", function(d) { return "path_" + d.source.id + "_" + d.target.id; })
             .attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
@@ -338,24 +342,18 @@ if (isset($_GET['logout'])) {
             .selectAll("circle")
             .data(nodes)
         .enter().append("circle")
+            .attr("id", function(d) { return "circle_" + d.id; })
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; })
             .attr("r", r - .75)
         .style("fill", function (d) {
-            return progressColour(d, false); 
+            return progressColour(d.id, false); 
         }).style("stroke", function (d) {
-            return progressColour(d, true);
+            return progressColour(d.id, true);
         }).on("click", function(d) {
             openNav(d.id);
         }).on("mouseover", function(d) {
-            if (isStudent) {
-                nodeStatus.transition()		
-                    .duration(200)		
-                    .style("opacity", .9);		
-                nodeStatus.html(nodeStatusMessage(d))	
-                    .style("left", (d3.event.pageX) + "px")		
-                    .style("top", (d3.event.pageY - 28) + "px");
-            }
+            circleOnMouseOver(d.id);
         }).on("mouseout", function(d) {
             nodeStatus.transition()		
                 .duration(500)		
@@ -365,6 +363,7 @@ if (isset($_GET['logout'])) {
         text_shadow = g.append("g").selectAll("circle")
             .data(nodes)
         .enter().append("text")
+            .attr("id", function(d) { return "shadow_" + d.id; })
             .attr("x", function(d) { return d.x; })
             .attr("y", function(d) { return d.y + r + 6; })
             .attr("dy", ".35em")
@@ -375,16 +374,28 @@ if (isset($_GET['logout'])) {
         text = g.append("g").selectAll("circle")
         .data(nodes)
         .enter().append("text")
-          .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y + r + 6; })
-          .attr("dy", ".35em")
-          .style("text-anchor", "middle")
-              .text(function(d) { return d.name;});
+            .attr("id", function(d) { return "text_" + d.id; })
+            .attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y + r + 6; })
+            .attr("dy", ".35em")
+            .style("text-anchor", "middle")
+                .text(function(d) { return d.name;});
               
         if (selectedTopic != 0) {
             openNav(selectedTopic);
         }
     });
+    
+    function circleOnMouseOver(id) {
+        if (isStudent) {
+            nodeStatus.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            nodeStatus.html(nodeStatusMessage(id))	
+                .style("left", (event.pageX) + "px")		
+                .style("top", (event.pageY - 28) + "px");
+        }
+    }
 
 	$('#exampleModal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget) // Button that triggered the modal
@@ -396,9 +407,15 @@ if (isset($_GET['logout'])) {
 	});
     
     $("#topicInput").bind('input', function () {
-        var id = $('#topicList option[value="' + $('#topicInput').val() + '"]').data('value');
-        if (id !== undefined) {
-            openNav(id);
+        var input = $('#topicInput').val();
+        if (input != "") {
+            $(this).attr("list", "topicList");
+            var id = $('#topicList option[value="' + input + '"]').data('value');
+            if (id !== undefined) {
+                openNav(id);
+            }
+        } else {
+            $(this).attr("list", "");
         }
     });
     
@@ -421,8 +438,8 @@ if (isset($_GET['logout'])) {
         .attr("offset", "50%")
         .attr("stop-color", nextColour);
         
-    function nodeStatusMessage(d) {
-        switch (progressColour(d, false)) {
+    function nodeStatusMessage(id) {
+        switch (progressColour(id, false)) {
             case unavailableColour:
                 return "Prerequisite not completed";
             case nextColour:
@@ -434,8 +451,7 @@ if (isset($_GET['logout'])) {
         }
     };
     
-    function progressColour(d, stroke) {
-        var id = parseInt(d.id);
+    function progressColour(id, stroke) {
         var colour = defaultColour;
         if (id == selectedTopic && stroke) {
             colour = selectedColour;
@@ -457,7 +473,7 @@ if (isset($_GET['logout'])) {
                     $.each(links, function (_, l) {
                         if (id == l.target.id) {
                             initial = false;
-                            if (progressColour(l.source, false) == defaultColour) {
+                            if (progressColour(l.source.id, false) == defaultColour) {
                                 colour = nextColour;
                             }
                         }
@@ -493,9 +509,9 @@ if (isset($_GET['logout'])) {
                 }
                 
                 circle.transition().duration(500).style("fill", function (d) {
-                    return progressColour(d, false); 
+                    return progressColour(d.id, false); 
                 }).style("stroke", function (d) {
-                    return progressColour(d, true); 
+                    return progressColour(d.id, true); 
                 });
             }
         });
@@ -515,12 +531,51 @@ if (isset($_GET['logout'])) {
     
     function openNav(id) {
         selectedTopic = id;
+        var topicStr = selectedTopic.toString();
         $.each(nodes, function (i, obj) {
             if (selectedTopic == obj['id']) {
                 currX = obj['x'];
                 currY = obj['y'];
             }
         });
+        
+        $("line").each(function (){
+            var line = $(this);
+            if (line.attr("opacity") == 0) {
+                var lid = line.attr("id").split("_");
+                if (lid[1] == topicStr || lid[2] == topicStr) {
+                    var anotherC = lid[1] == topicStr ? lid[2] : lid[1];
+                    if ($("#circle_" + anotherC).attr("opacity") > 0) {
+                        line.attr("opacity", 0.1);
+                    }
+                }
+            }
+        });
+        
+        if ($("#circle_" + selectedTopic).attr("opacity") == 0) {
+            $("#circle_" + selectedTopic).attr("opacity", 0.1)
+            .on("click", function() {
+                openNav(id);
+            }).on("mouseover", function(event) {
+                if (isStudent) {
+                    circleOnMouseOver(id);
+                    nodeStatus.transition()		
+                        .duration(200)		
+                        .style("opacity", .9);		
+                    nodeStatus.html(nodeStatusMessage(id))	
+                        .style("left", (event.pageX) + "px")		
+                        .style("top", (event.pageY - 28) + "px");
+                }
+            });
+        }
+        
+        if ($("#text_" + selectedTopic).attr("opacity") == 0) {
+            $("#text_" + selectedTopic).attr("opacity", 0.1);
+        }
+        
+        if ($("#shadow_" + selectedTopic).attr("opacity") == 0) {
+            $("#shadow_" + selectedTopic).attr("opacity", 0.1);
+        }
 
         $.ajax({
             url: "../topic/topic_handler.php",
@@ -531,9 +586,9 @@ if (isset($_GET['logout'])) {
                 if ($("#mySidenav").css("display") == "none") {
                     $('#mySidenav').show();
                 }
-                resizeSvgAndSidebar();
+                resizeSvgAndSidebar(true);
                 circle.style("stroke", function (d) {
-                    return progressColour(d, true);
+                    return progressColour(d.id, true);
                 });
             }
         });
@@ -541,14 +596,21 @@ if (isset($_GET['logout'])) {
     
     $(window).resize(function () {
         width = $("body").prop("clientWidth") - 20;
-        resizeSvgAndSidebar();
+        resizeSvgAndSidebar(false);
     });
     
-    function resizeSvgAndSidebar() {
+    function svgTransform(scale, x, y) {
+        container.transition()
+            .duration(750)
+            .attr("transform", "scale(" + scale + ") translate(" + x + "," + y + ")");
+        svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
+    }
+    
+    function resizeSvgAndSidebar(transform) {
         var w = width,
             scale = 1,
-            x = (w - initWidth)/2,
-            y = 0;
+            x = w == initWidth ? defaultX : defaultX + (w - initWidth)/2,
+            y = defaultY;
         if ($("#mySidenav").css("display") == "none") {
             document.getElementById("mySidenav").style.width = "0px";
         } else {
@@ -565,21 +627,20 @@ if (isset($_GET['logout'])) {
         svg.attr("width", w);
         container.attr("width", w);
         
-        container.transition()
-            .duration(750)
-            .attr("transform", "scale(" + scale + ") translate(" + x + "," + y + ")");
-        svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
+        if (transform) {
+            svgTransform(scale, x, y);
+        }
     }
     
     $('svg').click(function (event) {
         if (event.target.nodeName != "circle" && !sideNavClicked($(event.target))) {
             $('#mySidenav').hide();
-            resizeSvgAndSidebar();
+            resizeSvgAndSidebar(true);
             currX = 0;
             currY = 0;
             selectedTopic = 0;
             circle.style("stroke", function (d) {
-                return progressColour(d, true);
+                return progressColour(d.id, true);
             });
         }
     });
@@ -601,25 +662,53 @@ if (isset($_GET['logout'])) {
         });
         
         if (catChecked.length > 0) {
+            var xs = [], ys = [];
             circle.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
+                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
+                    xs.push(d.x);
+                    ys.push(d.y);
+                    return 1;
+                }
+                return 0;
+            }).on("click", function(d) {
+                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
+                    openNav(d.id);
+                }
+            }).on("mouseover", function(d) {
+                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
+                    circleOnMouseOver(d.id);
+                }
             });
             path.attr("opacity", function (d) {
                 var src = d.source.id;
                 var tar = d.target.id;
-                return ((topicCat[src].length == 0 || $(topicCat[src]).filter(catChecked).length > 0) && (topicCat[tar].length == 0 || $(topicCat[tar]).filter(catChecked).length > 0)) ? 1 : 0.1;
+                return ((topicCat[src].length == 0 || $(topicCat[src]).filter(catChecked).length > 0) && (topicCat[tar].length == 0 || $(topicCat[tar]).filter(catChecked).length > 0)) ? 1 : 0;
             });
             text.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0;
             });
             text_shadow.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0.1;
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0;
             });
+            
+            if (xs.length > 0) {
+                defaultX = -(Math.max.apply(Math, xs) + Math.min.apply(Math, xs))/2;
+                defaultY = -(Math.max.apply(Math, ys) + Math.min.apply(Math, ys))/2;
+                svgTransform(1, defaultX, defaultY);
+            }
         } else {
-            circle.attr("opacity", 1);
+            circle.attr("opacity", 1)
+            .on("click", function(d) {
+                openNav(d.id);
+            }).on("mouseover", function(d) {
+                circleOnMouseOver(d.id);
+            });
             path.attr("opacity", 1);
             text.attr("opacity", 1);
             text_shadow.attr("opacity", 1);
+            defaultX = 0;
+            defaultY = 0;
+            svgTransform(1, defaultX, defaultY);
         }
     });
 

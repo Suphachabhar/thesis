@@ -80,299 +80,279 @@ if (isset($_GET['logout'])) {
 </head>
     
 <body>
-	<div class="top-bar-right">
-		<a href="../auth/home.php">
-			<img src="../auth/img/unsw_0.png">
-		</a>
-
-        <div id="top-right-corner" class="top-bar-right">
+    
+<div class="containner">
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">   
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../auth/home.php">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><?php echo $topic['name']; ?></li>
             <?php 
-            if (permission()) {
+                if (permission()) {
             ?>
-            <!-- create sub topic -->
-            <form action="topic_handler.php" method="post">
-            <div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="courseAddModalLabel">Create new subtopic</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                        <div class="form-group">
-                            <label class="col-form-label">Subtopic:</label>
-                            <input name="function" value="createSubtopic" hidden>
-                            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-                            <input name="name">
-                        </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" value="Create">Submit</button>
-                    </div>
-                    </div>
-                </div>
-            </div>
-            <button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button> 
-            </form>
-
-            <!-- rename topic / edit description / rearrange subtopic -->
-            <form action="topic_handler.php" method="post">
-            <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
+                <!-- create sub topic -->
+                <a class="btn btn-light" id="nav-link-create" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo">+ create</a>
+                <form action="topic_handler.php" method="post">
+                <div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modifyModalLabel">Topic setting</h5>
+                            <h5 class="modal-title" id="courseAddModalLabel">Create new subtopic</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
                             <form>
-                                <div class="form-group">
-                                    <label class="col-form-label">Name:</label>
-                                    <input name="function" value="editTopic" hidden>
-                                    <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                                    <input name="name" value="<?php echo $topic['name']; ?>">
-                                </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="col-form-label">Description:</label>
-                                    <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="col-form-label">Category:</label>
-                                    <select id="category" name="category[]" multiple>
-                                        <?php
-                                            $cat_ids = array_map(function($cat) {
-                                                return $cat['id'];
-                                            }, $topic['category']);
-                                        
-                                            $query = "SELECT id, name FROM categories ORDER BY name";
-                                            $results = mysqli_query($db, $query);
-                                            foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
-                                        ?>
-                                        <option value="<?php echo $row["id"]; ?>"<?php if (in_array($row["id"], $cat_ids)) echo "selected"; ?>>
-                                            <?php echo $row["name"]; ?>
-                                        </option>
-                                        <?php
-                                            }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="col-form-label">Prerequisite:</label>
-                                    <select id="prerequisite" name="prerequisite[]" multiple>
-                                        <?php
-                                            $prereq_ids = array_map(function($prereq) {
-                                                return $prereq['id'];
-                                            }, $topic['prerequisite']);
-                                            
-                                            $query = "SELECT id, name FROM topics ORDER BY name";
-                                            $results = mysqli_query($db, $query);
-                                            foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
-                                        ?>
-                                        <option value="<?php echo $row["id"]; ?>"<?php if (in_array($row["id"], $prereq_ids)) echo "selected"; ?>><?php echo $row["name"]; ?></option>
-                                        <?php
-                                            }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="col-form-label">Subtopic order:</label>
-                                    <ul id="sortable">
-                                    <?php
-                                        foreach ($sList as $subtopic) {
-                                    ?>
-                                        <li>
-                                            <?php echo $subtopic['name']; ?>
-                                            <input name="subtopic[]" value="<?php echo $subtopic['id']; ?>" hidden>
-                                        </li>
-                                    <?php 
-                                        }
-                                    ?>
-                                    </ul>
-                                </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Subtopic:</label>
+                                <input name="function" value="createSubtopic" hidden>
+                                <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                                <input name="name">
+                            </div>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" value="Yes">Confirm</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" value="Create">Submit</button>
+                        </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <button class="modify-button-topic" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo"></button>
-            </form>
-
-            <!-- delete topic -->
-            <form action="topic_handler.php" method="post">
-            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModalLabel">Delete <?php echo $topic['name']; ?></h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <?php if (count($topic['prerequisite']) > 0 && count($topic['after']) > 0) { ?>
-                        <div class="modal-body">
-                            <p>The topic you are going to delete is a prerequisite of some other topics. Please tick the box if you want to link these topics to the prerequisites of this topic.</p>
-                            <form>
-                                <div class="form-group">
-                                    <input name="function" value="deleteTopic" hidden>
-                                    <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                                    <?php
-                                        foreach ($topic['prerequisite'] as $p) {
-                                            foreach ($topic['after'] as $a) {
-                                                echo '<input type="checkbox" name="connection[]" value="'.$a['id'].', '.$p['id']
-                                                    .' checked"><a href="topic.php?id='.$p['id'].'" target="_blank">'.$p['name']
-                                                    .'</a> -> <a href="topic.php?id='.$a['id'].'" target="_blank">'.$a['name'].'</a><br/>';
-                                            }
-                                        }
-                                    ?>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" value="Yes">Delete this topic</button>
-                        </div>
-                        <?php } else { ?>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete this topic?</p>
-                            <form>
-                                <div class="form-group" hidden>
-                                    <input name="function" value="deleteTopic">
-                                    <input name="id" value="<?php echo $_GET['id']; ?>">
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                            <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
-                        </div>
-                        <?php } ?>
-                    </div>
-                </div>
-            </div>
-            <button class="delete-button-topic" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo"></button>
-            </form>
-            <?php } ?>
-
-            <a class="btn btn-secondary" id="nav-link" href="../auth/login.php?logout='1'">Logout</a>
-        </div>
-	</div>
-    
-			
-
-    
-        
-
-        
-       
-
-        
-    
-    
-  
-
-   
-    
-    <!-- showing the responding of the system -->
-    <div class="containner">
-        <!-- showing topic name -->
-        
-    
-  
-</table>
-        <div id="name" class="header">
-            <h1><?php echo $topic['name']; ?></h1>
-            <div class="descAndNav">
-                <div class="description">
-                    <?php
-                        foreach (explode("\n", $topic["description"]) as $line) {
-                            echo "<p>".$line."</p>";
-                        }
-                    ?>
-                </div>
-                
-                <?php
-                    $defaultSub = 1;
-                    $progress = $nSubtopics;
-                    if (isAdmin()) {
-                        $defaultSub = isset($_GET['subtopic']) ? intval($_GET['subtopic']) : 1;
-                    } else {
-                        $query = "SELECT progress FROM progresses where topic = ".$_GET['id']." AND student = ".$_SESSION['user']['id'];
-                        $results = mysqli_query($db, $query);
-                        if (mysqli_num_rows($results) == 0) {
-                            $createProgress = "INSERT INTO progresses (student, topic, progress) VALUES (".$_SESSION['user']['id'].", ".$_GET['id'].", 0)";
-                            mysqli_query($db, $createProgress);
-                            $progress = 0;
-                        } else {
-                            $progress = mysqli_fetch_assoc($results)['progress'];
-                        }
-                        $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
-                        if (isset($_GET['subtopic']) && intval($_GET['subtopic']) < $defaultSub) {
-                            $defaultSub = intval($_GET['subtopic']);
-                        }
-                    }
-                    
-                    if (isAdmin()) {
-                ?>
-                <form method='post' action='topic_handler.php'>
-                    <input name="function" value="exportTopic" hidden>
-                    <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                    <input class="afterContent btn btn-primary" type="submit" value="Export">
+                <!--<button class="plus-button-topic" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo"></button> -->
                 </form>
-                <?php
-                    } else {
-                        foreach ($sList as $subtopic) {
-                            if ($subtopic['sort'] > ($progress + 1)) continue;
-                ?>
-                <div class="navigation" 
-                    id="navigation_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
-                    <?php
-                            if ($subtopic['sort'] == $nSubtopics && $subtopic['sort'] == $progress) {
-                                echo '<a class="afterContent btn btn-primary" href="../auth/home.php?topic='.$_GET['id'].'">Finish</a>';
-                            } elseif ($subtopic['sort'] <= $progress && $subtopic['sort'] != $nSubtopics) {
-                                echo '<button class="afterContent nextSubtopic btn btn-primary" id="nextSubtopic_'.$subtopic['sort'].'">Next</button>';
-                            } else {
-                                $button = '<button class="afterContent progressCheck btn btn-primary" id="progress_'.$subtopic['sort'].'">';
-                                if ($subtopic['sort'] == $nSubtopics) {
-                                    $button .= "Finish";
-                                } else {
-                                    $button .= "Next";
-                                }
-                                echo $button.'</button>';
-                            }
-                    ?>
+
+                <!-- rename topic / edit description / rearrange subtopic -->
+                <a class="btn btn-light" id="nav-link-setting" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo">setting</a>
+                <form action="topic_handler.php" method="post">
+                <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modifyModalLabel">Topic setting</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Name:</label>
+                                        <input name="function" value="editTopic" hidden>
+                                        <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                                        <input name="name" value="<?php echo $topic['name']; ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label">Description:</label>
+                                        <textarea class="form-control" id="message-text" name="description" rows="4" width="50"><?php echo $topic['description']; ?></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label">Category:</label>
+                                        <select id="category" name="category[]" multiple>
+                                            <?php
+                                                $cat_ids = array_map(function($cat) {
+                                                    return $cat['id'];
+                                                }, $topic['category']);
+                                            
+                                                $query = "SELECT id, name FROM categories ORDER BY name";
+                                                $results = mysqli_query($db, $query);
+                                                foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                                            ?>
+                                            <option value="<?php echo $row["id"]; ?>"<?php if (in_array($row["id"], $cat_ids)) echo "selected"; ?>>
+                                                <?php echo $row["name"]; ?>
+                                            </option>
+                                            <?php
+                                                }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label">Prerequisite:</label>
+                                        <select id="prerequisite" name="prerequisite[]" multiple>
+                                            <?php
+                                                $prereq_ids = array_map(function($prereq) {
+                                                    return $prereq['id'];
+                                                }, $topic['prerequisite']);
+                                                
+                                                $query = "SELECT id, name FROM topics ORDER BY name";
+                                                $results = mysqli_query($db, $query);
+                                                foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                                            ?>
+                                            <option value="<?php echo $row["id"]; ?>"<?php if (in_array($row["id"], $prereq_ids)) echo "selected"; ?>><?php echo $row["name"]; ?></option>
+                                            <?php
+                                                }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label">Subtopic order (drag to reorder)</label>
+                                        <ul id="sortable">
+                                        <?php
+                                            foreach ($sList as $subtopic) {
+                                        ?>
+                                            <li>
+                                                <?php echo $subtopic['name']; ?>
+                                                <input name="subtopic[]" value="<?php echo $subtopic['id']; ?>" hidden>
+                                            </li>
+                                        <?php 
+                                            }
+                                        ?>
+                                        </ul>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary" value="Yes">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <?php 
-                        }
+                </form>
+
+                <!-- delete topic -->
+                <a class="btn btn-light" id="nav-link-delete" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo">delete</a>
+                <form action="topic_handler.php" method="post">
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Delete <?php echo $topic['name']; ?></h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <?php if (count($topic['prerequisite']) > 0 && count($topic['after']) > 0) { ?>
+                            <div class="modal-body">
+                                <p>The topic you are going to delete is a prerequisite of some other topics. Please tick the box if you want to link these topics to the prerequisites of this topic.</p>
+                                <form>
+                                    <div class="form-group">
+                                        <input name="function" value="deleteTopic" hidden>
+                                        <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                                        <?php
+                                            foreach ($topic['prerequisite'] as $p) {
+                                                foreach ($topic['after'] as $a) {
+                                                    echo '<input type="checkbox" name="connection[]" value="'.$a['id'].', '.$p['id']
+                                                        .' checked"><a href="topic.php?id='.$p['id'].'" target="_blank">'.$p['name']
+                                                        .'</a> -> <a href="topic.php?id='.$a['id'].'" target="_blank">'.$a['name'].'</a><br/>';
+                                                }
+                                            }
+                                        ?>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary" value="Yes">Delete this topic</button>
+                            </div>
+                            <?php } else { ?>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete this topic?</p>
+                                <form>
+                                    <div class="form-group" hidden>
+                                        <input name="function" value="deleteTopic">
+                                        <input name="id" value="<?php echo $_GET['id']; ?>">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                </form>
+
+            <?php } ?>
+            
+        </ol>   
+    </nav>
+
+    <a class="btn" id="nav-link" href="../auth/login.php?logout='1'"><img src="../auth/img/leave.png"></a>
+    </div>
+
+  
+      
+        
+    
+ž
+    <div id="name" class="header">
+        <h1 id="topichead"><?php echo $topic['name']; ?></h1>
+        <div class="descAndNav">
+            
+            <?php
+                $defaultSub = 1;
+                $progress = $nSubtopics;
+                if (isAdmin()) {
+                    $defaultSub = isset($_GET['subtopic']) ? intval($_GET['subtopic']) : 1;
+                } else {
+                    $query = "SELECT progress FROM progresses where topic = ".$_GET['id']." AND student = ".$_SESSION['user']['id'];
+                    $results = mysqli_query($db, $query);
+                    if (mysqli_num_rows($results) == 0) {
+                        $createProgress = "INSERT INTO progresses (student, topic, progress) VALUES (".$_SESSION['user']['id'].", ".$_GET['id'].", 0)";
+                        mysqli_query($db, $createProgress);
+                        $progress = 0;
+                    } else {
+                        $progress = mysqli_fetch_assoc($results)['progress'];
                     }
+                    $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
+                    if (isset($_GET['subtopic']) && intval($_GET['subtopic']) < $defaultSub) {
+                        $defaultSub = intval($_GET['subtopic']);
+                    }
+                }
+                
+                if (isAdmin()) {
+            ?>
+            <form class="nav-link-export" method='post' action='topic_handler.php'>
+                <input name="function" value="exportTopic" hidden>
+                <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
+                <input class="afterContent btn btn-light" type="submit" value="export">
+            </form>
+            <?php
+                } else {
+                    foreach ($sList as $subtopic) {
+                        if ($subtopic['sort'] > ($progress + 1)) continue;
+            ?>
+            <div class="navigation" 
+                id="navigation_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
+                <?php
+                        if ($subtopic['sort'] == $nSubtopics && $subtopic['sort'] == $progress) {
+                            echo '<a class="afterContent btn btn-primary" href="../auth/home.php?topic='.$_GET['id'].'">Finish</a>';
+                        } elseif ($subtopic['sort'] <= $progress && $subtopic['sort'] != $nSubtopics) {
+                            echo '<button class="afterContent nextSubtopic btn btn-primary" id="nextSubtopic_'.$subtopic['sort'].'">Next</button>';
+                        } else {
+                            $button = '<button class="afterContent progressCheck btn btn-primary" id="progress_'.$subtopic['sort'].'">';
+                            if ($subtopic['sort'] == $nSubtopics) {
+                                $button .= "Finish";
+                            } else {
+                                $button .= "Next";
+                            }
+                            echo $button.'</button>';
+                        }
                 ?>
             </div>
-            <?php
-                if (!permission()) {
-                    $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
-                        ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_GET["id"];
-                    $result = mysqli_query($db, $query);
-                    $row = mysqli_fetch_assoc($result);
-                    $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
-                    print '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
-                        .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
+            <?php 
+                    }
                 }
             ?>
         </div>
-        <div class="row">
-            <div class="col-2">
+        <?php
+            if (!permission()) {
+                $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
+                    ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_GET["id"];
+                $result = mysqli_query($db, $query);
+                $row = mysqli_fetch_assoc($result);
+                $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
+                print '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
+                    .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
+            }
+        ?>
 
-            <div class="subtopicList">
+        <div class="subcontent">
+            
+
+            <div class="subtopicrow">
                 <?php
                     foreach ($sList as $subtopic) {
                 ?>
@@ -381,22 +361,66 @@ if (isset($_GET['logout'])) {
                 <div class="subtopicSlot<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?>"
                     id="subtopicSlot_<?php echo $subtopic['sort']; ?>">
                     <button class="subtopicName" id="subtopicName_<?php echo $subtopic['sort']; ?>"<?php if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) echo ' disabled'; ?>><?php echo $subtopic['name']; ?></button>
-                <?php
-                    if (isAdmin()) {
-                ?>
-                <div>
-                    <button class="moreButton" id="moreButton_<?php echo $subtopic['id']; ?>"></button>
-                    <div class="moreOptions" id="moreOptions_<?php echo $subtopic['id']; ?>">
-                        <button data-toggle="modal" data-target="#renameSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo">Rename</button>
-                        <button data-toggle="modal" data-target="#deleteSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo">Delete</button>
-                    </div>
+                    
                 </div>
-                <?php 
-                        }
-                ?>
-                </div>
+                
 
-                <form action="topic_handler.php" method="post">
+                
+                <?php
+                    }
+                ?>
+            </div>
+           
+
+            <div class="topiccontent">
+                <?php
+                    foreach ($sList as $subtopic) {
+                        if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) continue;
+                ?>
+                    <div class="subtopicContent" 
+                        id="subtopicContent_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
+                        <?php
+                            $directory = '../../files/'.$_GET['id'].'/'.$subtopic['id'];
+                            $has_files = false;
+                            if (is_dir($directory)) {
+                                $files = scandir($directory);
+                                if ($files !== false) {
+                                    foreach ($files as $f) {
+                                        if ($f == '.' || $f == '..') {continue;}
+                                        $has_files = true;
+                        ?>
+                        
+                        <iframe src="<?php echo $directory.'/'.$f; ?>" style="height:680px; width:100%"></iframe>
+                        <?php
+                                    }
+                                }
+                            }
+                            
+                            if (!$has_files && permission()) {
+                        ?>
+                       
+                        <h4>Upload content</h4>
+                        <form action="topic_handler.php" method="post" enctype="multipart/form-data">
+                            <input name="function" value="upload" hidden>
+                            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                            <input name="subtopic" value="<?php echo $subtopic['id']; ?>" hidden>
+                            <input type="file" name="fileToUpload">
+                            <input type="submit" value="Upload File">
+                        </form>
+                        <?php 
+                            }
+                        ?>
+
+                        <?php
+                            if (isAdmin()) {
+                        ?>
+                       
+                        <div  class="top-bar-right" <?php echo $subtopic['id']; ?>">
+                            <button class="modify-button-topic" data-toggle="modal" data-target="#renameSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo"></button>
+                            <button class="delete-button-topic" data-toggle="modal" data-target="#deleteSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo"></button>
+                        </div>
+
+                        <form action="topic_handler.php" method="post">
                     <div class="modal fade" id="renameSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="renameSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -454,57 +478,24 @@ if (isset($_GET['logout'])) {
                         </div>
                     </div>
                 </form>
-                <?php
-                    }
-                ?>
-            </div>
-            </div>
+                        
+                        <?php 
+                                }
+                        ?>
 
-            <div class="col-10">
+                    </div>
 
-            <?php
-                foreach ($sList as $subtopic) {
-                    if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) continue;
-            ?>
-
-            <div class="subtopicContent" 
-                id="subtopicContent_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
-                <?php
-                    $directory = '../../files/'.$_GET['id'].'/'.$subtopic['id'];
-                    $has_files = false;
-                    if (is_dir($directory)) {
-                        $files = scandir($directory);
-                        if ($files !== false) {
-                            foreach ($files as $f) {
-                                if ($f == '.' || $f == '..') {continue;}
-                                $has_files = true;
-                ?>
-                <iframe src="<?php echo $directory.'/'.$f; ?>" style="height:680px; width:100%"></iframe>
-                <?php
-                            }
-                        }
-                    }
                     
-                    if (!$has_files && permission()) {
-                ?>
-                <h4>Upload content</h4>
-                    <form action="topic_handler.php" method="post" enctype="multipart/form-data">
-                        <input name="function" value="upload" hidden>
-                        <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-                        <input name="subtopic" value="<?php echo $subtopic['id']; ?>" hidden>
-                        <input type="file" name="fileToUpload">
-                        <input type="submit" value="Upload File">
-                    </form>
                 <?php 
                     }
                 ?>
             </div>
-            <?php 
-                }
-            ?>
-            </div>
         </div>
     </div>
+
+
+        
+   
 
 	
 <script>
@@ -517,29 +508,6 @@ if (isset($_GET['logout'])) {
         $("#subtopicIDToDelete").val(subID);
         $("#confirmDeleteSubtopic").css("display", "block");
 	}));
-    
-	$(document).on("click", ".moreButton", (function () {
-		var subID = $(this).attr("id").split("_")[1];
-        $("#moreOptions_" + subID).css("display", "block");
-	}));
-    
-    $(document).on("click", "body", (function(event) {
-        var subID = "";
-        var mouseOut = true;
-        if ($(event.target).hasClass('moreButton')) {
-            subID = "moreOptions_" + $(event.target).attr("id").split("_")[1];
-        } else if ($(event.target).hasClass('moreOptions')) {
-            mouseOut = false;
-        }
-        
-        if (mouseOut) {
-            $(".moreOptions").each(function() {
-                if ($(this).attr("id") != subID) {
-                    $(this).css("display", "none");
-                }
-            });
-        }
-    }));
 
     $(document).ready(function () {
         var instance = new SlimSelect({
