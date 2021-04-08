@@ -12,6 +12,11 @@
     
 }
 
+hr{
+    color: #f5c852;
+    height: 2px;
+}
+
 img{
     width: 32px;
 }
@@ -86,7 +91,7 @@ body {
     background-color: white;
     
     border: 1px solid lightgrey;
-  
+    
     
 }
 
@@ -160,7 +165,7 @@ form + .subtopicSlot {
     flex-direction: column;
     position: absolute;
     right: 60px;
-    top: 250px;
+    top: 440px;
 }
 
 #nav-link{

@@ -274,11 +274,21 @@ if (isset($_GET['logout'])) {
 
   
       
-        
-    
-ž
     <div id="name" class="header">
         <h1 id="topichead"><?php echo $topic['name']; ?></h1>
+        
+        
+        <div class="subcontent">
+        <div class="description">
+            <h2>Description</h2>
+            <?php
+                foreach (explode("\n", $topic["description"]) as $line) {
+                    echo "<p>".$line."</p>";
+                }
+            ?>
+        </div>
+        <hr />
+        <!--<hr style="height:10px;border:none;color:#f5c852;background-color:#f5c852;" />-->
         <div class="descAndNav">
             
             <?php
@@ -337,7 +347,29 @@ if (isset($_GET['logout'])) {
                 }
             ?>
         </div>
-        <?php
+        
+        <h2>Subtopics</h2>
+            <div class="subtopicrow">
+
+                
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <?php
+                    foreach ($sList as $subtopic) {
+                ?>
+                    <li class="nav-item">
+                    <div class="subtopicSlot<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?> nav-link"
+                        id="subtopicSlot_<?php echo $subtopic['sort']; ?>">
+                        <button class="subtopicName" id="subtopicName_<?php echo $subtopic['sort']; ?>"<?php if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) echo ' disabled'; ?>><?php echo $subtopic['name']; ?></button>
+                        
+                    </div>
+                <?php
+                    }
+                ?>
+                </ul>
+                 
+            </div>
+           
+            <?php
             if (!permission()) {
                 $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
                     ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_GET["id"];
@@ -347,30 +379,8 @@ if (isset($_GET['logout'])) {
                 print '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
-        ?>
-
-        <div class="subcontent">
+            ?>
             
-
-            <div class="subtopicrow">
-                <?php
-                    foreach ($sList as $subtopic) {
-                ?>
-                
-                
-                <div class="subtopicSlot<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?>"
-                    id="subtopicSlot_<?php echo $subtopic['sort']; ?>">
-                    <button class="subtopicName" id="subtopicName_<?php echo $subtopic['sort']; ?>"<?php if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) echo ' disabled'; ?>><?php echo $subtopic['name']; ?></button>
-                    
-                </div>
-                
-
-                
-                <?php
-                    }
-                ?>
-            </div>
-           
 
             <div class="topiccontent">
                 <?php
@@ -415,7 +425,7 @@ if (isset($_GET['logout'])) {
                             if (isAdmin()) {
                         ?>
                        
-                        <div  class="top-bar-right" <?php echo $subtopic['id']; ?>">
+                        <div  class="top-bar-right" <?php echo $subtopic['id']; ?>>
                             <button class="modify-button-topic" data-toggle="modal" data-target="#renameSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo"></button>
                             <button class="delete-button-topic" data-toggle="modal" data-target="#deleteSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo"></button>
                         </div>
