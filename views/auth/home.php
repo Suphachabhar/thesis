@@ -295,7 +295,7 @@ if (isset($_GET['logout'])) {
 
     var n = <?php echo count($nodes); ?>;
         
-    var path, circle, text, text_shadow;
+    var path, circle, text, text_shadow, groupText, groupShadow;
         
     var nodeStatus = d3.select("body").append("div")
         .attr("class", "nodeStatus")
@@ -433,7 +433,7 @@ if (isset($_GET['logout'])) {
             });
         });
         
-        var groupShadow = g.append("g").selectAll("circle")
+        groupShadow = g.append("g").selectAll("circle")
             .data(bigText)
         .enter().append("text")
             .attr("x", function(d) { return d.x; })
@@ -443,7 +443,7 @@ if (isset($_GET['logout'])) {
             .style("font-size", 100)
             .text(function(d) { return d.name;});
 
-        var groupText = g.append("g").selectAll("circle")
+        groupText = g.append("g").selectAll("circle")
             .data(bigText)
         .enter().append("text")
             .attr("x", function(d) { return d.x; })
@@ -462,7 +462,6 @@ if (isset($_GET['logout'])) {
             text_shadow.attr("opacity", normalOpacity);
             groupText.attr("opacity", groupOpacity);
             groupShadow.attr("opacity", groupOpacity);
-            console.log(groupOpacity);
         }));
         
         groupText.attr("opacity", 0);
@@ -641,6 +640,13 @@ if (isset($_GET['logout'])) {
     ?>
     
     function openNav(id) {
+        circle.attr("opacity", 1);
+        path.attr("opacity", 1);
+        text.attr("opacity", 1);
+        text_shadow.attr("opacity", 1);
+        groupText.attr("opacity", 0);
+        groupShadow.attr("opacity", 0);
+            
         selectedTopic = id;
         var topicStr = selectedTopic.toString();
         $.each(nodes, function (i, obj) {
