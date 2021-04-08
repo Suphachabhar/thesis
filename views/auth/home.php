@@ -383,9 +383,6 @@ if (isset($_GET['logout'])) {
             openNav(selectedTopic);
         }
         
-        // set zooming size to display all nodes
-        defaultZoomSize();
-        
         // display main topic in a node cluster when zooming out enough
         var nodeGroups = [];
         var nodesQueue = [];
@@ -454,18 +451,11 @@ if (isset($_GET['logout'])) {
         
         svg.call(d3.zoom().on("zoom", function () {
             container.attr("transform", d3.event.transform);
-            var normalOpacity = d3.event.transform.k < 0.3 ? 0.2 : 1;
-            var groupOpacity = d3.event.transform.k < 0.3 ? 1 : 0;
-            circle.attr("opacity", normalOpacity);
-            path.attr("opacity", normalOpacity);
-            text.attr("opacity", normalOpacity);
-            text_shadow.attr("opacity", normalOpacity);
-            groupText.attr("opacity", groupOpacity);
-            groupShadow.attr("opacity", groupOpacity);
+            svgOpacity(d3.event.transform.k);
         }));
         
-        groupText.attr("opacity", 0);
-        groupShadow.attr("opacity", 0);
+        // set zooming size to display all nodes
+        defaultZoomSize();
     });
     
     function calculateZoomSize(xs, ys) {
@@ -640,13 +630,6 @@ if (isset($_GET['logout'])) {
     ?>
     
     function openNav(id) {
-        circle.attr("opacity", 1);
-        path.attr("opacity", 1);
-        text.attr("opacity", 1);
-        text_shadow.attr("opacity", 1);
-        groupText.attr("opacity", 0);
-        groupShadow.attr("opacity", 0);
-            
         selectedTopic = id;
         var topicStr = selectedTopic.toString();
         $.each(nodes, function (i, obj) {
@@ -717,10 +700,23 @@ if (isset($_GET['logout'])) {
     });
     
     function svgTransform(scale, x, y) {
+        svgOpacity(scale);
+        
         container.transition()
             .duration(750)
             .attr("transform", "scale(" + scale + ") translate(" + x + "," + y + ")");
         svg.call(d3.zoom().transform, d3.zoomIdentity.scale(scale).translate(x, y));
+    }
+    
+    function svgOpacity(scale) {
+        var normalOpacity = scale < 0.3 ? 0.2 : 1;
+        var groupOpacity = scale < 0.3 ? 1 : 0;
+        circle.attr("opacity", normalOpacity);
+        path.attr("opacity", normalOpacity);
+        text.attr("opacity", normalOpacity);
+        text_shadow.attr("opacity", normalOpacity);
+        groupText.attr("opacity", groupOpacity);
+        groupShadow.attr("opacity", groupOpacity);
     }
     
     function resizeSvgAndSidebar(transform) {
