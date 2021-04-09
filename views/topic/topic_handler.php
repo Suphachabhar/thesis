@@ -453,7 +453,7 @@
                         } else {
                             $subStatus = '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
                             if (($subsFinished + 1) < $s['sort']) {
-                                $onclick = ' data-toggle="tooltip" title="Unavailable to study"';
+                                $onclick = '';
                             }
                         }
                     }

@@ -437,7 +437,7 @@ if (isset($_GET['logout'])) {
             .attr("y", function(d) { return d.y; })
             .attr("class", "shadow")
             .style("text-anchor", "middle")
-            .style("font-size", 80)
+            .style("font-size", 50)
             .text(function(d) { return d.name;});
 
         groupText = g.append("g").selectAll("circle")
@@ -446,7 +446,7 @@ if (isset($_GET['logout'])) {
             .attr("x", function(d) { return d.x; })
             .attr("y", function(d) { return d.y; })
             .style("text-anchor", "middle")
-            .style("font-size", 80)
+            .style("font-size", 50)
             .text(function(d) { return d.name;});
         
         svg.call(d3.zoom().on("zoom", function () {
