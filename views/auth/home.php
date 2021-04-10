@@ -167,7 +167,10 @@ if (isset($_GET['logout'])) {
 
 
         
-		<a class="btn btn-secondary" id="nav-link" href="login.php?logout='1'">Logout</a>	 
+		<a class="btn btn-secondary" id="nav-link" href="login.php?logout='1'">Logout</a>	<?php echo display_error(); ?>
+  
+
+
     </div>
 
     <?php
@@ -245,8 +248,23 @@ if (isset($_GET['logout'])) {
 	</nav>
 
     
-
+    <div class="alertt">
+        <?php echo display_error(); ?>
+        <?php if (isset($_SESSION['success'])) : ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?php 
+                echo $_SESSION['success']; 
+                unset($_SESSION['success']);
+            ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <?php endif ?>
+    </div>
+    
     <div id="main">
+    
         <div id="mySidenav" class="sidenav">
             <div id="sideNavContent"></div>
         </div> 

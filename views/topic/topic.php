@@ -270,11 +270,24 @@ if (isset($_GET['logout'])) {
     </nav>
 
     <a class="btn" id="nav-link" href="../auth/login.php?logout='1'"><img src="../auth/img/leave.png"></a>
+    <?php echo display_error(); ?>
+    <?php if (isset($_SESSION['success'])) : ?>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <?php 
+          	echo $_SESSION['success']; 
+          	unset($_SESSION['success']);
+          ?>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+  	<?php endif ?>
     </div>
 
   
       
     <div id="name" class="header">
+    
         <h1 id="topichead"><?php echo $topic['name']; ?></h1>
         
         
@@ -435,7 +448,7 @@ if (isset($_GET['logout'])) {
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="renameSubModalLabel_<?php echo $subtopic['id']; ?>">Rename <?php echo $subtopic['name']; ?></h5>
+                                <h5 class="modal-title" id="renameSubModalLabel_<?php echo $subtopic['id']; ?>">Subtopic setting</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                                 </button>
@@ -448,6 +461,14 @@ if (isset($_GET['logout'])) {
                                     <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
                                     <input name="id" value="<?php echo $subtopic['id']; ?>" hidden>
                                     <input name="name" value="<?php echo $subtopic['name']; ?>">
+                                </div>
+                                <div class="form-group">
+                                    <p><b>Upload new file</b></p>
+                                    <input name="function" value="upload" hidden>
+                                    <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
+                                    <input name="subtopic" value="<?php echo $subtopic['id']; ?>" hidden>
+                                    <input type="file" name="fileToUpload">
+                                    <input type="submit" value="Upload File">
                                 </div>
                                 </form>
                             </div>
