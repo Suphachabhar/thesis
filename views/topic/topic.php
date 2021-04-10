@@ -57,14 +57,12 @@ if (isset($_GET['logout'])) {
 <head>
     <title id="title"><?php echo $topic['name']; ?></title>
     <link rel="stylesheet" type="text/css" href="modal.css">
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
     
@@ -94,7 +92,7 @@ if (isset($_GET['logout'])) {
                 if (permission()) {
             ?>
                 <!-- create sub topic -->
-                <a class="btn btn-light" id="nav-link-create" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo">+ create</a>
+                <a class="btn btn-light" id="nav-link-create" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo">+ Create</a>
                 <form action="topic_handler.php" method="post">
                 <div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -126,7 +124,7 @@ if (isset($_GET['logout'])) {
                 </form>
 
                 <!-- rename topic / edit description / rearrange subtopic -->
-                <a class="btn btn-light" id="nav-link-setting" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo">setting</a>
+                <a class="btn btn-light" id="nav-link-setting" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo">Setting</a>
                 <form action="topic_handler.php" method="post">
                 <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -214,7 +212,7 @@ if (isset($_GET['logout'])) {
                 </form>
 
                 <!-- delete topic -->
-                <a class="btn btn-light" id="nav-link-delete" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo">delete</a>
+                <a class="btn btn-light" id="nav-link-delete" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo">Delete</a>
                 <form action="topic_handler.php" method="post">
                 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -274,11 +272,24 @@ if (isset($_GET['logout'])) {
     </nav>
 
     <a class="btn" id="nav-link" href="../auth/login.php?logout='1'"><img src="../auth/img/leave.png"></a>
+    <?php echo display_error(); ?>
+    <?php if (isset($_SESSION['success'])) : ?>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <?php 
+          	echo $_SESSION['success']; 
+          	unset($_SESSION['success']);
+          ?>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+  	<?php endif ?>
     </div>
 
   
       
     <div id="name" class="header">
+    
         <h1 id="topichead"><?php echo $topic['name']; ?></h1>
         
         
@@ -301,7 +312,7 @@ if (isset($_GET['logout'])) {
             <form class="nav-link-export" method='post' action='topic_handler.php'>
                 <input name="function" value="exportTopic" hidden>
                 <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                <input class="afterContent btn btn-light" type="submit" value="export">
+                <input class="afterContent btn btn-light" type="submit" value="Export">
             </form>
             <?php
                 }
@@ -317,8 +328,10 @@ if (isset($_GET['logout'])) {
                     $defaultSub = 0;
                     if (isset($_GET['subtopic'])) {
                         $defaultSub = intval($_GET['subtopic']);
-                        $query = "INSERT INTO progresses (student, subtopic) VALUES (".$_SESSION['user']['id'].", ".$_GET['subtopic'].")";
-                        mysqli_query($db, $query);
+                        if (!isAdmin()) {
+                            $query = "INSERT INTO progresses (student, subtopic) VALUES (".$_SESSION['user']['id'].", ".$_GET['subtopic'].")";
+                            mysqli_query($db, $query);
+                        }
                     }
                     
                     $subFinished = 0;
@@ -420,7 +433,7 @@ if (isset($_GET['logout'])) {
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="renameSubModalLabel_<?php echo $subtopic['id']; ?>">Rename <?php echo $subtopic['name']; ?></h5>
+                                <h5 class="modal-title" id="renameSubModalLabel_<?php echo $subtopic['id']; ?>">Subtopic setting</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                                 </button>

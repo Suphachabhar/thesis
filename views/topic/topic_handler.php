@@ -125,7 +125,7 @@
             $query = "INSERT INTO subtopics (topic, name, sort) VALUES (".$_POST['topic'].", '".$name."', ".$sort.")";
             mysqli_query($db, $query);
             $_SESSION['success'] = "Subtopic \"".$_POST['name']."\" has been created successfully.";
-        
+            
             $query = "SELECT id FROM subtopics WHERE topic = ".$_POST['topic']." AND name = '".$name."' ORDER BY id DESC LIMIT 1";
             $results = mysqli_query($db, $query); 
             $subID = mysqli_fetch_assoc($results)["id"];
@@ -157,6 +157,13 @@
                 $query = "UPDATE subtopics SET name = '".$name."' WHERE id = ".$_POST['id'];
                 mysqli_query($db, $query);
                 $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
+
+                $query = "SELECT id FROM subtopics WHERE topic = ".$_POST['topic']." AND name = '".$name."' ORDER BY id DESC LIMIT 1";
+                $results = mysqli_query($db, $query); 
+                $subID = mysqli_fetch_assoc($results)["id"];
+                header('location: topic.php?id='.$_POST['topic'].'&subtopic='.$subID);
+                return;
+
             }
         }
         header('location: topic.php?id='.$_POST['topic']);
@@ -336,9 +343,12 @@
                 } else {
                     $move_result = move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $directory."/".$chosen_file);
                     $_SESSION['success'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded successfully.";
+
+                    
                 }
             }
         }
+        
         header('location: topic.php?id='.$_POST['topic']);
     }
     
@@ -375,8 +385,9 @@
         $query = "SELECT id FROM topics WHERE name = '".str_replace("'", "''", $_POST["name"])."'";
         $result = mysqli_query($db, $query);
         if (mysqli_num_rows($result) > 0) {
-            $link = "../topic/topic.php?id=".mysqli_fetch_assoc($result)["id"];
+            $link = "../topic/topic.php?id=".mysqli_fetch_assoc($result)["id"];    
         }
+
         print $link;
     }
     
@@ -421,11 +432,19 @@
                 }
             }
             $output = '<h1>'.$info['name'];
-            if ($addLink) {
-                $output .= '<span><button type="button" class="btn btn-primary btn-sm" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">access</button></span>';
-            }
             $output .= '</h1>';
           
+            if ($addLink) {
+                $output .= '<div class="badgee">';
+                $output .= '<button type="button" class="btn btn-primary btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Artificail Intelligence</button>';
+                $output .= '<button type="button" class="btn btn-secondary btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Network</button>';
+                $output .= '<button type="button" class="btn btn-success btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Database</button>';
+                $output .= '<button type="button" class="btn btn-danger btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">eCommerce</button>';
+                $output .= '<button type="button" class="btn btn-warning btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Embedded</button>';
+                $output .= '<button type="button" class="btn btn-info btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Programming Languages</button>';
+                $output .= '<button type="button" class="btn btn-dark btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Security</button>';
+                $output .= '</div>';
+            }
             
             if (!is_null($info['description'])) {
                 $output .= '<p>'.$info['description'].'</p>';
@@ -445,7 +464,7 @@
                 }
                 
                 $percentage = $subTotal == 0 ? 0 : ($subsFinished / $subTotal) * 100;
-                $output .= '<h4>Progress</h4><div class="progress progressss"><div class="progress-bar" role="progressbar" aria-valuenow="'
+                $output .= '<h4>Progress bar <span>()</span></h4><div class="progress progressss"><div class="progress-bar" role="progressbar" aria-valuenow="'
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
 
@@ -457,9 +476,9 @@
                     $subStatus = "";
                     if (!permission()) {
                         if (in_array($s['id'], $finished)) {
-                            $subStatus = '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
+                            $subStatus = '<td><img data-toggle="tooltip" title="Completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $subStatus = '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
+                            $subStatus = '<td><img data-toggle="tooltip" title="Incomplete" src="../auth/img/dashed_circle.png"></td>';
                         }
                     }
                     $output .= '<tr><td style="width: 90%"'.$onclick.'>'.$s['name'].$subStatus.'</td></tr>';
@@ -473,9 +492,9 @@
                     $output .= '<tr><td style="width: 90%"  onclick="openNav('.$pid.')">'.$p['name'];
                     if (!permission()) {
                         if ($prereqCheck[$pid]) {
-                            $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="Completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="Incomplete" src="../auth/img/dashed_circle.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
@@ -493,9 +512,9 @@
                     $output .= '<tr><td style="width: 90%"  onclick="openNav('.$aid.')">'.$progress['name'];
                     if (!permission()) {
                         if ($progress['nSub'] == $progress['progress']) {
-                            $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="Completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="Incomplete" src="../auth/img/dashed_circle.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';

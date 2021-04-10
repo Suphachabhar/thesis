@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2021 at 09:29 AM
+-- Generation Time: Apr 10, 2021 at 12:39 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -28,8 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `subtopics` (
-  `topic` int(11) NOT NULL,
   `id` int(11) NOT NULL,
+  `topic` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `sort` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -38,16 +38,19 @@ CREATE TABLE `subtopics` (
 -- Dumping data for table `subtopics`
 --
 
-INSERT INTO `subtopics` (`topic`, `id`, `name`, `sort`) VALUES
-(51, 1, 'Syntax', 1),
-(51, 2, 'Ecosystem', 2),
-(52, 1, 'Intro', 1),
-(52, 2, 'DOM', 2),
-(52, 3, 'Loading order', 3),
-(53, 1, 'Intro', 1),
-(53, 2, 'Basic CSS usage', 2),
-(54, 1, 'NPM Intro', 1),
-(58, 1, 'd\'d', 1);
+INSERT INTO `subtopics` (`id`, `topic`, `name`, `sort`) VALUES
+(1, 51, 'Syntax', 1),
+(2, 51, 'Ecosystem', 2),
+(3, 52, 'Intro', 1),
+(4, 52, 'DOM', 2),
+(5, 52, 'Loading order', 3),
+(6, 53, 'Intro', 1),
+(7, 53, 'Basic CSS usage', 2),
+(8, 54, 'NPM Intro', 1),
+(9, 59, 'testt', 1),
+(10, 69, 'CREATE TABLE', 1),
+(11, 69, 'PRIMARY KEY', 2),
+(13, 54, 'test', 2);
 
 --
 -- Indexes for dumped tables
@@ -57,7 +60,18 @@ INSERT INTO `subtopics` (`topic`, `id`, `name`, `sort`) VALUES
 -- Indexes for table `subtopics`
 --
 ALTER TABLE `subtopics`
-  ADD PRIMARY KEY (`topic`,`id`);
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `topic` (`topic`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `subtopics`
+--
+ALTER TABLE `subtopics`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Constraints for dumped tables
@@ -67,7 +81,7 @@ ALTER TABLE `subtopics`
 -- Constraints for table `subtopics`
 --
 ALTER TABLE `subtopics`
-  ADD CONSTRAINT `subtopics_ibfk_1` FOREIGN KEY (`topic`) REFERENCES `topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `subtopics_ibfk_1` FOREIGN KEY (`topic`) REFERENCES `topics` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

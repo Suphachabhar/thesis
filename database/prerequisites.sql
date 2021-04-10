@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2021 at 09:28 AM
+-- Generation Time: Apr 10, 2021 at 12:40 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -40,14 +40,17 @@ INSERT INTO `prerequisites` (`topic`, `prerequisite`) VALUES
 (52, 51),
 (53, 51),
 (54, 51),
-(57, 51),
-(58, 51),
 (59, 53),
 (60, 59),
 (61, 51),
 (62, 59),
-(63, 62),
-(64, 54);
+(69, 75),
+(70, 69),
+(71, 69),
+(72, 70),
+(73, 70),
+(74, 70),
+(76, 72);
 
 --
 -- Indexes for dumped tables

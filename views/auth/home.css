@@ -222,7 +222,27 @@ text.shadow {
 #sideNavContent h1 {
   text-align: center;
   margin-bottom: 10px;
+  margin-top: -5px;
+}
 
+
+
+
+
+#sideNavContent h4 {
+  margin-top: -20px;
+
+}
+
+#sideNavContent p {
+  margin-top: 25px;
+  margin-bottom: 45px;
+
+}
+
+#sideNavContent .badgee{
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 #sideNavContent td {
@@ -236,8 +256,9 @@ text.shadow {
 }
 
 .progress.progressss{
-  margin-top: 20px;
+  margin-top: 25px;
   background-color: white;
+  margin-bottom: 35px;
 }
 
 #sideNavContent a:hover {
@@ -262,6 +283,15 @@ text.shadow {
   flex-direction: row;
   flex-wrap: wrap;
   margin-top: 10px;
+}
+
+.alertt{
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+.alertt button{
+  padding-top: 5px;
 }
 
 
@@ -298,3 +328,4 @@ text.shadow {
     pointer-events: none;
     color: black;
 }
+
