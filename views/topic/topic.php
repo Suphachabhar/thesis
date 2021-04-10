@@ -90,7 +90,7 @@ if (isset($_GET['logout'])) {
                 if (permission()) {
             ?>
                 <!-- create sub topic -->
-                <a class="btn btn-light" id="nav-link-create" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo">+ create</a>
+                <a class="btn btn-light" id="nav-link-create" data-toggle="modal" data-target="#courseAddModal" data-whatever="@mdo">+ Create</a>
                 <form action="topic_handler.php" method="post">
                 <div class="modal fade" id="courseAddModal" tabindex="-1" role="dialog" aria-labelledby="courseAddModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -122,7 +122,7 @@ if (isset($_GET['logout'])) {
                 </form>
 
                 <!-- rename topic / edit description / rearrange subtopic -->
-                <a class="btn btn-light" id="nav-link-setting" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo">setting</a>
+                <a class="btn btn-light" id="nav-link-setting" data-toggle="modal" data-target="#modifyModal" data-whatever="@mdo">Setting</a>
                 <form action="topic_handler.php" method="post">
                 <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -210,7 +210,7 @@ if (isset($_GET['logout'])) {
                 </form>
 
                 <!-- delete topic -->
-                <a class="btn btn-light" id="nav-link-delete" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo">delete</a>
+                <a class="btn btn-light" id="nav-link-delete" data-toggle="modal" data-target="#deleteModal" data-whatever="@mdo">Delete</a>
                 <form action="topic_handler.php" method="post">
                 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -330,7 +330,7 @@ if (isset($_GET['logout'])) {
             <form class="nav-link-export" method='post' action='topic_handler.php'>
                 <input name="function" value="exportTopic" hidden>
                 <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
-                <input class="afterContent btn btn-light" type="submit" value="export">
+                <input class="afterContent btn btn-light" type="submit" value="Export">
             </form>
             <?php
                 } else {

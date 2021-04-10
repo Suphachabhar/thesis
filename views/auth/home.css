@@ -242,7 +242,7 @@ text.shadow {
 
 #sideNavContent .badgee{
   text-align: center;
-  
+  margin-bottom: 30px;
 }
 
 #sideNavContent td {
@@ -258,7 +258,7 @@ text.shadow {
 .progress.progressss{
   margin-top: 25px;
   background-color: white;
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
 #sideNavContent a:hover {
