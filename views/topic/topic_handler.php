@@ -451,7 +451,7 @@
                         if ($subsFinished >= $s['sort']) {
                             $subStatus = '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $subStatus = '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
+                            $subStatus = '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
                             if (($subsFinished + 1) < $s['sort']) {
                                 $onclick = '';
                             }
@@ -470,7 +470,7 @@
                         if ($prereqCheck[$pid]) {
                             $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
@@ -487,7 +487,7 @@
                         if (!is_null($progress) && $progress['nSub'] == $progress['progress']) {
                             $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
-                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/warning.png"></td>';
+                            $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
                         }
                     }
                     $output .= '</td></tr>';
