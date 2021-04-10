@@ -274,7 +274,8 @@ if (isset($_GET['logout'])) {
         nodes=<?php echo json_encode($nodes); ?>,
         links=<?php echo json_encode($links); ?>,
         progresses=<?php echo json_encode($progresses); ?>,
-        topicCat=<?php echo json_encode($topicCat); ?>;
+        topicCat=<?php echo json_encode($topicCat); ?>,
+        catChecked=[];
     
     var simulation = d3.forceSimulation(nodes)
         .force("charge", d3.forceManyBody().strength(-1000))
@@ -711,10 +712,41 @@ if (isset($_GET['logout'])) {
     function svgOpacity(scale) {
         var normalOpacity = scale < 0.3 ? 0.2 : 1;
         var groupOpacity = scale < 0.3 ? 1 : 0;
-        circle.attr("opacity", normalOpacity);
-        path.attr("opacity", normalOpacity);
-        text.attr("opacity", normalOpacity);
-        text_shadow.attr("opacity", normalOpacity);
+        
+        if (catChecked.length > 0) {
+            circle.attr("opacity", function (d) {
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? normalOpacity : 0;
+            }).on("click", function(d) {
+                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
+                    openNav(d.id);
+                }
+            }).on("mouseover", function(d) {
+                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
+                    circleOnMouseOver(d.id);
+                }
+            });
+            path.attr("opacity", function (d) {
+                var src = d.source.id;
+                var tar = d.target.id;
+                return ((topicCat[src].length == 0 || $(topicCat[src]).filter(catChecked).length > 0) && (topicCat[tar].length == 0 || $(topicCat[tar]).filter(catChecked).length > 0)) ? normalOpacity : 0;
+            });
+            text.attr("opacity", function (d) {
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? normalOpacity : 0;
+            });
+            text_shadow.attr("opacity", function (d) {
+                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? normalOpacity : 0;
+            });
+        } else {
+            circle.attr("opacity", normalOpacity)
+            .on("click", function(d) {
+                openNav(d.id);
+            }).on("mouseover", function(d) {
+                circleOnMouseOver(d.id);
+            });
+            path.attr("opacity", normalOpacity);
+            text.attr("opacity", normalOpacity);
+            text_shadow.attr("opacity", normalOpacity);
+        }
         groupText.attr("opacity", groupOpacity);
         groupShadow.attr("opacity", groupOpacity);
     }
@@ -769,52 +801,21 @@ if (isset($_GET['logout'])) {
     }
     
     $('input[name="category"]').change(function () {
-        var catChecked = [];
+        catChecked = [];
         $('input[name="category"]:checked').each(function() {
             catChecked.push($(this).val());
         });
         
         if (catChecked.length > 0) {
             var xs = [], ys = [];
-            circle.attr("opacity", function (d) {
+            $(nodes).each(function (_, d) {
                 if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
                     xs.push(d.x);
                     ys.push(d.y);
-                    return 1;
-                }
-                return 0;
-            }).on("click", function(d) {
-                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
-                    openNav(d.id);
-                }
-            }).on("mouseover", function(d) {
-                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
-                    circleOnMouseOver(d.id);
                 }
             });
-            path.attr("opacity", function (d) {
-                var src = d.source.id;
-                var tar = d.target.id;
-                return ((topicCat[src].length == 0 || $(topicCat[src]).filter(catChecked).length > 0) && (topicCat[tar].length == 0 || $(topicCat[tar]).filter(catChecked).length > 0)) ? 1 : 0;
-            });
-            text.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0;
-            });
-            text_shadow.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? 1 : 0;
-            });
-            
             calculateZoomSize(xs, ys);
         } else {
-            circle.attr("opacity", 1)
-            .on("click", function(d) {
-                openNav(d.id);
-            }).on("mouseover", function(d) {
-                circleOnMouseOver(d.id);
-            });
-            path.attr("opacity", 1);
-            text.attr("opacity", 1);
-            text_shadow.attr("opacity", 1);
             defaultZoomSize();
         }
     });
