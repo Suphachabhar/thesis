@@ -34,11 +34,15 @@ if (isset($_GET['logout'])) {
         $prerequisite = array();
         if (!isAdmin() && count($topic['prerequisite']) > 0) {
             foreach ($topic['prerequisite'] as $p) {
-                $query = "SELECT count(a.id) AS subtopics, b.progress FROM subtopics AS a, progresses AS b WHERE b.student = ".$_SESSION['user']['id']
-                    ." AND b.topic = ".$p['id']." AND b.topic = a.topic";
-                $results = mysqli_query($db, $query);
-                $progress = mysqli_fetch_assoc($results);
-                if (is_null($progress) || $progress['subtopics'] != $progress['progress']) {
+                $query = "SELECT COUNT(id) AS nSub FROM subtopics WHERE topic = ".$p["id"];
+                $result = mysqli_query($db, $query);
+                $subTotal = mysqli_fetch_assoc($result)['nSub'];
+                
+                $query = "SELECT COUNT(a.subtopic) AS nSub FROM progresses AS a, subtopics AS b WHERE a.student = ".$_SESSION["user"]["id"]." AND a.subtopic = b.id AND b.topic = ".$p["id"];
+                $result = mysqli_query($db, $query);
+                $subFinished = mysqli_fetch_assoc($result)['nSub'];
+                
+                if ($subFinished < $subTotal) {
                     $prerequisite[] = '<li><a href="../topic/topic.php?id='.$p['id'].'">'.$p['name'].'</a></li>';
                 }
             }
@@ -292,26 +296,6 @@ if (isset($_GET['logout'])) {
         <div class="descAndNav">
             
             <?php
-                $defaultSub = 1;
-                $progress = $nSubtopics;
-                if (isAdmin()) {
-                    $defaultSub = isset($_GET['subtopic']) ? intval($_GET['subtopic']) : 1;
-                } else {
-                    $query = "SELECT progress FROM progresses where topic = ".$_GET['id']." AND student = ".$_SESSION['user']['id'];
-                    $results = mysqli_query($db, $query);
-                    if (mysqli_num_rows($results) == 0) {
-                        $createProgress = "INSERT INTO progresses (student, topic, progress) VALUES (".$_SESSION['user']['id'].", ".$_GET['id'].", 0)";
-                        mysqli_query($db, $createProgress);
-                        $progress = 0;
-                    } else {
-                        $progress = mysqli_fetch_assoc($results)['progress'];
-                    }
-                    $defaultSub = $progress == $nSubtopics ? $progress : $progress + 1;
-                    if (isset($_GET['subtopic']) && intval($_GET['subtopic']) < $defaultSub) {
-                        $defaultSub = intval($_GET['subtopic']);
-                    }
-                }
-                
                 if (isAdmin()) {
             ?>
             <form class="nav-link-export" method='post' action='topic_handler.php'>
@@ -320,30 +304,6 @@ if (isset($_GET['logout'])) {
                 <input class="afterContent btn btn-light" type="submit" value="export">
             </form>
             <?php
-                } else {
-                    foreach ($sList as $subtopic) {
-                        if ($subtopic['sort'] > ($progress + 1)) continue;
-            ?>
-            <div class="navigation" 
-                id="navigation_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
-                <?php
-                        if ($subtopic['sort'] == $nSubtopics && $subtopic['sort'] == $progress) {
-                            echo '<a class="afterContent btn btn-primary" href="../auth/home.php?topic='.$_GET['id'].'">Finish</a>';
-                        } elseif ($subtopic['sort'] <= $progress && $subtopic['sort'] != $nSubtopics) {
-                            echo '<button class="afterContent nextSubtopic btn btn-primary" id="nextSubtopic_'.$subtopic['sort'].'">Next</button>';
-                        } else {
-                            $button = '<button class="afterContent progressCheck btn btn-primary" id="progress_'.$subtopic['sort'].'">';
-                            if ($subtopic['sort'] == $nSubtopics) {
-                                $button .= "Finish";
-                            } else {
-                                $button .= "Next";
-                            }
-                            echo $button.'</button>';
-                        }
-                ?>
-            </div>
-            <?php 
-                    }
                 }
             ?>
         </div>
@@ -354,12 +314,42 @@ if (isset($_GET['logout'])) {
                 
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <?php
+                    $defaultSub = 0;
+                    if (isset($_GET['subtopic'])) {
+                        $defaultSub = intval($_GET['subtopic']);
+                        $query = "INSERT INTO progresses (student, subtopic) VALUES (".$_SESSION['user']['id'].", ".$_GET['subtopic'].")";
+                        mysqli_query($db, $query);
+                    }
+                    
+                    $subFinished = 0;
+                    $progresses = array();
+                    if (!permission() && $nSubtopics != 0) {
+                        $query = "SELECT a.subtopic FROM progresses AS a, subtopics AS b WHERE a.student = ".$_SESSION["user"]["id"]." AND a.subtopic = b.id AND b.topic = ".$_GET["id"];
+                        $results = mysqli_query($db, $query);
+                        $subFinished = mysqli_num_rows($results);
+                        
+                        foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                            $progresses[] = $row['subtopic'];
+                        }
+                    }
+                    
                     foreach ($sList as $subtopic) {
                 ?>
                     <li class="nav-item">
-                    <div class="subtopicSlot<?php if ($defaultSub == $subtopic['sort']) {echo " selected";} ?> nav-link"
-                        id="subtopicSlot_<?php echo $subtopic['sort']; ?>">
-                        <button class="subtopicName" id="subtopicName_<?php echo $subtopic['sort']; ?>"<?php if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) echo ' disabled'; ?>><?php echo $subtopic['name']; ?></button>
+                    <div class="subtopicSlot<?php if ($defaultSub == $subtopic['id']) {echo " selected";} ?> nav-link"
+                        id="subtopicSlot_<?php echo $subtopic['id']; ?>">
+                        <button class="subtopicName" id="subtopicName_<?php echo $subtopic['id']; ?>">
+                            <?php
+                                echo $subtopic['name'];
+                                
+                                if (!isAdmin()) {
+                                    $finished = in_array($subtopic['id'], $progresses);
+                                    $title = $finished ? 'completed' : 'not completed';
+                                    $src = $finished ? 'tick' : 'dashed_circle';
+                                    echo '<img id="status_'.$subtopic['id'].'" data-toggle="tooltip" title="'.$title.'" src="../auth/img/'.$src.'.png">';
+                                }
+                            ?>
+                        </button>
                         
                     </div>
                 <?php
@@ -368,14 +358,10 @@ if (isset($_GET['logout'])) {
                 </ul>
                  
             </div>
-           
+            
             <?php
             if (!permission()) {
-                $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
-                    ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$_GET["id"];
-                $result = mysqli_query($db, $query);
-                $row = mysqli_fetch_assoc($result);
-                $percentage = $row['nSub'] == 0 ? 0 : round(($row['progress'] / $row['nSub']) * 100);
+                $percentage = $nSubtopics == 0 ? 0 : ($subFinished / $nSubtopics) * 100;
                 print '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
@@ -385,10 +371,9 @@ if (isset($_GET['logout'])) {
             <div class="topiccontent">
                 <?php
                     foreach ($sList as $subtopic) {
-                        if (!isAdmin() && $subtopic['sort'] > ($progress + 1)) continue;
                 ?>
                     <div class="subtopicContent" 
-                        id="subtopicContent_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
+                        id="subtopicContent_<?php echo $subtopic['id']; ?>"<?php if ($defaultSub != $subtopic['id']) echo ' style="display: none;"'; ?>>
                         <?php
                             $directory = '../../files/'.$_GET['id'].'/'.$subtopic['id'];
                             $has_files = false;
@@ -530,29 +515,8 @@ if (isset($_GET['logout'])) {
     <?php
         } else {
     ?>
-	$(document).on("click", ".progressCheck", (function () {
-		var progressID = $(this).attr("id").split("_")[1];
-        $.ajax({
-            url: "topic_handler.php",
-            method: "post",
-            data: "function=recordProgress&topic=<?php echo $_GET['id']; ?>&progress=" + progressID,
-            success: function(result){
-                window.location = result;
-            }
-        });
-	}));
-    
-	$(document).on("click", ".nextSubtopic", (function () {
-		var currID = $(this).attr("id").split("_")[1];
-		var nextID = parseInt(currID, 10) + 1;
-        console.log(currID + " " + nextID);
-        $("#subtopicSlot_" + currID).removeClass("selected");
-        $("#subtopicSlot_" + nextID).addClass("selected");
-        $("#subtopicContent_" + currID).css("display", "none");
-        $("#subtopicContent_" + nextID).css("display", "block");
-        $("#navigation_" + currID).css("display", "none");
-        $("#navigation_" + nextID).css("display", "block");
-	}));
+        var nSubtopics = <?php echo $nSubtopics; ?>,
+            progresses = [<?php echo join(", ", $progresses);?>];
     <?php
         }
     ?>
@@ -580,6 +544,25 @@ if (isset($_GET['logout'])) {
                 $(this).css("display", "none");
             }
         });
+        
+        <?php if (!isAdmin()) { ?>
+        $.ajax({
+            url: "topic_handler.php",
+            method: "post",
+            data: "function=recordProgress&topic=<?php echo $_GET['id']; ?>&progress=" + subID,
+            success: function(){
+                var subInt = parseInt(subID);
+                if ($.inArray(subInt, progresses) < 0) {
+                    progresses.push(subInt);
+                    var percentage = (progresses.length / nSubtopics) * 100;
+                    $('.progress-bar').attr('aria-valuenow', percentage);
+                    $('.progress-bar').css('width', '' + percentage + '%');
+                    $('#status_' + subID).attr('title', 'completed');
+                    $('#status_' + subID).attr('src', '../auth/img/tick.png');
+                }
+            }
+        });
+        <?php } ?>
 	}));
 
     

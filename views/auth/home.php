@@ -53,10 +53,7 @@ if (isset($_GET['logout'])) {
     if (permission()) {
         $progresses = array();
     } else {
-        $query = "SELECT a.id, b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
-                ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION['user']["id"]." GROUP BY a.id";
-        $results = mysqli_query($db, $query);
-        $progresses = mysqli_fetch_all($results, MYSQLI_ASSOC);
+        $progresses = getStudentProgresses($_SESSION['user']["id"], $db);
     }
 ?>
 

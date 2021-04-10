@@ -54,10 +54,25 @@
         return mysqli_num_rows($results) != 0;
     }
     
-    function getUserProgress($topic, $db) {
-        $query = "SELECT b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
-            ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_SESSION["user"]["id"]." AND a.id = ".$topic;
-        $result = mysqli_query($db, $query);
-        return mysqli_fetch_assoc($result);
+    function getStudentProgressByTopic($topics, $db) {
+        $tableB = "SELECT a.id, COUNT(b.topic) AS nSub FROM topics AS a LEFT JOIN subtopics AS b ON a.id = b.topic GROUP BY a.id";
+        $tableC = "SELECT a.id, COUNT(b.subtopic) AS progress FROM topics AS a LEFT JOIN subtopics AS c ON a.id = c.topic"
+            ." LEFT JOIN progresses AS b ON c.id = b.subtopic WHERE b.student = ".$_SESSION["user"]["id"]." GROUP BY a.id";
+        
+        $query = "SELECT a.id, a.name, IFNULL(b.nSub, 0) AS nSub, IFNULL(c.progress, 0) AS progress FROM topics AS a LEFT JOIN (".$tableB
+            .") AS b ON a.id = b.id LEFT JOIN (".$tableC.") AS c ON a.id = c.id WHERE a.id IN (".join(", ", $topics).")";
+        $results = mysqli_query($db, $query);
+        return mysqli_fetch_all($results, MYSQLI_ASSOC);
+    }
+    
+    function getStudentProgresses($id, $db) {
+        $tableB = "SELECT a.id, COUNT(b.topic) AS nSub FROM topics AS a LEFT JOIN subtopics AS b ON a.id = b.topic GROUP BY a.id";
+        $tableC = "SELECT a.id, COUNT(b.subtopic) AS progress FROM topics AS a LEFT JOIN subtopics AS c ON a.id = c.topic"
+            ." LEFT JOIN progresses AS b ON c.id = b.subtopic WHERE b.student = ".$id." GROUP BY a.id";
+        
+        $query = "SELECT a.id, IFNULL(b.nSub, 0) AS nSub, IFNULL(c.progress, 0) AS progress FROM topics AS a, (".$tableB.") AS b, ("
+            .$tableC.") AS c WHERE a.id = b.id AND a.id = c.id";
+        $results = mysqli_query($db, $query);
+        return mysqli_fetch_all($results, MYSQLI_ASSOC);
     }
 ?>

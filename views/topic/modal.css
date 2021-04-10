@@ -222,4 +222,6 @@ form + .subtopicSlot {
     margin-right: 30px;
 }
 
-
+.subtopicName img{
+  width: 20px;
+}

@@ -121,11 +121,16 @@
             $query = "SELECT COALESCE(MAX(id), 0) as id, COUNT(*) as sort FROM subtopics WHERE topic = ".$_POST['topic'];
             $results = mysqli_query($db, $query);
             $newInfo = mysqli_fetch_assoc($results);
-            $id = $newInfo['id'] + 1;
             $sort = $newInfo['sort'] + 1;
-            $query = "INSERT INTO subtopics (topic, id, name, sort) VALUES (".$_POST['topic'].", ".$id.", '".$name."', ".$sort.")";
+            $query = "INSERT INTO subtopics (topic, name, sort) VALUES (".$_POST['topic'].", '".$name."', ".$sort.")";
             mysqli_query($db, $query);
             $_SESSION['success'] = "Subtopic \"".$_POST['name']."\" has been created successfully.";
+        
+            $query = "SELECT id FROM subtopics WHERE topic = ".$_POST['topic']." AND name = '".$name."' ORDER BY id DESC LIMIT 1";
+            $results = mysqli_query($db, $query); 
+            $subID = mysqli_fetch_assoc($results)["id"];
+            header('location: topic.php?id='.$_POST['topic'].'&subtopic='.$subID);
+            return;
         }
         header('location: topic.php?id='.$_POST['topic']);
     }
@@ -149,7 +154,7 @@
             if (existingSubtopicName($name, $_POST['topic'], $db)) {
                 $_SESSION['success'] = clashedInputError('subtopic name', $_POST['name']);
             } else {
-                $query = "UPDATE subtopics SET name = '".$name."' WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
+                $query = "UPDATE subtopics SET name = '".$name."' WHERE id = ".$_POST['id'];
                 mysqli_query($db, $query);
                 $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
             }
@@ -201,7 +206,7 @@
         } elseif (!permission()) {
             $_SESSION['success'] = permissionError("delete subtopics");
         } else {
-            $query = "DELETE FROM subtopics WHERE id = ".$_POST['id']." and topic = ".$_POST['topic'];
+            $query = "DELETE FROM subtopics WHERE id = ".$_POST['id'];
             mysqli_query($db, $query);
             $query = "UPDATE subtopics SET sort = (sort - 1) WHERE topic = ".$_POST['topic']." AND sort > ".$subtopic['sort'];
             mysqli_query($db, $query);
@@ -359,18 +364,10 @@
     }
     
     function recordProgress($db) {
-        $url = "topic.php?id=".$_POST['topic'];
         if (!empty($_POST['topic']) && !empty($_POST['progress'])) {
-            $query = "UPDATE progresses SET progress = ".$_POST['progress']." WHERE student = ".$_SESSION['user']['id']." AND topic = ".$_POST['topic'];
+            $query = "INSERT INTO progresses (student, subtopic) VALUES (".$_SESSION['user']['id'].", ".$_POST['progress'].")";
             mysqli_query($db, $query);
-            
-            $query = "SELECT max(sort) AS max FROM subtopics WHERE topic = ".$_POST['topic'];
-            $result = mysqli_fetch_assoc(mysqli_query($db, $query));
-            if ($result['max'] == intval($_POST['progress'])) {
-                $url = "../auth/home.php?topic=".$_POST['topic'];
-            }
         }
-        print $url;
     }
     
     function searchTopic($db) {
@@ -385,11 +382,7 @@
     
     function searchProgress($db) {
         if (is_numeric($_POST["student"]) && is_int(intval($_POST["student"]))) {
-            $query = "SELECT a.id, b.progress, COUNT(c.topic) AS nSub FROM topics AS a LEFT JOIN progresses AS b ON a.id = b.topic"
-                ." LEFT JOIN subtopics AS c ON a.id = c.topic WHERE b.student = ".$_POST["student"]." GROUP BY a.id";
-            $result = mysqli_query($db, $query);
-            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
-            print json_encode($rows);
+            print json_encode(getStudentProgresses($_POST["student"], $db));
         }
     }
     
@@ -399,25 +392,31 @@
         $result = mysqli_query($db, $query);
         if (mysqli_num_rows($result) > 0) {
             $info = mysqli_fetch_assoc($result);
-            $query = "SELECT name, sort FROM subtopics WHERE topic = ".$_POST["id"]." ORDER BY sort";
+            $query = "SELECT id, name FROM subtopics WHERE topic = ".$_POST["id"]." ORDER BY sort";
             $result = mysqli_query($db, $query);
             $subtopics = mysqli_fetch_all($result, MYSQLI_ASSOC);
             $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b WHERE b.topic = ".$_POST["id"]." AND b.prerequisite = a.id";
             $result = mysqli_query($db, $query);
             $prereqs = mysqli_fetch_all($result, MYSQLI_ASSOC);
-            $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b WHERE b.prerequisite = ".$_POST["id"]." AND b.topic = a.id";
+            $query = "SELECT a.id FROM topics AS a, prerequisites AS b WHERE b.prerequisite = ".$_POST["id"]." AND b.topic = a.id";
             $result = mysqli_query($db, $query);
             $after = mysqli_fetch_all($result, MYSQLI_ASSOC);
             
             $addLink = true;
             $prereqCheck = array();
             if(!permission()){
+                $pids = array();
                 foreach ($prereqs as $p) {
-                    $pid = $p['id'];
-                    $progress = getUserProgress($pid, $db);
-                    $prereqCheck[$pid] = !is_null($progress) && $progress['nSub'] == $progress['progress'];
-                    if (!$prereqCheck[$pid]) {
-                        $addLink = false;
+                    $pids[] = $p['id'];
+                }
+                
+                if (count($pids) > 0) {
+                    foreach (getStudentProgressByTopic($pids, $db) as $progress) {
+                        $pid = $progress['id'];
+                        $prereqCheck[$pid] = !is_null($progress) && $progress['nSub'] == $progress['progress'];
+                        if (!$prereqCheck[$pid]) {
+                            $addLink = false;
+                        }
                     }
                 }
             }
@@ -432,11 +431,20 @@
                 $output .= '<p>'.$info['description'].'</p>';
             }
 
-            $subsFinished = 0;
+            $finished = array();
             if (!permission()) {
-                $row = getUserProgress($_POST["id"], $db);
-                $subsFinished = $row['progress'];
-                $percentage = $row['nSub'] == 0 ? 0 : round(($subsFinished / $row['nSub']) * 100);
+                $query = "SELECT COUNT(id) AS nSub FROM subtopics WHERE topic = ".$_POST["id"];
+                $result = mysqli_query($db, $query);
+                $subTotal = mysqli_fetch_assoc($result)['nSub'];
+                
+                $query = "SELECT a.subtopic FROM progresses AS a, subtopics AS b WHERE a.student = ".$_SESSION["user"]["id"]." AND a.subtopic = b.id AND b.topic = ".$_POST["id"];
+                $results = mysqli_query($db, $query);
+                $subsFinished = mysqli_num_rows($results);
+                foreach (mysqli_fetch_all($results, MYSQLI_ASSOC) as $row) {
+                    $finished[] = $row['subtopic'];
+                }
+                
+                $percentage = $subTotal == 0 ? 0 : ($subsFinished / $subTotal) * 100;
                 $output .= '<h4>Progress</h4><div class="progress progressss"><div class="progress-bar" role="progressbar" aria-valuenow="'
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
@@ -445,16 +453,13 @@
             if (count($subtopics) > 0) {
                 $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
-                    $onclick = ' onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'&subtopic='.$s['sort'].'\'"';
+                    $onclick = $addLink ? ' onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'&subtopic='.$s['id'].'\'"' : "";
                     $subStatus = "";
                     if (!permission()) {
-                        if ($subsFinished >= $s['sort']) {
+                        if (in_array($s['id'], $finished)) {
                             $subStatus = '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
                             $subStatus = '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
-                            if (($subsFinished + 1) < $s['sort']) {
-                                $onclick = '';
-                            }
                         }
                     }
                     $output .= '<tr><td style="width: 90%"'.$onclick.'>'.$s['name'].$subStatus.'</td></tr>';
@@ -479,12 +484,15 @@
             }
             if (count($after) > 0) {
                 $output .= '<br/><h4>What you should do next</h4><div class="card-body"><table class="table table-hover"><tbody>';
+                $aids = array();
                 foreach ($after as $a) {
-                    $aid = $a['id'];
-                    $output .= '<tr><td style="width: 90%"  onclick="openNav('.$aid.')">'.$a['name'];
+                    $aids[] = $a['id'];
+                }
+                foreach (getStudentProgressByTopic($aids, $db) as $progress) {
+                    $aid = $progress['id'];
+                    $output .= '<tr><td style="width: 90%"  onclick="openNav('.$aid.')">'.$progress['name'];
                     if (!permission()) {
-                        $progress = getUserProgress($aid, $db);
-                        if (!is_null($progress) && $progress['nSub'] == $progress['progress']) {
+                        if ($progress['nSub'] == $progress['progress']) {
                             $output .= '<td><img data-toggle="tooltip" title="completed" src="../auth/img/tick.png"></td>';
                         } else {
                             $output .= '<td><img data-toggle="tooltip" title="not complete" src="../auth/img/dashed_circle.png"></td>';
