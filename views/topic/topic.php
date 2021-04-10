@@ -84,7 +84,7 @@ if (isset($_GET['logout'])) {
 <div class="containner">
     <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">   
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="../auth/home.php">Home</a></li>
+            <li class="breadcrumb-item"><a href="../auth/home.php">< back</a></li>
             <li class="breadcrumb-item active" aria-current="page"><?php echo $topic['name']; ?></li>
             <?php 
                 if (permission()) {
@@ -279,16 +279,7 @@ if (isset($_GET['logout'])) {
         
         
         <div class="subcontent">
-        <div class="description">
-            <h2>Description</h2>
-            <?php
-                foreach (explode("\n", $topic["description"]) as $line) {
-                    echo "<p>".$line."</p>";
-                }
-            ?>
-        </div>
-        <hr />
-        <!--<hr style="height:10px;border:none;color:#f5c852;background-color:#f5c852;" />-->
+        
         <div class="descAndNav">
             
             <?php
@@ -319,36 +310,15 @@ if (isset($_GET['logout'])) {
                 <input name="id" value="<?php echo $_GET['id']; ?>" hidden>
                 <input class="afterContent btn btn-light" type="submit" value="export">
             </form>
-            <?php
-                } else {
-                    foreach ($sList as $subtopic) {
-                        if ($subtopic['sort'] > ($progress + 1)) continue;
-            ?>
-            <div class="navigation" 
-                id="navigation_<?php echo $subtopic['sort']; ?>"<?php if ($defaultSub != $subtopic['sort']) echo ' style="display: none;"'; ?>>
-                <?php
-                        if ($subtopic['sort'] == $nSubtopics && $subtopic['sort'] == $progress) {
-                            echo '<a class="afterContent btn btn-primary" href="../auth/home.php?topic='.$_GET['id'].'">Finish</a>';
-                        } elseif ($subtopic['sort'] <= $progress && $subtopic['sort'] != $nSubtopics) {
-                            echo '<button class="afterContent nextSubtopic btn btn-primary" id="nextSubtopic_'.$subtopic['sort'].'">Next</button>';
-                        } else {
-                            $button = '<button class="afterContent progressCheck btn btn-primary" id="progress_'.$subtopic['sort'].'">';
-                            if ($subtopic['sort'] == $nSubtopics) {
-                                $button .= "Finish";
-                            } else {
-                                $button .= "Next";
-                            }
-                            echo $button.'</button>';
-                        }
-                ?>
-            </div>
+            
+            
             <?php 
-                    }
+                    
                 }
             ?>
         </div>
         
-        <h2>Subtopics</h2>
+       
             <div class="subtopicrow">
 
                 
