@@ -145,7 +145,10 @@ if (isset($_GET['logout'])) {
                 <?php
                     foreach ($categories as $cat) {
                 ?>
-                <a class="dropdown-item"><input type="checkbox" name="category" value="<?php echo $cat['id']; ?>"/>  <?php echo $cat['name']; ?></a>
+                <a class="dropdown-item">
+                    <input type="checkbox" name="category" value="<?php echo $cat['id']; ?>"/>
+                    <span id="catName_<?php echo $cat['id']; ?>"><?php echo $cat['name']; ?></span>
+                </a>
                 <?php
                     }
                 ?>
@@ -872,7 +875,20 @@ if (isset($_GET['logout'])) {
     }
     
     function filterTopicTree() {
+        if ($('#topicsFiltered').length) {
+            $('#topicsFiltered').remove();
+        }
         if (catChecked.length > 0) {
+            catNames = "";
+            for (var i = 0; i < catChecked.length; i++) {
+                if (i > 0) {
+                    catNames += i == catChecked.length - 1 ? " and " : ", ";
+                }
+                catNames += "<b>" + $('#catName_' + catChecked[i]).text() + "</b>";
+            };
+            $('.alertt').append('<div id="topicsFiltered" class="alert alert-info alert-dismissible fade show" role="alert">You have selected '
+                + catNames + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+            
             var xs = [], ys = [];
             $(nodes).each(function (_, d) {
                 if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
@@ -880,7 +896,6 @@ if (isset($_GET['logout'])) {
                     ys.push(d.y);
                 }
             });
-            console.log(xs, ys);
             calculateZoomSize(xs, ys);
         } else {
             defaultZoomSize();
