@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 10, 2021 at 12:39 PM
+-- Generation Time: Apr 11, 2021 at 11:24 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -31,26 +31,30 @@ CREATE TABLE `subtopics` (
   `id` int(11) NOT NULL,
   `topic` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `sort` int(11) NOT NULL
+  `sort` int(11) NOT NULL,
+  `video` varchar(25) DEFAULT NULL,
+  `link` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `subtopics`
 --
 
-INSERT INTO `subtopics` (`id`, `topic`, `name`, `sort`) VALUES
-(1, 51, 'Syntax', 1),
-(2, 51, 'Ecosystem', 2),
-(3, 52, 'Intro', 1),
-(4, 52, 'DOM', 2),
-(5, 52, 'Loading order', 3),
-(6, 53, 'Intro', 1),
-(7, 53, 'Basic CSS usage', 2),
-(8, 54, 'NPM Intro', 1),
-(9, 59, 'testt', 1),
-(10, 69, 'CREATE TABLE', 1),
-(11, 69, 'PRIMARY KEY', 2),
-(13, 54, 'test', 2);
+INSERT INTO `subtopics` (`id`, `topic`, `name`, `sort`, `video`, `link`) VALUES
+(1, 51, 'Syntax', 1, 'tSvsPFpNHKs', 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement?fbclid=IwAR1EC4z8_HuCLffw0xnVleZRnIZYtFzM11bMr73sr_lk4bljksAGFNR8jZc'),
+(2, 51, 'Ecosystem', 2, NULL, NULL),
+(3, 52, 'Intro', 1, NULL, NULL),
+(4, 52, 'DOM', 2, NULL, NULL),
+(5, 52, 'Loading order', 3, NULL, NULL),
+(6, 53, 'Intro', 1, NULL, NULL),
+(7, 53, 'Basic CSS usage', 2, NULL, NULL),
+(8, 54, 'NPM Intro', 1, NULL, NULL),
+(9, 59, 'testt', 1, NULL, NULL),
+(10, 69, 'CREATE TABLE', 1, NULL, NULL),
+(11, 69, 'PRIMARY KEY', 2, NULL, NULL),
+(13, 54, 'testt', 2, NULL, NULL),
+(14, 54, 'test2', 3, NULL, NULL),
+(15, 61, 'Intro', 1, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -71,7 +75,7 @@ ALTER TABLE `subtopics`
 -- AUTO_INCREMENT for table `subtopics`
 --
 ALTER TABLE `subtopics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
