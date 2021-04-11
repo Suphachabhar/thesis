@@ -149,21 +149,36 @@
         if (!permission()) {
             $_SESSION['success'] = permissionError("edit subtopic names");
         } else {
-            if (!empty($_POST['name']) && strcmp($_POST['name'], $subtopic['name']) != 0) {
+            $messages = array();
+            $subtopicName = $subtopic['name'];
+            if (!empty($_POST['name']) && strcmp($_POST['name'], $subtopicName) != 0) {
                 if (existingSubtopicName($name, $_POST['topic'], $db)) {
-                    $_SESSION['success'] = clashedInputError('subtopic name', $_POST['name']);
+                    $messages[] = clashedInputError('subtopic name', $_POST['name']);
                 } else {
                     $query = "UPDATE subtopics SET name = '".$name."' WHERE id = ".$_POST['id'];
                     mysqli_query($db, $query);
-                    $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
+                    $messages[] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
+                    $subtopicName = $_POST["name"];
                 }
             }
             
             $chosen_file = basename($_FILES["fileToUpload"]["name"]);
-            if (!empty($chosen_file)) {
-                $message = "";
+            if ($_POST["fileRemove"] == "1") {
+                $cwd = getcwd();
+                $directory = "../../files/" . $_POST["topic"] . "/" . $_POST["id"];
+                $test = file_exists($directory);
+
+                if (file_exists($directory)) {
+                    $dh = opendir($directory);
+                    while (($file = readdir($dh)) !== false) {
+                        unlink($directory."/".$file);
+                    }
+                    closedir($dh);
+                    $messages[] = "A PDF file has been removed from \"".$subtopicName."\" successfully.";
+                }
+            } else if (!empty($chosen_file)) {
                 if (strtolower(pathinfo($chosen_file, PATHINFO_EXTENSION)) != "pdf") {
-                    $message = "You can upload PDF files only.";
+                    $messages[] = "You can upload PDF files only.";
                 } else {
                     $cwd = getcwd();
                     $directory = "../../files/" . $_POST["topic"] . "/" . $_POST["id"];
@@ -174,7 +189,7 @@
                     }
 
                     if (!$test) {
-                        $message = 'Failed to create the directory';
+                        $messages[] = 'Failed to create the directory';
                     } else {
                         $dh = opendir($directory);
                         while (($file = readdir($dh)) !== false) {
@@ -183,16 +198,50 @@
                         closedir($dh);
                         
                         $move_result = move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $directory."/".$chosen_file);
-                        $message = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded successfully.";
+                        $messages[] = "A PDF file has been added to \"".$subtopicName."\" successfully.";
                     }
                 }
-                
-                if (isset($_SESSION['success']) && $_SESSION['success'] != "") {
-                    $_SESSION['success'] .= "<br>".$message;
+            }
+            
+            if ($_POST["videoRemove"] == "1") {
+                $query = "UPDATE subtopics SET video = NULL WHERE id = ".$_POST['id'];
+                mysqli_query($db, $query);
+                $messages[] = "A video has been removed from \"".$subtopicName."\" successfully.";
+            } else if (!empty($_POST['video'])) {
+                if (stripos($_POST['video'], 'youtube.com') !== false) {
+                    parse_str(parse_url($_POST["video"], PHP_URL_QUERY), $params);
+                    if (!$params['v']) {
+                        $messages[] = invalidInputError("YouTube video link");
+                    } else {
+                        $video = $params['v'];
+                        if ($params['t']) {
+                            $video .= '?t='.$params['t'];
+                        }
+                        $query = "UPDATE subtopics SET video = '".$video."' WHERE id = ".$_POST['id'];
+                        mysqli_query($db, $query);
+                        $messages[] = "A video has been added to \"".$subtopicName."\" successfully.";
+                    }
+                } else if (($i = stripos($_POST['video'], 'youtu.be')) !== false) {
+                    $video = substr($_POST['video'], $i + 9);
+                    $query = "UPDATE subtopics SET video = '".$video."' WHERE id = ".$_POST['id'];
+                    mysqli_query($db, $query);
+                    $messages[] = "A video has been added to \"".$subtopicName."\" successfully.";
                 } else {
-                    $_SESSION['success'] = $message;
+                    $messages[] = invalidInputError("YouTube video link");
                 }
             }
+            
+            if ($_POST["linkRemove"] == "1") {
+                $query = "UPDATE subtopics SET link = NULL WHERE id = ".$_POST['id'];
+                mysqli_query($db, $query);
+                $messages[] = "An external link has been removed from \"".$subtopicName."\" successfully.";
+            } else if (!empty($_POST['link'])) {
+                $query = "UPDATE subtopics SET link = '".$_POST['link']."' WHERE id = ".$_POST['id'];
+                mysqli_query($db, $query);
+                $messages[] = "An external link has been added to \"".$subtopicName."\" successfully.";
+            }
+            
+            $_SESSION['success'] = join("<br>", $messages);
         }
         header('location: topic.php?id='.$_POST['topic'].'&subtopic='.$_POST['id']);
     }
@@ -483,8 +532,8 @@
             }
 
             
+            $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
             if (count($subtopics) > 0) {
-                $output .= '<br/><h4>Subtopics</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($subtopics as $s) {
                     $onclick = $addLink ? ' onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'&subtopic='.$s['id'].'\'"' : "";
                     $subStatus = "";
@@ -497,8 +546,11 @@
                     }
                     $output .= '<tr><td style="width: 90%"'.$onclick.'>'.$s['name'].$subStatus.'</td></tr>';
                 }
-                $output .= '</tbody></table></div>';
+            } else {
+                $output .= '<tr><td style="width: 90%" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">+ Click to create subtopic</td></tr>';
             }
+            $output .= '</tbody></table></div>';
+            
             if (count($prereqs) > 0) {
                 $output .= '<br/><h4>Prerequisite</h4><div class="card-body"><table class="table table-hover"><tbody>';
                 foreach ($prereqs as $p) {

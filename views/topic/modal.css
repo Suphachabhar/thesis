@@ -225,3 +225,8 @@ form + .subtopicSlot {
 .subtopicName img{
   width: 20px;
 }
+
+.videoContainer {
+    width: 100%;
+    position: relative;
+}

@@ -26,7 +26,7 @@ if (isset($_GET['logout'])) {
         $_SESSION['success'] = invalidInputError("topic ID");
         header('location: '.mainPage());
     } else {
-        $query = "SELECT id, name, sort FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
+        $query = "SELECT id, name, sort, video, link FROM subtopics where topic = ".$_GET['id']." ORDER BY sort";
         $results = mysqli_query($db, $query);
         $nSubtopics = mysqli_num_rows($results);
         $sList = mysqli_fetch_all($results, MYSQLI_ASSOC);
@@ -404,6 +404,27 @@ if (isset($_GET['logout'])) {
                                 }
                             }
                             
+                            $has_video = false;
+                            if ($subtopic['video']) {
+                                $has_video = true;
+                        ?>
+                        <div class="videoContainer">
+                            <iframe src="https://www.youtube.com/embed/<?php echo $subtopic['video']; ?>"></iframe>
+                        </div>
+                        <?php
+                            }
+                            
+                            $has_link = false;
+                            if ($subtopic['link']) {
+                                $has_link = true;
+                        ?>
+                        <div>
+                            <h5>External link</h5>
+                            <a href="<?php echo $subtopic['link']; ?>"><img src="../auth/img/expand.png" width="20" height="20"></img></a>
+                        </div>
+                        <?php
+                            }
+                            
                             if (isAdmin()) {
                         ?>
                        
@@ -432,8 +453,34 @@ if (isset($_GET['logout'])) {
                                         <input name="name" value="<?php echo $subtopic['name']; ?>">
                                     </div>
                                     <div class="form-group">
-                                        <p><b><?php echo $has_files ? "Replace content" : "Upload content";?></b></p>
+                                        <p><b><?php echo $has_files ? "Replace/Delete" : "Add";?> PDF file</b></p>
+                                        <?php if ($has_files) { ?>
+                                        <input type="radio" name="fileRemove" value="0" checked><label>Replace</label>
+                                        <?php } ?>
                                         <input type="file" name="fileToUpload">
+                                        <?php if ($has_files) { ?>
+                                        <br><input type="radio" name="fileRemove" value="1"><label>Delete</label>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="form-group">
+                                        <p><b><?php echo $has_video ? "Replace/Delete" : "Add";?> YouTube video</b></p>
+                                        <?php if ($has_video) { ?>
+                                        <input type="radio" name="videoRemove" value="0" checked><label>Replace</label>
+                                        <?php } ?>
+                                        <input name="video">
+                                        <?php if ($has_video) { ?>
+                                        <br><input type="radio" name="videoRemove" value="1"><label>Delete</label>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="form-group">
+                                        <p><b><?php echo $has_link ? "Replace/Delete" : "Add";?> external link</b></p>
+                                        <?php if ($has_link) { ?>
+                                        <input type="radio" name="linkRemove" value="0" checked><label>Replace</label>
+                                        <?php } ?>
+                                        <input name="link">
+                                        <?php if ($has_link) { ?>
+                                        <br><input type="radio" name="linkRemove" value="1"><label>Delete</label>
+                                        <?php } ?>
                                     </div>
                                 </form>
                             </div>
@@ -512,6 +559,18 @@ if (isset($_GET['logout'])) {
         var instance2 = new SlimSelect({
             select: '#category'
         });
+    });
+    
+    $('input:radio[name="fileRemove"]').change(function () {
+        $('input[name="fileToUpload"]').prop('disabled', $(this).val() == "1");
+    });
+    
+    $('input:radio[name="videoRemove"]').change(function () {
+        $('input[name="video"]').prop('disabled', $(this).val() == "1");
+    });
+    
+    $('input:radio[name="linkRemove"]').change(function () {
+        $('input[name="link"]').prop('disabled', $(this).val() == "1");
     });
     <?php
         } else {
