@@ -404,22 +404,6 @@ if (isset($_GET['logout'])) {
                                 }
                             }
                             
-                            if (!$has_files && permission()) {
-                        ?>
-                       
-                        <h4>Upload content</h4>
-                        <form action="topic_handler.php" method="post" enctype="multipart/form-data">
-                            <input name="function" value="upload" hidden>
-                            <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
-                            <input name="subtopic" value="<?php echo $subtopic['id']; ?>" hidden>
-                            <input type="file" name="fileToUpload">
-                            <input type="submit" value="Upload File">
-                        </form>
-                        <?php 
-                            }
-                        ?>
-
-                        <?php
                             if (isAdmin()) {
                         ?>
                        
@@ -428,7 +412,7 @@ if (isset($_GET['logout'])) {
                             <button class="delete-button-topic" data-toggle="modal" data-target="#deleteSubModal_<?php echo $subtopic['id']; ?>" data-whatever="@mdo"></button>
                         </div>
 
-                        <form action="topic_handler.php" method="post">
+                        <form action="topic_handler.php" method="post" enctype="multipart/form-data">
                     <div class="modal fade" id="renameSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="renameSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -440,13 +424,17 @@ if (isset($_GET['logout'])) {
                             </div>
                             <div class="modal-body">
                                 <form>
-                                <div class="form-group">
-                                    <label class="col-form-label">Name:</label>
-                                    <input name="function" value="editSubtopicName" hidden>
+                                    <input name="function" value="editSubtopic" hidden>
                                     <input name="topic" value="<?php echo $_GET['id']; ?>" hidden>
                                     <input name="id" value="<?php echo $subtopic['id']; ?>" hidden>
-                                    <input name="name" value="<?php echo $subtopic['name']; ?>">
-                                </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Name:</label>
+                                        <input name="name" value="<?php echo $subtopic['name']; ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <p><b><?php echo $has_files ? "Replace content" : "Upload content";?></b></p>
+                                        <input type="file" name="fileToUpload">
+                                    </div>
                                 </form>
                             </div>
                             <div class="modal-footer">

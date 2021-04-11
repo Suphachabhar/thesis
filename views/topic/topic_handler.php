@@ -12,8 +12,8 @@
             createSubtopic($db);
             break;
             
-        case "editSubtopicName":
-            editSubtopicName($db);
+        case "editSubtopic":
+            editSubtopic($db);
             break;
             
         case "deleteTopic":
@@ -26,10 +26,6 @@
             
         case "editTopic":
             editTopic($db);
-            break;
-    
-        case "upload":
-            uploadTopicContent($db);
             break;
     
         case "recordProgress":
@@ -135,7 +131,7 @@
         header('location: topic.php?id='.$_POST['topic']);
     }
     
-    function editSubtopicName($db) {
+    function editSubtopic($db) {
         $name = str_replace("'", "''", $_POST["name"]);
         if (is_null(existingTopicID($_POST['topic'], $db))) {
             $_SESSION['success'] = invalidInputError("topic ID");
@@ -146,27 +142,59 @@
         $subtopic = existingSubtopicID($_POST['id'], $_POST['topic'], $db);
         if (is_null($subtopic)) {
             $_SESSION['success'] = invalidInputError("subtopic ID");
-        } elseif (!permission()) {
+            header('location: topic.php?id='.$_POST['topic']);
+            return;
+        }
+        
+        if (!permission()) {
             $_SESSION['success'] = permissionError("edit subtopic names");
-        } elseif (empty($_POST['name'])) {
-            $_SESSION['success'] = blankInputError("a topic name");
-        } elseif (strcmp($_POST['name'], $subtopic['name']) != 0) {
-            if (existingSubtopicName($name, $_POST['topic'], $db)) {
-                $_SESSION['success'] = clashedInputError('subtopic name', $_POST['name']);
-            } else {
-                $query = "UPDATE subtopics SET name = '".$name."' WHERE id = ".$_POST['id'];
-                mysqli_query($db, $query);
-                $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
+        } else {
+            if (!empty($_POST['name']) && strcmp($_POST['name'], $subtopic['name']) != 0) {
+                if (existingSubtopicName($name, $_POST['topic'], $db)) {
+                    $_SESSION['success'] = clashedInputError('subtopic name', $_POST['name']);
+                } else {
+                    $query = "UPDATE subtopics SET name = '".$name."' WHERE id = ".$_POST['id'];
+                    mysqli_query($db, $query);
+                    $_SESSION['success'] = "Subtopic name has been changed to \"".$_POST['name']."\" successfully.";
+                }
+            }
+            
+            $chosen_file = basename($_FILES["fileToUpload"]["name"]);
+            if (!empty($chosen_file)) {
+                $message = "";
+                if (strtolower(pathinfo($chosen_file, PATHINFO_EXTENSION)) != "pdf") {
+                    $message = "You can upload PDF files only.";
+                } else {
+                    $cwd = getcwd();
+                    $directory = "../../files/" . $_POST["topic"] . "/" . $_POST["id"];
+                    $test = file_exists($directory);
 
-                $query = "SELECT id FROM subtopics WHERE topic = ".$_POST['topic']." AND name = '".$name."' ORDER BY id DESC LIMIT 1";
-                $results = mysqli_query($db, $query); 
-                $subID = mysqli_fetch_assoc($results)["id"];
-                header('location: topic.php?id='.$_POST['topic'].'&subtopic='.$subID);
-                return;
+                    if (!$test) {
+                        $test = mkdir($directory, 0777, true);
+                    }
 
+                    if (!$test) {
+                        $message = 'Failed to create the directory';
+                    } else {
+                        $dh = opendir($directory);
+                        while (($file = readdir($dh)) !== false) {
+                            unlink($directory."/".$file);
+                        }
+                        closedir($dh);
+                        
+                        $move_result = move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $directory."/".$chosen_file);
+                        $message = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded successfully.";
+                    }
+                }
+                
+                if (isset($_SESSION['success']) && $_SESSION['success'] != "") {
+                    $_SESSION['success'] .= "<br>".$message;
+                } else {
+                    $_SESSION['success'] = $message;
+                }
             }
         }
-        header('location: topic.php?id='.$_POST['topic']);
+        header('location: topic.php?id='.$_POST['topic'].'&subtopic='.$_POST['id']);
     }
     
     function deleteTopic($db) {
@@ -312,46 +340,6 @@
         header('location: topic.php?id='.$_POST['id']);
     }
     
-    function uploadTopicContent($db) {
-        if (is_null(existingTopicID($_POST['topic'], $db))) {
-            $_SESSION['success'] = invalidInputError("topic ID");
-            header('location: '.mainPage());
-            return;
-        }
-    
-        if (!permission()) {
-            $_SESSION['success'] = permissionError("upload files");
-        } elseif (is_null(existingSubtopicID($_POST['subtopic'], $_POST['topic'], $db))) {
-            $_SESSION['success'] = invalidInputError("subtopic ID");
-        } else {
-            $chosen_file = basename($_FILES["fileToUpload"]["name"]);
-            if (empty($chosen_file)) {
-                $_SESSION['success'] = blankInputError("a file to upload");
-            } else if (strtolower(pathinfo($chosen_file, PATHINFO_EXTENSION)) != "pdf") {
-                $_SESSION['success'] = "You can upload PDF files only.";
-            } else {
-                $cwd = getcwd();
-                $directory = "../../files/" . $_POST["topic"] . "/" . $_POST["subtopic"];
-                $test = file_exists($directory);
-
-                if (!$test) {
-                    $test = mkdir($directory, 0777, true);
-                }
-
-                if (!$test) {
-                    $_SESSION['success'] = 'failed to create the directory';
-                } else {
-                    $move_result = move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $directory."/".$chosen_file);
-                    $_SESSION['success'] = "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded successfully.";
-
-                    
-                }
-            }
-        }
-        
-        header('location: topic.php?id='.$_POST['topic']);
-    }
-    
     function removeTopicDirectory($topic, $subtopics) {
         $directory = "../../files/".$topic."/";
         if (is_dir($directory)) {
@@ -406,6 +394,9 @@
             $query = "SELECT id, name FROM subtopics WHERE topic = ".$_POST["id"]." ORDER BY sort";
             $result = mysqli_query($db, $query);
             $subtopics = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $query = "SELECT a.id, a.name FROM categories AS a, topic_categories AS b WHERE b.topic = ".$_POST["id"]." AND b.category = a.id";
+            $result = mysqli_query($db, $query);
+            $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
             $query = "SELECT a.id, a.name FROM topics AS a, prerequisites AS b WHERE b.topic = ".$_POST["id"]." AND b.prerequisite = a.id";
             $result = mysqli_query($db, $query);
             $prereqs = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -434,15 +425,38 @@
             $output = '<h1>'.$info['name'];
             $output .= '</h1>';
           
-            if ($addLink) {
+            if (count($categories) > 0) {
                 $output .= '<div class="badgee">';
-                $output .= '<button type="button" class="btn btn-primary btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Artificail Intelligence</button>';
-                $output .= '<button type="button" class="btn btn-secondary btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Network</button>';
-                $output .= '<button type="button" class="btn btn-success btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Database</button>';
-                $output .= '<button type="button" class="btn btn-danger btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">eCommerce</button>';
-                $output .= '<button type="button" class="btn btn-warning btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Embedded</button>';
-                $output .= '<button type="button" class="btn btn-info btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Programming Languages</button>';
-                $output .= '<button type="button" class="btn btn-dark btn-xs" onclick="window.location.href = \'../topic/topic.php?id='.$_POST["id"].'\'">Security</button>';
+                foreach ($categories as $c) {
+                    switch ($c['id']) {
+                        case 1:
+                            $colour = 'primary';
+                            break;
+                        case 2:
+                            $colour = 'secondary';
+                            break;
+                        case 3:
+                            $colour = 'success';
+                            break;
+                        case 4:
+                            $colour = 'danger';
+                            break;
+                        case 5:
+                            $colour = 'warning';
+                            break;
+                        case 6:
+                            $colour = 'info';
+                            break;
+                        case 7:
+                            $colour = 'dark';
+                            break;
+                            
+                        default:
+                            $colour = 'primary';
+                    }
+                    $output .= '<button type="button" class="btn btn-'.$colour.' btn-xs" onclick="categoryButtonClicked('.$c['id']
+                        .')">'.$c['name'].'</button>';
+                }
                 $output .= '</div>';
             }
             
@@ -464,7 +478,7 @@
                 }
                 
                 $percentage = $subTotal == 0 ? 0 : ($subsFinished / $subTotal) * 100;
-                $output .= '<h4>Progress bar <span>()</span></h4><div class="progress progressss"><div class="progress-bar" role="progressbar" aria-valuenow="'
+                $output .= '<h4>Progress bar ('.$subsFinished.'/'.$subTotal.')</h4><div class="progress progressss"><div class="progress-bar" role="progressbar" aria-valuenow="'
                     .$percentage.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$percentage.'%"></div></div>';
             }
 

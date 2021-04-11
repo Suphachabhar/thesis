@@ -525,10 +525,30 @@ if (isset($_GET['logout'])) {
     $("#topicInput").bind('input', function () {
         var input = $('#topicInput').val();
         if (input != "") {
+            if ($('#searchNotFound').length) {
+                $('#searchNotFound').remove();
+            }
             $(this).attr("list", "topicList");
-            var id = $('#topicList option[value="' + input + '"]').data('value');
-            if (id !== undefined) {
+            
+            var inputUC = input.toUpperCase(),
+                id = 0,
+                found = false;
+            $('#topicList option').each(function () {
+                var val = $(this).val().toUpperCase();
+                if (val.includes(inputUC)) {
+                    found = true;
+                    if (val == inputUC) {
+                        id = $(this).data('value');
+                    }
+                }
+            });
+        
+            if (id != 0) {
                 openNav(id);
+            }
+            if (!found) {
+                $('.alertt').append('<div id="searchNotFound" class="alert alert-warning alert-dismissible fade show" role="alert">No topic name matches with "'
+                    + input + '"<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
             }
         } else {
             $(this).attr("list", "");
@@ -610,27 +630,63 @@ if (isset($_GET['logout'])) {
         if (permission()) {
     ?>
     $("#studentInput").bind('input', function () {
-        var id = $('#studentList option[value="' + $('#studentInput').val() + '"]').data('value');
-        $.ajax({
-            url: "../topic/topic_handler.php",
-            method: "POST",
-            data: "function=searchProgress&student=" + id,
-            success: function(result){
-                if (result == "") {
-                    progresses = [];
-                    isStudent = false;
-                } else {
+        var input = $('#studentInput').val(),
+            id = 0;
+        if (input != "") {
+            if ($('#searchNotFound').length) {
+                $('#searchNotFound').remove();
+            }
+            $(this).attr("list", "studentList");
+            
+            var inputUC = input.toUpperCase(),
+                found = false;
+            $('#studentList option').each(function () {
+                var val = $(this).val().toUpperCase();
+                if (val.includes(inputUC)) {
+                    found = true;
+                    if (val == inputUC) {
+                        id = $(this).data('value');
+                    }
+                }
+            });
+            
+            if (!found) {
+                $('.alertt').append('<div id="searchNotFound" class="alert alert-warning alert-dismissible fade show" role="alert">No student name matches with "'
+                    + input + '"<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+            }
+        } else {
+            $(this).attr("list", "");
+        }
+        
+        if ($('#viewAsStudent').length) {
+            $('#viewAsStudent').remove();
+        }
+        if (id != 0) {
+            $('.alertt').append('<div id="viewAsStudent" class="alert alert-info alert-dismissible fade show" role="alert">You are viewing the topic tree as <b>'
+                + input + '</b><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+            $.ajax({
+                url: "../topic/topic_handler.php",
+                method: "POST",
+                data: "function=searchProgress&student=" + id,
+                success: function(result){
                     progresses = JSON.parse(result);
                     isStudent = true;
+                    circle.transition().duration(500).style("fill", function (d) {
+                        return progressColour(d.id, false); 
+                    }).style("stroke", function (d) {
+                        return progressColour(d.id, true); 
+                    });
                 }
-                
-                circle.transition().duration(500).style("fill", function (d) {
-                    return progressColour(d.id, false); 
-                }).style("stroke", function (d) {
-                    return progressColour(d.id, true); 
-                });
-            }
-        });
+            });
+        } else {
+            progresses = [];
+            isStudent = false;
+            circle.transition().duration(500).style("fill", function (d) {
+                return progressColour(d.id, false); 
+            }).style("stroke", function (d) {
+                return progressColour(d.id, true); 
+            });
+        }
     });
 
     $(document).ready(function () {
@@ -815,12 +871,7 @@ if (isset($_GET['logout'])) {
         return $.inArray(true, parents) >= 0;
     }
     
-    $('input[name="category"]').change(function () {
-        catChecked = [];
-        $('input[name="category"]:checked').each(function() {
-            catChecked.push($(this).val());
-        });
-        
+    function filterTopicTree() {
         if (catChecked.length > 0) {
             var xs = [], ys = [];
             $(nodes).each(function (_, d) {
@@ -829,10 +880,29 @@ if (isset($_GET['logout'])) {
                     ys.push(d.y);
                 }
             });
+            console.log(xs, ys);
             calculateZoomSize(xs, ys);
         } else {
             defaultZoomSize();
         }
+    };
+    
+    function categoryButtonClicked(id) {
+        catChecked = [id.toString()];
+        $('input[name="category"]').each(function() {
+            $(this).prop('checked', $(this).val() == id);
+        });
+        
+        filterTopicTree();
+    };
+    
+    $('input[name="category"]').change(function () {
+        catChecked = [];
+        $('input[name="category"]:checked').each(function() {
+            catChecked.push($(this).val());
+        });
+        
+        filterTopicTree();
     });
 
     if (isStudent) {
