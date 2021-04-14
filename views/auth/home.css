@@ -242,7 +242,6 @@ text.shadow {
 
 #sideNavContent .badgee{
   text-align: center;
-  margin-bottom: 30px;
 }
 
 #sideNavContent td {
@@ -261,9 +260,6 @@ text.shadow {
   margin-bottom: 35px;
 }
 
-#sideNavContent a:hover {
-  color: grey;
-}
 
 .sidenav .closebtn {
   font-size: 36px;
