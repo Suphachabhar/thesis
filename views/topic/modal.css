@@ -265,6 +265,7 @@ form + .subtopicSlot {
 }
 
 .topiccontent{
+
     margin-top: 10px;
     margin-bottom: 20px;
 }
@@ -273,4 +274,32 @@ form + .subtopicSlot {
     width: 100%;
     display: flex;
     flex-direction: row;
+}
+
+@media screen and (max-width: 1000px) {
+    .subtopicContent{
+        flex-direction: column;
+    }
+
+    .subcontent{
+        margin-left: 30px;
+        margin-right: 30px;
+        
+    }
+
+    #topichead{
+        font-size: 35px;
+    }
+
+    .subcontent h2{
+        font-size: 25px;   
+    }
+
+    .breadcrumb{
+        margin-left: -30px;
+        margin-right: -30px;
+    }
+
+    
+    
 }

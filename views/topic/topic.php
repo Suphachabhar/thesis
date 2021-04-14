@@ -412,7 +412,7 @@ if (isset($_GET['logout'])) {
                         <div class="externalcontent">
                             <div class="videoContainer">
                                 <h5>External video</h5>
-                                <iframe src="https://www.youtube.com/embed/<?php echo $subtopic['video']; ?>"></iframe>
+                                <iframe src="http://www.youtube.com/embed/<?php echo $subtopic['video']; ?>"allowfullscreen ></iframe>
                             </div>
                                 <?php
                             }
@@ -598,7 +598,7 @@ if (isset($_GET['logout'])) {
         });
         $(".subtopicContent").each(function() {
             if ($(this).attr("id") == "subtopicContent_" + subID) {
-                $(this).css("display", "block");
+                $(this).css("display", "flex");
             } else {
                 $(this).css("display", "none");
             }
