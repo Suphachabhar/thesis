@@ -643,19 +643,20 @@
             $subtopics = mysqli_fetch_all($result, MYSQLI_ASSOC);
             foreach ($subtopics as $s) {
 		$subDir = $topicDir."/".$s['id'];
-                if (is_dir($subDir) && $dh = opendir($subDir)) {
+		if (is_dir($subDir)) {
+                    $dh = opendir($subDir);
                     while (($file = readdir($dh)) !== false) {
                         if ($file != "." && $file != "..") {
                             $res = $zip->addFile($subDir."/".$file, $s['name'].".pdf");
                             $canExport = true;
 			}
-                    }
+		    }
+		    closedir($dh);
                 }
-                closedir($dh);
             }
         }
         $zip->close();
-        
+
         if ($canExport) {
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="'.basename($filename).'"');
