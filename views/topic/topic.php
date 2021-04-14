@@ -402,25 +402,31 @@ if (isset($_GET['logout'])) {
                                     }
                                 }
                             }
-                            
+                        ?>
+                        <?php
                             $has_video = false;
                             if ($subtopic['video']) {
                                 $has_video = true;
                         ?>
-                        <div class="videoContainer">
-                            <iframe src="https://www.youtube.com/embed/<?php echo $subtopic['video']; ?>"></iframe>
-                        </div>
-                        <?php
+                        <div class="externalcontent">
+                            <div class="videoContainer">
+                                <h5>External video</h5>
+                                <iframe src="http://www.youtube.com/embed/<?php echo $subtopic['video']; ?>"allowfullscreen ></iframe>
+                            </div>
+                                <?php
                             }
                             
                             $has_link = false;
                             if ($subtopic['link']) {
                                 $has_link = true;
-                        ?>
-                        <div>
-                            <h5>External link</h5>
-                            <a href="<?php echo $subtopic['link']; ?>"><img src="../auth/img/expand.png" width="20" height="20"></img></a>
+                            ?>
+                        
+                            <div class="linkContainer">
+                            <h5>External link <span><a href="<?php echo $subtopic['link']; ?>"><img src="../auth/img/expand.png"></img></a></span></h5>
+                            
+                            </div>
                         </div>
+                        
                         <?php
                             }
                             
@@ -433,7 +439,7 @@ if (isset($_GET['logout'])) {
                         </div>
 
                         <form action="topic_handler.php" method="post" enctype="multipart/form-data">
-                    <div class="modal fade" id="renameSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="renameSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
+                        <div class="modal fade" id="renameSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="renameSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                             <div class="modal-header">
@@ -489,40 +495,40 @@ if (isset($_GET['logout'])) {
                             </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                        </div>
+                        </form>
 
-                <form action="topic_handler.php" method="post">
-                    <div class="modal fade" id="deleteSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="deleteSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deleteSubModalLabel_<?php echo $subtopic['id']; ?>">Delete <?php echo $subtopic['name']; ?></h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Are you sure you want to delete this subtopic?</p>
-                                    <form>
-                                        <div class="form-group" hidden>
-                                            <input name="function" value="deleteSubtopic">
-                                            <input name="topic" value="<?php echo $_GET['id']; ?>">
-                                            <input name="id" value="<?php echo $subtopic['id']; ?>">
+                        <form action="topic_handler.php" method="post">
+                            <div class="modal fade" id="deleteSubModal_<?php echo $subtopic['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="deleteSubModalLabel_<?php echo $subtopic['id']; ?>" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteSubModalLabel_<?php echo $subtopic['id']; ?>">Delete <?php echo $subtopic['name']; ?></h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
                                         </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                                    <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete this subtopic?</p>
+                                            <form>
+                                                <div class="form-group" hidden>
+                                                    <input name="function" value="deleteSubtopic">
+                                                    <input name="topic" value="<?php echo $_GET['id']; ?>">
+                                                    <input name="id" value="<?php echo $subtopic['id']; ?>">
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                            <button type="submit" class="btn btn-primary" value="Yes">Yes</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </form>
+                        </form>
                         
                         <?php 
-                                }
+                            }
                         ?>
 
                     </div>
@@ -591,7 +597,7 @@ if (isset($_GET['logout'])) {
         });
         $(".subtopicContent").each(function() {
             if ($(this).attr("id") == "subtopicContent_" + subID) {
-                $(this).css("display", "block");
+                $(this).css("display", "flex");
             } else {
                 $(this).css("display", "none");
             }
