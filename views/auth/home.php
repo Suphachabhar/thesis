@@ -877,6 +877,12 @@ if (isset($_GET['logout'])) {
         if ($("#mySidenav").css("display") == "block") {
             $('#mySidenav').hide();
             resizeSvgAndSidebar(false);
+            currX = 0;
+            currY = 0;
+            selectedTopic = 0;
+            circle.style("stroke", function (d) {
+                return progressColour(d.id, true);
+            });
         }
         if ($('#topicsFiltered').length) {
             $('#topicsFiltered').remove();
