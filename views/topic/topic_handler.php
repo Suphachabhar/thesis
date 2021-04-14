@@ -626,10 +626,10 @@
             header('location: topic.php?id='.$_POST['id']);
         }
         
-        $filename = $topic['name'].".zip";
+	$filename = "../../files/".$topic['name'].".zip";
         $zip = new ZipArchive();
         $canExport = false;
-        if ($zip->open("./".$filename, ZipArchive::CREATE) !== true) {
+        if ($zip->open($filename, ZipArchive::CREATE) !== true) {
             $_SESSION['success'] = 'The files are unable to be exported';
             print $_SESSION['success'];
             header('location: topic.php?id='.$_POST['id']);
