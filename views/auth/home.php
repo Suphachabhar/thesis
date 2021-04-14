@@ -1,6 +1,5 @@
 <?php 
 include('server.php');
-include('../../database.php');
 include('../../checks.php');
 
 if (isset($_GET['logout'])) {

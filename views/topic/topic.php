@@ -1,6 +1,5 @@
 <?php
     require_once("../auth/server.php");
-    require_once("../../database.php");
     require_once("../../errors.php");
     require_once("../../checks.php");
     

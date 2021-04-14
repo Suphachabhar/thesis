@@ -4,7 +4,7 @@ session_start();
 
 //connect to the database
 
-$db = mysqli_connect('127.0.0.1', 'root', '', 'thesis') or die("could not connect to database");
+require_once("../../database.php");
 
 $username = "";
 $email = "";
