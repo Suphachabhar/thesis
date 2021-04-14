@@ -660,7 +660,6 @@
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="'.basename($filename).'"');
             header('Content-Length: '.filesize($filename));
-            $_SESSION['success'] = 'The topic "'.$topic['name'].'" has been exported';
 
             flush();
             readfile($filename);

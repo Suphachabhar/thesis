@@ -874,6 +874,10 @@ if (isset($_GET['logout'])) {
     }
     
     function filterTopicTree() {
+        if ($("#mySidenav").css("display") == "block") {
+            $('#mySidenav').hide();
+            resizeSvgAndSidebar(false);
+        }
         if ($('#topicsFiltered').length) {
             $('#topicsFiltered').remove();
         }
