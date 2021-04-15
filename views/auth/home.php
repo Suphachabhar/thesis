@@ -893,16 +893,6 @@ if (isset($_GET['logout'])) {
             $('#topicsFiltered').remove();
         }
         if (catChecked.length > 0) {
-            catNames = "";
-            for (var i = 0; i < catChecked.length; i++) {
-                if (i > 0) {
-                    catNames += i == catChecked.length - 1 ? " and " : ", ";
-                }
-                catNames += "<b>" + $('#catName_' + catChecked[i]).text() + "</b>";
-            };
-            $('.alertt').append('<div id="topicsFiltered" class="alert alert-info alert-dismissible fade show" role="alert">You have selected '
-                + catNames + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-            
             var xs = [], ys = [];
             $(nodes).each(function (_, d) {
                 if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
@@ -912,13 +902,24 @@ if (isset($_GET['logout'])) {
             
                 $("#circle_" + d.id).removeClass("transparent");
             });
-        
             $("line").each(function (){
                 $(this).removeClass("transparent");
             });
             $("text").each(function (){
                 $(this).removeClass("transparent");
             });
+            
+            var catNames = "";
+            for (var i = 0; i < catChecked.length; i++) {
+                if (i > 0) {
+                    catNames += i == catChecked.length - 1 ? " and " : ", ";
+                }
+                catNames += "<b>" + $('#catName_' + catChecked[i]).text() + "</b>";
+            };
+            var message = xs.length > 0 ? 'You have selected ' : 'No topics found in ';
+            $('.alertt').append('<div id="topicsFiltered" class="alert alert-info alert-dismissible fade show" role="alert">' + message
+                + catNames + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+            
             calculateZoomSize(xs, ys);
         } else {
             $("circle").each(function () {
