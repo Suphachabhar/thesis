@@ -721,13 +721,16 @@ if (isset($_GET['logout'])) {
                     var anotherC = lid[1] == topicStr ? lid[2] : lid[1];
                     if ($("#circle_" + anotherC).attr("opacity") > 0) {
                         line.attr("opacity", 0.1);
+                        line.addClass("transparent");
                     }
                 }
             }
         });
         
-        if ($("#circle_" + selectedTopic).attr("opacity") == 0) {
-            $("#circle_" + selectedTopic).attr("opacity", 0.1)
+        var cir = $("#circle_" + selectedTopic);
+        if (cir.attr("opacity") == 0) {
+            cir.attr("opacity", 0.1)
+            .addClass("transparent")
             .on("click", function() {
                 openNav(id);
             }).on("mouseover", function(event) {
@@ -741,13 +744,8 @@ if (isset($_GET['logout'])) {
                         .style("top", (event.pageY - 28) + "px");
                 }
             });
-        }
         
-        if ($("#text_" + selectedTopic).attr("opacity") == 0) {
             $("#text_" + selectedTopic).attr("opacity", 0.1);
-        }
-        
-        if ($("#shadow_" + selectedTopic).attr("opacity") == 0) {
             $("#shadow_" + selectedTopic).attr("opacity", 0.1);
         }
 
@@ -787,27 +785,34 @@ if (isset($_GET['logout'])) {
         var groupOpacity = scale < 0.3 ? 1 : 0;
         
         if (catChecked.length > 0) {
-            circle.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? normalOpacity : 0;
-            }).on("click", function(d) {
-                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
-                    openNav(d.id);
+            $("circle").each(function () {
+                if (!$(this).hasClass("transparent")) {
+                    var id = $(this).attr("id").split("_")[1];
+                    if (topicCat[id].length == 0 || $(topicCat[id]).filter(catChecked).length > 0) {
+                        $(this).attr("opacity", normalOpacity)
+                        .on("click", function() {
+                            openNav(id);
+                        }).on("mouseover", function() {
+                            circleOnMouseOver(id);
+                        });
+                        $("#text_" + id).attr("opacity", normalOpacity);
+                        $("#shadow_" + id).attr("opacity", normalOpacity);
+                    } else {
+                        $(this).attr("opacity", 0);
+                        $("#text_" + id).attr("opacity", 0);
+                        $("#shadow_" + id).attr("opacity", 0);
+                    }
                 }
-            }).on("mouseover", function(d) {
-                if (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) {
-                    circleOnMouseOver(d.id);
+            });
+            $("line").each(function () {
+                if (!$(this).hasClass("transparent")) {
+                    var lid = $(this).attr("id").split("_");
+                    var src = lid[1];
+                    var tar = lid[2];
+                    $(this).attr("opacity", function (d) {
+                        return ((topicCat[src].length == 0 || $(topicCat[src]).filter(catChecked).length > 0) && (topicCat[tar].length == 0 || $(topicCat[tar]).filter(catChecked).length > 0)) ? normalOpacity : 0;
+                    });
                 }
-            });
-            path.attr("opacity", function (d) {
-                var src = d.source.id;
-                var tar = d.target.id;
-                return ((topicCat[src].length == 0 || $(topicCat[src]).filter(catChecked).length > 0) && (topicCat[tar].length == 0 || $(topicCat[tar]).filter(catChecked).length > 0)) ? normalOpacity : 0;
-            });
-            text.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? normalOpacity : 0;
-            });
-            text_shadow.attr("opacity", function (d) {
-                return (topicCat[d.id].length == 0 || $(topicCat[d.id]).filter(catChecked).length > 0) ? normalOpacity : 0;
             });
         } else {
             circle.attr("opacity", normalOpacity)
@@ -904,9 +909,24 @@ if (isset($_GET['logout'])) {
                     xs.push(d.x);
                     ys.push(d.y);
                 }
+            
+                $("#circle_" + d.id).removeClass("transparent");
+            });
+        
+            $("line").each(function (){
+                $(this).removeClass("transparent");
+            });
+            $("text").each(function (){
+                $(this).removeClass("transparent");
             });
             calculateZoomSize(xs, ys);
         } else {
+            $("circle").each(function () {
+                $(this).removeClass("transparent");
+            });
+            $("line").each(function (){
+                $(this).removeClass("transparent");
+            });
             defaultZoomSize();
         }
     };
