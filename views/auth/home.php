@@ -798,7 +798,12 @@ if (isset($_GET['logout'])) {
                         $("#text_" + id).attr("opacity", normalOpacity);
                         $("#shadow_" + id).attr("opacity", normalOpacity);
                     } else {
-                        $(this).attr("opacity", 0);
+                        $(this).attr("opacity", 0)
+                        .on("click", function() {
+                            void 0;
+                        }).on("mouseover", function() {
+                            void 0;
+                        });
                         $("#text_" + id).attr("opacity", 0);
                         $("#shadow_" + id).attr("opacity", 0);
                     }
@@ -892,6 +897,13 @@ if (isset($_GET['logout'])) {
         if ($('#topicsFiltered').length) {
             $('#topicsFiltered').remove();
         }
+        $("circle").each(function () {
+            $(this).removeClass("transparent");
+        });
+        $("line").each(function (){
+            $(this).removeClass("transparent");
+        });
+        
         if (catChecked.length > 0) {
             var xs = [], ys = [];
             $(nodes).each(function (_, d) {
@@ -899,14 +911,6 @@ if (isset($_GET['logout'])) {
                     xs.push(d.x);
                     ys.push(d.y);
                 }
-            
-                $("#circle_" + d.id).removeClass("transparent");
-            });
-            $("line").each(function (){
-                $(this).removeClass("transparent");
-            });
-            $("text").each(function (){
-                $(this).removeClass("transparent");
             });
             
             var catNames = "";
@@ -916,18 +920,18 @@ if (isset($_GET['logout'])) {
                 }
                 catNames += "<b>" + $('#catName_' + catChecked[i]).text() + "</b>";
             };
-            var message = xs.length > 0 ? 'You have selected ' : 'No topics found in ';
+            
+            if (xs.length > 0) {
+                var message = 'You have selected ';
+                calculateZoomSize(xs, ys);
+            } else {
+                catChecked = [];
+                var message = 'No topics found in ';
+                defaultZoomSize();
+            }
             $('.alertt').append('<div id="topicsFiltered" class="alert alert-info alert-dismissible fade show" role="alert">' + message
                 + catNames + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-            
-            calculateZoomSize(xs, ys);
         } else {
-            $("circle").each(function () {
-                $(this).removeClass("transparent");
-            });
-            $("line").each(function (){
-                $(this).removeClass("transparent");
-            });
             defaultZoomSize();
         }
     };
